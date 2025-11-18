@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const route = useRoute()
-const router = useRouter()
 
 const isValidating = ref(true)
 const validationError = ref<string | null>(null)
@@ -30,7 +29,7 @@ async function validateToken() {
     isValid.value = true
 
     setTimeout(() => {
-      router.push('/')
+      location.href = '/'
     }, 2000)
   } catch (error: any) {
     validationError.value = error.data?.message || 'Invalid or expired token'

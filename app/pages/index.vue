@@ -2,10 +2,8 @@
 import type { TableColumn } from '@nuxt/ui'
 import type { Expense } from '~~/shared/types/expense'
 
-const { loggedIn } = useUserSession()
-
-watch(loggedIn, (to) => {
-  if (!to) navigateTo('/entry', { replace: true })
+definePageMeta({
+  middleware: 'auth',
 })
 
 const UBadge = resolveComponent('UBadge')
@@ -14,9 +12,9 @@ const { data } = useFetch('/api/expenses/list', {
   transform: ({ expenses }) => {
     return expenses.map((expense) => {
       return {
-        amount: expense.amount,
-        category: expense.category!,
-        note: expense.note!,
+        amount: parseFloat(expense.amount),
+        category: expense.category,
+        note: expense.note,
       }
     })
   },
