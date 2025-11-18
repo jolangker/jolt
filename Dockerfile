@@ -9,7 +9,7 @@ RUN npm install --verbose
 COPY . .
 
 RUN npx run build
-RUN npx run drizzle-kit generate
+RUN npx run drizzle-kit migrate
 
 FROM node:24-alpine AS production
 
