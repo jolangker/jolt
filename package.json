@@ -3,27 +3,36 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "nuxt build",
+    "build": "nuxt build && bun run db:migrate",
     "dev": "nuxt dev",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "typecheck": "nuxt typecheck",
-    "pm2:start": "pm2 start ecosystem.config.cjs",
-    "pm2:stop": "pm2 stop ecosystem.config.cjs"
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "docker:build": "docker build -t jolt:latest .",
+    "docker:save": "docker save jolt:latest | gzip > jolt.tar.gz",
+    "scp": "scp jolt.tar.gz compose.yaml package.json jolley@103.197.188.39:~/personal/jolt",
+    "deploy": "bun run docker:build && bun run docker:save && bun run scp && rm jolt.tar.gz"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.73",
     "@iconify-json/simple-icons": "^1.2.58",
+    "@neondatabase/serverless": "^1.0.2",
     "@nuxt/ui": "^4.1.0",
-    "@prisma/nuxt": "^0.3.0",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.7",
+    "drizzle-seed": "^0.3.1",
     "nuxt": "^4.2.1",
     "nuxt-auth-utils": "^0.5.25",
     "valibot": "^1.1.0"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.10.0",
+    "drizzle-kit": "^0.31.7",
     "eslint": "^9.39.1",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "vue-tsc": "^3.1.3"
   }

@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { db } from '~~/server/utils/db'
+import { expenses } from '~~/server/db/schema'
+import { desc, eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
@@ -18,10 +18,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Missing telegram user id' })
   }
 
-  const expenses = await prisma.expense.findMany({
-    where: { telegramUserId: telegramUserId },
-    orderBy: { createdAt: 'desc' },
-  })
+  const responses = await db.select().from(expenses)
+    .where(eq(expenses.telegramUserId, telegramUserId))
+    .orderBy(desc(expenses))
 
-  return { expenses }
+  return { expenses: responses }
 })

@@ -1,7 +1,6 @@
-import { PrismaClient } from '@prisma/client'
 import { generateShortToken } from '~~/server/utils/token'
-
-const prisma = new PrismaClient()
+import { db } from '~~/server/utils/db'
+import { links } from '~~/server/db/schema'
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
@@ -17,13 +16,7 @@ export default defineEventHandler(async (event) => {
   const token = generateShortToken()
   const expiresAt = new Date(Date.now() + ttlMinutes * 60 * 1000)
 
-  await prisma.shortLink.create({
-    data: {
-      token,
-      telegramUserId,
-      expiresAt,
-    },
-  })
+  await db.insert(links).values({ telegramUserId, token, expiresAt })
 
   return {
     ok: true,

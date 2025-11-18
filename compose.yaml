@@ -1,0 +1,10 @@
+services:
+  jolt:
+    image: jolt:latest
+    container_name: jolt
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: ["node", ".output/server/index.mjs"]

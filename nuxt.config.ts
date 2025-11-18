@@ -4,35 +4,30 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/ui',
     'nuxt-auth-utils',
-    '@prisma/nuxt'
   ],
 
   devtools: {
-    enabled: true
+    enabled: true,
   },
 
   css: ['~/assets/css/main.css'],
 
   runtimeConfig: {
     N8N_SECRET: process.env.N8N_SECRET,
-    APP_BASE_URL: process.env.APP_BASE_URL
-  },
-
-  routeRules: {
-    '/': { prerender: true }
+    APP_BASE_URL: process.env.APP_BASE_URL,
   },
 
   compatibilityDate: '2025-01-15',
 
   vite: {
     server: {
-      allowedHosts: true
-    }
+      allowedHosts: true,
+    },
   },
 
   eslint: {
     config: {
-      stylistic: true
-    }
-  }
+      stylistic: true,
+    },
+  },
 })
