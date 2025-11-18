@@ -2,14 +2,14 @@ FROM node:24-alpine AS build
 
 WORKDIR /app
 
-COPY package.json package-lock.json* bun.lockb* ./
+COPY package.json package-lock.json bun.lockb ./
 
 RUN npm install --verbose
 
 COPY . .
 
-RUN npx run build
-RUN npx run drizzle-kit migrate
+RUN npx nuxt build
+RUN npx drizzle-kit migrate
 
 FROM node:24-alpine AS production
 
