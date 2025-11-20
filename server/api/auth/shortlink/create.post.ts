@@ -24,6 +24,6 @@ export default defineEventHandler(async (event) => {
     data: {
       url: `${process.env.APP_BASE_URL}/entry?token=${token}`,
       expiresAt,
-    }
+    },
   }
 })

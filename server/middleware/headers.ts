@@ -1,3 +1,3 @@
 export default defineEventHandler((event) => {
-    setHeader(event, 'Content-Type', 'application/json')
+  setHeader(event, 'Content-Type', 'application/json')
 })

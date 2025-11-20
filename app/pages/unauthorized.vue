@@ -7,7 +7,10 @@
     <template #body>
       <UCard class="w-full max-w-md mx-auto text-center">
         <div class="space-y-4">
-          <UIcon name="i-heroicons-lock-closed" class="w-16 h-16 mx-auto text-gray-400" />
+          <UIcon
+            name="i-heroicons-lock-closed"
+            class="w-16 h-16 mx-auto text-gray-400"
+          />
           <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
             Unauthorized Access
           </h1>

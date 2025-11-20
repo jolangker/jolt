@@ -1,5 +1,5 @@
 <template>
-    <UDashboardGroup>
-        <slot />
-    </UDashboardGroup>
+  <UDashboardGroup>
+    <slot />
+  </UDashboardGroup>
 </template>
