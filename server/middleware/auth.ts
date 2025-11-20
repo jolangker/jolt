@@ -1,3 +1,5 @@
+import { users } from '../db/schema'
+
 export default defineEventHandler(async (event) => {
   const url = getRequestURL(event)
 
@@ -6,6 +8,7 @@ export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
   const secret = getHeader(event, 'x-api-key')
   const telegramUserId = getHeader(event, 'x-telegram-user-id')
+  const telegramUsername = getHeader(event, 'x-telegram-username')
 
   if (session.user) {
     event.context.auth = {
@@ -14,13 +17,19 @@ export default defineEventHandler(async (event) => {
     }
   }
   else if (secret === process.env.APP_SECRET) {
-    if (!telegramUserId) throw createError({ statusCode: 400, statusMessage: 'Missing x-telegram-user-id' })
+    if (!telegramUserId || !telegramUsername) throw createError({ statusCode: 400, statusMessage: 'Missing telegram credentials' })
 
-    const user = await db.query.users.findFirst({
+    let user = await db.query.users.findFirst({
       where: (user, { eq }) => eq(user.telegramUserId, telegramUserId),
     })
 
-    if (!user) throw createError({ statusCode: 404, statusMessage: 'User not found' })
+    if (!user) {
+      [user] = await db.insert(users).values({
+        telegramUserId,
+        telegramUsername: telegramUsername,
+      }).returning()
+    }
+
     event.context.auth = {
       userId: user.id,
       source: 'n8n',
