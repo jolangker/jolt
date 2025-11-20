@@ -3,10 +3,8 @@ import { db } from '~~/server/utils/db'
 import { links } from '~~/server/db/schema'
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
-
   const secret = getHeader(event, 'x-api-key')
-  if (secret !== config.N8N_SECRET) {
+  if (secret !== process.env.N8N_SECRET) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
@@ -20,7 +18,7 @@ export default defineEventHandler(async (event) => {
 
   return {
     ok: true,
-    url: `${config.APP_BASE_URL}/entry?token=${token}`,
+    url: `${process.env.APP_BASE_URL}/entry?token=${token}`,
     expiresAt,
   }
 })

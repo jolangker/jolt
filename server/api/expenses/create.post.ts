@@ -2,10 +2,8 @@ import { expenses } from '~~/server/db/schema'
 import { db } from '~~/server/utils/db'
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
-
   const secret = getHeader(event, 'x-api-key')
-  if (secret !== config.N8N_SECRET) {
+  if (secret !== process.env.N8N_SECRET) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 

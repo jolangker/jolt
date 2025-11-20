@@ -9,7 +9,6 @@ RUN npm install --verbose
 COPY . .
 
 RUN npx nuxt build
-RUN npx drizzle-kit migrate
 
 FROM node:24-alpine AS production
 

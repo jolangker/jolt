@@ -12,11 +12,6 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  runtimeConfig: {
-    N8N_SECRET: process.env.N8N_SECRET,
-    APP_BASE_URL: process.env.APP_BASE_URL,
-  },
-
   compatibilityDate: '2025-01-15',
 
   vite: {
