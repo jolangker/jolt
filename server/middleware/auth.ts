@@ -3,6 +3,10 @@ import { users } from '../db/schema'
 export default defineEventHandler(async (event) => {
   const url = getRequestURL(event)
 
+  if (!url.pathname.startsWith('/api')) return
+
+  setHeader(event, 'Content-Type', 'application/json')
+
   if (url.pathname.startsWith('/api/auth')) return
 
   const session = await getUserSession(event)
