@@ -11,10 +11,8 @@
     "typecheck": "nuxt typecheck",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "docker:build": "docker build --no-cache -t jolt:latest .",
-    "docker:save": "docker save jolt:latest | gzip > jolt.tar.gz",
-    "scp": "scp jolt.tar.gz compose.yaml package.json jolley@103.197.188.39:~/personal/jolt",
-    "deploy": "bun run docker:build && bun run docker:save && bun run scp && rm jolt.tar.gz"
+    "docker:build": "docker build -t jolleyx/jolt:latest .",
+    "docker:push": "docker push jolleyx/jolt:latest"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.73",

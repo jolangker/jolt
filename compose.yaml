@@ -1,6 +1,6 @@
 services:
   jolt:
-    image: jolt:latest
+    image: jolleyx/jolt:latest
     container_name: jolt
     ports:
       - "3000:3000"
