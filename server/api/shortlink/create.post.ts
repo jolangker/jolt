@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event)
-  const { telegramUserId, ttlMinutes = 15 } = body
+  const { telegramUserId, ttlMinutes = 60 } = body
 
   const token = generateShortToken()
   const expiresAt = new Date(Date.now() + ttlMinutes * 60 * 1000)

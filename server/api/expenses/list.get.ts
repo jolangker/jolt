@@ -1,5 +1,5 @@
 import { db } from '~~/server/utils/db'
-import { expenses } from '~~/server/db/schema'
+import { expenses as ExpensesSchema } from '~~/server/db/schema'
 import { desc, eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
@@ -18,9 +18,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Missing telegram user id' })
   }
 
-  const responses = await db.select().from(expenses)
-    .where(eq(expenses.telegramUserId, telegramUserId))
-    .orderBy(desc(expenses))
+  const expenses = await db.select().from(ExpensesSchema)
+    .where(eq(ExpensesSchema.telegramUserId, telegramUserId))
+    .orderBy(desc(ExpensesSchema.transactionDate))
 
-  return { expenses: responses }
+  return { data: expenses }
 })

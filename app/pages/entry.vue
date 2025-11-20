@@ -23,7 +23,7 @@ async function validateToken() {
   try {
     await $fetch('/api/shortlink/consume', {
       method: 'GET',
-      query: { token: token.value }
+      query: { token: token.value },
     })
 
     isValid.value = true
@@ -31,10 +31,12 @@ async function validateToken() {
     setTimeout(() => {
       location.href = '/'
     }, 2000)
-  } catch (error: any) {
+  }
+  catch (error: any) {
     validationError.value = error.data?.message || 'Invalid or expired token'
     isValid.value = false
-  } finally {
+  }
+  finally {
     isValidating.value = false
   }
 }
@@ -65,7 +67,7 @@ watch(() => route.query.token, () => {
               :class="{
                 'animate-spin text-primary': isValidating,
                 'text-success': isValid,
-                'text-error': !isValidating && !isValid
+                'text-error': !isValidating && !isValid,
               }"
             />
             <h2 class="text-xl font-semibold">
