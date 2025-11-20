@@ -21,5 +21,5 @@ export default defineEventHandler(async (event) => {
     maxAge: (link.expiresAt.getTime() - link.createdAt.getTime()) / 1000,
   })
 
-  return { ok: true }
+  return { success: true }
 })

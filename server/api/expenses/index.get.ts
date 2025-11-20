@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const query = getQuery<{ telegramUserId: string | undefined }>(event)
   const secret = getHeader(event, 'x-api-key')
 
-  if (!session.user && secret !== process.env.N8N_SECRET) {
+  if (!session.user && secret !== process.env.APP_SECRET) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
@@ -21,5 +21,8 @@ export default defineEventHandler(async (event) => {
     .where(eq(ExpensesSchema.telegramUserId, telegramUserId))
     .orderBy(desc(ExpensesSchema.transactionDate))
 
-  return { data: expenses }
+  return {
+    success: true,
+    data: expenses
+  }
 })
