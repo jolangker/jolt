@@ -1,0 +1,24 @@
+import { relations } from 'drizzle-orm'
+import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+
+export const users = pgTable('users', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  telegramUserId: text('telegramUserId').notNull(),
+  telegramUsername: text('telegramUsername').notNull(),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
+})
+
+export const userTokens = pgTable('user_tokens', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  userId: uuid('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  token: text('token').notNull().unique(),
+  expiresAt: timestamp('expiresAt').notNull(),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
+})
+
+export const userTokenRelations = relations(userTokens, ({ one }) => ({
+  user: one(users, {
+    fields: [userTokens.userId],
+    references: [users.id],
+  }),
+}))

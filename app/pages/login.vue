@@ -5,7 +5,7 @@ const isValidating = ref(true)
 const validationError = ref<string | null>(null)
 const isValid = ref(false)
 
-const token = computed(() => route.query.token as string)
+const token = computed(() => route.query.t as string)
 
 async function validateToken() {
   if (!token.value) {
@@ -21,9 +21,11 @@ async function validateToken() {
   }
 
   try {
-    await $fetch('/api/auth/shortlink/consume', {
-      method: 'GET',
-      query: { token: token.value },
+    await $fetch('/api/auth/login-with-token', {
+      method: 'POST',
+      body: {
+        token: token.value,
+      },
     })
 
     isValid.value = true

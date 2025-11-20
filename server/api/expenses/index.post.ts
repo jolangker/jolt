@@ -3,15 +3,11 @@ import { db } from '~~/server/utils/db'
 import { expenseInsertSchema } from '~~/server/db/schemas/expenses'
 
 export default defineEventHandler(async (event) => {
-  const secret = getHeader(event, 'x-api-key')
-  if (secret !== process.env.APP_SECRET) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
-  }
-
+  const userId = event.context.auth.userId
   const body = await readValidatedBody(event, expenseInsertSchema.parse)
 
   const [expense] = await db.insert(expenses).values({
-    telegramUserId: body.telegramUserId,
+    userId: userId,
     amount: body.amount,
     category: body.category,
     note: body.note,
