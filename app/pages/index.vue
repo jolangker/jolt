@@ -3,7 +3,7 @@ definePageMeta({
   middleware: 'auth',
 })
 
-const { data: expenses } = useFetch('/api/expenses/list')
+const { data: expenses } = useFetch('/api/expenses')
 
 const total = computed<number>(() => {
   if (!expenses.value?.data) return 0

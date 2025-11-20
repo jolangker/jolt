@@ -21,7 +21,7 @@ async function validateToken() {
   }
 
   try {
-    await $fetch('/api/shortlink/consume', {
+    await $fetch('/api/auth/shortlink/consume', {
       method: 'GET',
       query: { token: token.value },
     })
