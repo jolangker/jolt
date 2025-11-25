@@ -1,0 +1,1 @@
+ALTER TABLE "transactions" ADD COLUMN "type" "category_type" DEFAULT 'expense' NOT NULL;

@@ -31,4 +31,6 @@ export default defineNuxtConfig({
       title: 'Jolt',
     },
   },
+
+  ssr: false
 })
