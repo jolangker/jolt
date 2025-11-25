@@ -7,4 +7,14 @@
 
 :root {
   --ui-radius: 0.5rem;
+  --vis-font-family: var(--font-sans);
+}
+
+.unovis-xy-container {
+  --vis-tooltip-background-color: var(--ui-bg);
+  --vis-tooltip-border-color: var(--ui-border);
+  --vis-tooltip-text-color: var(--ui-text);
+
+  --vis-crosshair-line-stroke-color: var(--ui-text);
+  --vis-crosshair-circle-stroke-color: var(--ui-primary);
 }

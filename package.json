@@ -21,6 +21,8 @@
     "@iconify-json/solar": "^1.2.5",
     "@neondatabase/serverless": "^1.0.2",
     "@nuxt/ui": "^4.1.0",
+    "@unovis/ts": "^1.6.2",
+    "@unovis/vue": "^1.6.2",
     "dayjs": "^1.11.19",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.7",

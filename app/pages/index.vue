@@ -1,11 +1,24 @@
 <script setup lang="ts">
 definePageMeta({
   middleware: 'auth',
+  layout: 'authenticated',
 })
 
-const { data: expenses } = useFetch('/api/expenses')
+// Get current month start and end dates
+const now = dayjs()
+const startOfMonth = now.startOf('month').format('YYYY-MM-DD')
+const endOfMonth = now.endOf('month').format('YYYY-MM-DD')
 
-const total = computed<number>(() => {
+// Fetch current month expenses
+const { data: expenses } = useFetch('/api/expenses', {
+  query: {
+    startDate: startOfMonth,
+    endDate: endOfMonth,
+  },
+})
+
+// Calculate metrics
+const totalSpent = computed<number>(() => {
   if (!expenses.value?.data) return 0
   let amount = 0
   for (const expense of expenses.value.data) {
@@ -14,12 +27,23 @@ const total = computed<number>(() => {
   return amount
 })
 
-const averagePerDay = computed(() => {
-  if (!expenses.value?.data) return 0
-  const start = dayjs(expenses.value.data[expenses.value.data.length - 1]!.transactionDate)
-  const end = dayjs(expenses.value.data[0]!.transactionDate)
-  const duration = end.diff(start, 'day')
-  return total.value / duration
+const transactionCount = computed(() => {
+  return expenses.value?.data?.length ?? 0
+})
+
+const averagePerTransaction = computed(() => {
+  if (!transactionCount.value) return 0
+  return totalSpent.value / transactionCount.value
+})
+
+const highestExpense = computed(() => {
+  if (!expenses.value?.data?.length) return 0
+  return Math.max(...expenses.value.data.map(e => parseFloat(e.amount)))
+})
+
+// Get recent 5 transactions
+const recentTransactions = computed(() => {
+  return expenses.value?.data?.slice(0, 5) ?? []
 })
 </script>
 
@@ -35,32 +59,90 @@ const averagePerDay = computed(() => {
             Jolt
           </div>
         </template>
-        <template #right>
-          <UColorModeButton />
-        </template>
       </UDashboardNavbar>
     </template>
     <template #body>
-      <div class="mx-auto w-max flex flex-col items-center gap-1">
+      <!-- This Month Header -->
+      <div class="mx-auto w-full max-w-2xl flex flex-col items-center gap-1 mb-6">
         <div class="text-dimmed">
-          Total Spent
+          This Month Spend
         </div>
-        <div class="text-3xl font-semibold text-highlighted">
-          {{ formatCurrency(total) }}
+        <div class="text-4xl font-bold text-highlighted">
+          {{ formatCurrency(totalSpent) }}
         </div>
-        <div class="text-primary">
-          {{ formatCurrency(averagePerDay) }}/day
+        <div class="text-xs text-dimmed">
+          {{ now.format('MMMM YYYY') }}
         </div>
       </div>
-      <div class="mt-6">
-        <div class="flex justify-between items-center">
-          <div class="text-lg font-medium">
-            Transactions
+
+      <!-- Quick Metrics -->
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <UCard variant="subtle">
+          <div class="flex flex-col gap-1">
+            <div class="text-xs text-dimmed">
+              Transactions
+            </div>
+            <div class="text-2xl font-semibold text-highlighted">
+              {{ transactionCount }}
+            </div>
           </div>
+        </UCard>
+
+        <UCard variant="subtle">
+          <div class="flex flex-col gap-1">
+            <div class="text-xs text-dimmed">
+              Average
+            </div>
+            <div class="text-2xl font-semibold text-highlighted">
+              {{ formatCurrency(averagePerTransaction) }}
+            </div>
+          </div>
+        </UCard>
+
+        <UCard variant="subtle">
+          <div class="flex flex-col gap-1">
+            <div class="text-xs text-dimmed">
+              Highest
+            </div>
+            <div class="text-2xl font-semibold text-error">
+              {{ formatCurrency(highestExpense) }}
+            </div>
+          </div>
+        </UCard>
+
+        <UCard variant="subtle">
+          <div class="flex flex-col gap-1">
+            <div class="text-xs text-dimmed">
+              Daily Avg
+            </div>
+            <div class="text-2xl font-semibold text-primary">
+              {{ formatCurrency(totalSpent / now.date()) }}
+            </div>
+          </div>
+        </UCard>
+      </div>
+
+      <!-- Recent Transactions -->
+      <div class="mt-6">
+        <div class="flex justify-between items-center mb-3">
+          <div class="text-lg font-semibold">
+            Recent Transactions
+          </div>
+          <NuxtLink
+            to="/transactions"
+            class="text-sm text-primary hover:underline"
+          >
+            View All
+          </NuxtLink>
         </div>
-        <div class="mt-2 flex flex-col gap-4">
+        
+        <div v-if="recentTransactions.length === 0" class="text-center py-8 text-dimmed">
+          No transactions this month
+        </div>
+        
+        <div v-else class="flex flex-col gap-3">
           <UCard
-            v-for="expense in expenses?.data ?? []"
+            v-for="expense in recentTransactions"
             :key="expense.id"
             variant="subtle"
           >
@@ -75,10 +157,10 @@ const averagePerDay = computed(() => {
                   {{ expense.note }}
                 </div>
                 <div class="text-xs text-dimmed">
-                  {{ formatDate(expense.transactionDate) }}
+                  {{ formatDate(expense.transactionDate) }} • {{ expense.category }}
                 </div>
               </div>
-              <div class="shrink-0 text-error text-sm">
+              <div class="shrink-0 text-error text-sm font-semibold">
                 {{ formatCurrency(expense.amount) }}
               </div>
             </div>
