@@ -10,11 +10,15 @@
   --vis-font-family: var(--font-sans);
 }
 
+.unovis-single-container,
 .unovis-xy-container {
+  --vis-legend-label-color: var(--ui-text-muted);
+  --vis-legend-label-font-size: 0.75rem;
+
   --vis-tooltip-background-color: var(--ui-bg);
   --vis-tooltip-border-color: var(--ui-border);
   --vis-tooltip-text-color: var(--ui-text);
 
   --vis-crosshair-line-stroke-color: var(--ui-text);
-  --vis-crosshair-circle-stroke-color: var(--ui-primary);
+  --vis-crosshair-circle-stroke-color: var(--ui-text);
 }

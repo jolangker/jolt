@@ -1,16 +1,12 @@
 <script setup lang="ts">
-import { VisLine, VisDonut, VisStackedBar, VisArea, VisXYContainer, VisAxis, VisSingleContainer, VisCrosshair, VisTooltip } from '@unovis/vue'
-import { colors } from '@unovis/ts'
-
 definePageMeta({
   middleware: 'auth',
   layout: 'authenticated',
 })
 
-// Time period selector
 const timePeriod = ref<'7d' | '30d' | '3m' | '6m' | 'all'>('30d')
 
-const timePeriodOptions = [
+const timePeriodOptions: { value: '7d' | '30d' | '3m' | '6m' | 'all'; label: string }[] = [
   { value: '7d', label: 'Last 7 Days' },
   { value: '30d', label: 'Last 30 Days' },
   { value: '3m', label: 'Last 3 Months' },
@@ -18,7 +14,6 @@ const timePeriodOptions = [
   { value: 'all', label: 'All Time' },
 ]
 
-// Calculate date range based on selected period
 const dateRange = computed(() => {
   const now = dayjs()
   switch (timePeriod.value) {
@@ -37,7 +32,6 @@ const dateRange = computed(() => {
   }
 })
 
-// Fetch all expenses
 const { data: allExpenses } = await useFetch('/api/expenses', {
   query: computed(() => ({
     startDate: dateRange.value.start?.format('YYYY-MM-DD') ?? undefined,
@@ -45,7 +39,6 @@ const { data: allExpenses } = await useFetch('/api/expenses', {
   })),
 })
 
-// Calculate metrics
 const totalSpent = computed(() => {
   if (!allExpenses.value?.data) return 0
   return allExpenses.value.data.reduce((sum, e) => sum + parseFloat(e.amount), 0)
@@ -58,7 +51,6 @@ const averageTransaction = computed(() => {
   return totalSpent.value / transactionCount.value
 })
 
-// Category breakdown
 const categoryData = computed(() => {
   if (!allExpenses.value?.data) return []
   
@@ -75,7 +67,6 @@ const categoryData = computed(() => {
   }))
 })
 
-// Daily spending trend
 const dailyData = computed(() => {
   if (!allExpenses.value?.data || !dateRange.value.start) return []
   
@@ -83,14 +74,12 @@ const dailyData = computed(() => {
   const start = dateRange.value.start
   const end = dateRange.value.end || dayjs()
   
-  // Initialize all days with 0
   let current = start
   while (current.isBefore(end) || current.isSame(end, 'day')) {
     dailyMap.set(current.format('YYYY-MM-DD'), 0)
     current = current.add(1, 'day')
   }
   
-  // Fill in actual spending
   allExpenses.value.data.forEach(expense => {
     const date = dayjs(expense.transactionDate).format('YYYY-MM-DD')
     const current = dailyMap.get(date) || 0
@@ -105,20 +94,17 @@ const dailyData = computed(() => {
     }))
 })
 
-// Monthly comparison (last 6 months)
 const monthlyData = computed(() => {
   if (!allExpenses.value?.data) return []
   
   const monthlyMap = new Map<string, number>()
   const now = dayjs()
   
-  // Initialize last 6 months
   for (let i = 5; i >= 0; i--) {
     const month = now.subtract(i, 'month').format('YYYY-MM')
     monthlyMap.set(month, 0)
   }
   
-  // Fill in actual spending
   allExpenses.value.data.forEach(expense => {
     const month = dayjs(expense.transactionDate).format('YYYY-MM')
     if (monthlyMap.has(month)) {
@@ -135,47 +121,6 @@ const monthlyData = computed(() => {
     }))
 })
 
-// Cumulative spending
-const cumulativeData = computed(() => {
-  let cumulative = 0
-  return dailyData.value.map(item => {
-    cumulative += item.value
-    return {
-      date: item.date,
-      value: cumulative,
-    }
-  })
-})
-
-// Chart configurations
-const lineX = (d: any, i: number) => i
-const lineY = (d: any) => d.value
-const barX = (d: any, i: number) => i
-const barY = (d: any) => d.value
-const donutValue = (d: any) => d.value
-
-const currencyFormat = (d: any) => formatCurrency(d)
-
-const lineXFormat = (d: any, i: number) => {
-  return dailyData.value[i]!.date
-}
-
-const barXFormat = (d: any, i: number) => {
-  const date = dayjs(monthlyData.value[i]!.date, "MMM DD")
-  return date.format('MMM')
-}
-
-const template = (d: any) => {
-  const date = dayjs(d.date).format('MMM DD')
-  const value = formatCurrency(d.value)
-
-  return `
-    <div>
-      <div class="text-sm">${date}</div>
-      <div class="text-lg font-medium">${value}</div>
-    </div>
-  `
-}
 </script>
 
 <template>
@@ -249,86 +194,9 @@ const template = (d: any) => {
         </UCard>
       </div>
 
-      <!-- Daily Spending Trend -->
-      <UCard variant="subtle" class="mb-6">
-        <div class="mb-4">
-          <div class="text-sm font-semibold">
-            Daily Spending Trend
-          </div>
-          <div class="text-xs text-dimmed">
-            Track your spending over time
-          </div>
-        </div>
-        <VisXYContainer :data="dailyData" :height="300">
-          <VisLine
-            :x="lineX"
-            :y="lineY"
-            color="var(--ui-primary)"
-          />
-          <VisArea
-            :x="lineX"
-            :y="lineY"
-            :opacity="0.1"
-            color="var(--ui-primary)"
-          />
-          <VisTooltip />
-          <VisAxis type="x" :grid-line="false" :tick-format="lineXFormat" />
-          <VisAxis type="y" :grid-line="false" :tick-format="currencyFormat" />
-          <VisCrosshair :template="template" color="var(--ui-primary)" />
-        </VisXYContainer>
-      </UCard>
-
-      <!-- Category Breakdown -->
-      <UCard variant="subtle" class="mb-6">
-        <div class="mb-4">
-          <div class="text-sm font-semibold">
-            Spending by Category
-          </div>
-          <div class="text-xs text-dimmed">
-            See where your money goes
-          </div>
-        </div>
-        <VisSingleContainer :data="categoryData" :height="300">
-          <VisDonut :value="donutValue" :arc-width="0" />
-        </VisSingleContainer>
-        <div v-if="categoryData.length > 0" class="mt-4 space-y-2">
-          <div
-            v-for="(item, index) in categoryData"
-            :key="item.category"
-            class="flex items-center justify-between text-sm"
-          >
-            <div class="flex items-center gap-2">
-              <div
-                class="w-3 h-3 rounded-full"
-                :style="{ backgroundColor: colors[index % colors.length] }"
-              />
-              <span>{{ item.category }}</span>
-            </div>
-            <span class="font-semibold">{{ formatCurrency(item.value) }}</span>
-          </div>
-        </div>
-      </UCard>
-
-      <!-- Monthly Comparison -->
-      <UCard variant="subtle" class="mb-6">
-        <div class="mb-4">
-          <div class="text-sm font-semibold">
-            Monthly Comparison
-          </div>
-          <div class="text-xs text-dimmed">
-            Last 6 months spending
-          </div>
-        </div>
-        <VisXYContainer :data="monthlyData" :height="300">
-          <VisStackedBar
-            :x="barX"
-            :y="barY"
-            color="var(--ui-primary)"
-          />
-          <VisAxis type="x" :grid-line="false" :tick-format="barXFormat" />
-          <VisAxis type="y" :grid-line="false" :tick-format="currencyFormat" />
-        </VisXYContainer>
-      </UCard>
+      <AnalyticDailyChart :data="dailyData" />
+      <AnalyticCategoryChart :data="categoryData" />
+      <AnalyticMonthlyChart :data="monthlyData" />
     </template>
   </UDashboardPanel>
 </template>
