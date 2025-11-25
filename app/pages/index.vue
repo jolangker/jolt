@@ -10,7 +10,7 @@ const startOfMonth = now.startOf('month').format('YYYY-MM-DD')
 const endOfMonth = now.endOf('month').format('YYYY-MM-DD')
 
 // Fetch current month expenses
-const { data: expenses } = useFetch('/api/expenses', {
+const { data: expenses } = useFetch('/api/transactions', {
   query: {
     startDate: startOfMonth,
     endDate: endOfMonth,
@@ -157,7 +157,7 @@ const recentTransactions = computed(() => {
                   {{ expense.note }}
                 </div>
                 <div class="text-xs text-dimmed">
-                  {{ formatDate(expense.transactionDate) }} • {{ expense.category }}
+                  {{ formatDate(expense.date) }} • {{ expense.category.name }}
                 </div>
               </div>
               <div class="shrink-0 text-error text-sm font-semibold">

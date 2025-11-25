@@ -32,7 +32,7 @@ const dateRange = computed(() => {
   }
 })
 
-const { data: allExpenses } = await useFetch('/api/expenses', {
+const { data: transactions } = await useFetch('/api/transactions', {
   query: computed(() => ({
     startDate: dateRange.value.start?.format('YYYY-MM-DD') ?? undefined,
     endDate: dateRange.value.end?.format('YYYY-MM-DD') ?? undefined,
@@ -40,11 +40,11 @@ const { data: allExpenses } = await useFetch('/api/expenses', {
 })
 
 const totalSpent = computed(() => {
-  if (!allExpenses.value?.data) return 0
-  return allExpenses.value.data.reduce((sum, e) => sum + parseFloat(e.amount), 0)
+  if (!transactions.value?.data) return 0
+  return transactions.value.data.reduce((sum, e) => sum + parseFloat(e.amount), 0)
 })
 
-const transactionCount = computed(() => allExpenses.value?.data?.length ?? 0)
+const transactionCount = computed(() => transactions.value?.data?.length ?? 0)
 
 const averageTransaction = computed(() => {
   if (!transactionCount.value) return 0
@@ -52,13 +52,13 @@ const averageTransaction = computed(() => {
 })
 
 const categoryData = computed(() => {
-  if (!allExpenses.value?.data) return []
+  if (!transactions.value?.data) return []
   
   const categoryMap = new Map<string, number>()
   
-  allExpenses.value.data.forEach(expense => {
-    const current = categoryMap.get(expense.category) || 0
-    categoryMap.set(expense.category, current + parseFloat(expense.amount))
+  transactions.value.data.forEach(transaction => {
+    const current = categoryMap.get(transaction.category.name) || 0
+    categoryMap.set(transaction.category.name, current + parseFloat(transaction.amount))
   })
   
   return Array.from(categoryMap.entries()).map(([category, value]) => ({
@@ -68,7 +68,7 @@ const categoryData = computed(() => {
 })
 
 const dailyData = computed(() => {
-  if (!allExpenses.value?.data || !dateRange.value.start) return []
+  if (!transactions.value?.data || !dateRange.value.start) return []
   
   const dailyMap = new Map<string, number>()
   const start = dateRange.value.start
@@ -80,10 +80,10 @@ const dailyData = computed(() => {
     current = current.add(1, 'day')
   }
   
-  allExpenses.value.data.forEach(expense => {
-    const date = dayjs(expense.transactionDate).format('YYYY-MM-DD')
+  transactions.value.data.forEach(transaction => {
+    const date = dayjs(transaction.date).format('YYYY-MM-DD')
     const current = dailyMap.get(date) || 0
-    dailyMap.set(date, current + parseFloat(expense.amount))
+    dailyMap.set(date, current + parseFloat(transaction.amount))
   })
   
   return Array.from(dailyMap.entries())
@@ -95,7 +95,7 @@ const dailyData = computed(() => {
 })
 
 const monthlyData = computed(() => {
-  if (!allExpenses.value?.data) return []
+  if (!transactions.value?.data) return []
   
   const monthlyMap = new Map<string, number>()
   const now = dayjs()
@@ -105,11 +105,11 @@ const monthlyData = computed(() => {
     monthlyMap.set(month, 0)
   }
   
-  allExpenses.value.data.forEach(expense => {
-    const month = dayjs(expense.transactionDate).format('YYYY-MM')
+  transactions.value.data.forEach(transaction => {
+    const month = dayjs(transaction.date).format('YYYY-MM')
     if (monthlyMap.has(month)) {
       const current = monthlyMap.get(month) || 0
-      monthlyMap.set(month, current + parseFloat(expense.amount))
+      monthlyMap.set(month, current + parseFloat(transaction.amount))
     }
   })
   
