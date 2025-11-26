@@ -10,7 +10,7 @@ const { data: transactions } = await useFetch('/api/transactions', {
   },
 })
 
-const { data: summary } = await useFetch('/api/summary')
+const { data: summary } = await useFetch('/api/analytics/summary')
 </script>
 
 <template>
@@ -28,8 +28,7 @@ const { data: summary } = await useFetch('/api/summary')
       </UDashboardNavbar>
     </template>
     <template #body>
-      <!-- This Month Header -->
-      <div class="mx-auto w-full max-w-2xl flex flex-col items-center gap-1 mb-2">
+      <div class="mx-auto w-full max-w-2xl flex flex-col items-center gap-1">
         <div class="text-dimmed">
           Nett Balance
         </div>
@@ -38,19 +37,7 @@ const { data: summary } = await useFetch('/api/summary')
         </div>
       </div>
 
-      <!-- Quick Metrics -->
-      <div class="grid grid-cols-2 gap-4 mb-4">
-        <UCard variant="subtle">
-          <div class="flex flex-col gap-1">
-            <div class="text-xs text-dimmed">
-              Total Expense
-            </div>
-            <div class="text-2xl font-semibold text-error">
-              {{ formatCurrency(summary?.data.expense) }}
-            </div>
-          </div>
-        </UCard>
-
+      <div class="grid grid-cols-2 gap-4">
         <UCard variant="subtle">
           <div class="flex flex-col gap-1">
             <div class="text-xs text-dimmed">
@@ -61,11 +48,20 @@ const { data: summary } = await useFetch('/api/summary')
             </div>
           </div>
         </UCard>
+        <UCard variant="subtle">
+          <div class="flex flex-col gap-1">
+            <div class="text-xs text-dimmed">
+              Total Expense
+            </div>
+            <div class="text-2xl font-semibold text-error">
+              {{ formatCurrency(summary?.data.expense) }}
+            </div>
+          </div>
+        </UCard>
       </div>
 
-      <!-- Recent Transactions -->
       <div>
-        <div class="flex justify-between items-center mb-3">
+        <div class="flex justify-between items-center mb-2">
           <div class="text-lg font-semibold">
             Recent Transactions
           </div>
