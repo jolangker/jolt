@@ -8,6 +8,7 @@ export default defineEventHandler(async (event) => {
   setHeader(event, 'Content-Type', 'application/json')
 
   if (url.pathname.startsWith('/api/auth')) return
+  if (url.pathname.startsWith('/api/master')) return
 
   const session = await getUserSession(event)
   const secret = getHeader(event, 'x-api-key')
