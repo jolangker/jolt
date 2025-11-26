@@ -4,7 +4,19 @@ definePageMeta({
   layout: 'authenticated',
 })
 
-const { data: transactions } = await useFetch('/api/transactions')
+const type = ref('all')
+
+const { data: transactions } = await useFetch('/api/transactions', {
+  query: computed(() => ({
+    type: type.value === 'all' ? undefined : type.value,
+  })),
+})
+
+const types = [
+  { label: 'All', value: 'all' },
+  { label: 'Income', value: 'income' },
+  { label: 'Expense', value: 'expense' },
+]
 </script>
 
 <template>
@@ -19,36 +31,20 @@ const { data: transactions } = await useFetch('/api/transactions')
             All Transactions
           </div>
         </template>
+        <template #right>
+          <USelect v-model="type" :items="types" class="w-40"  />
+        </template>
       </UDashboardNavbar>
     </template>
     <template #body>
       <!-- Transactions List -->
       <div>
         <div class="flex flex-col gap-3">
-          <UCard
+          <TransactionCard
             v-for="transaction in transactions?.data"
             :key="transaction.id"
-            variant="subtle"
-          >
-            <div class="flex items-center gap-3">
-              <UAvatar
-                icon="i-solar:cash-out-bold"
-                size="2xl"
-                :ui="{ root: 'bg-accented' }"
-              />
-              <div class="flex-1 overflow-hidden">
-                <div class="text-sm font-medium">
-                  {{ transaction.note }}
-                </div>
-                <div class="text-xs text-dimmed">
-                  {{ formatDate(transaction.date) }} • {{ transaction.category.name }}
-                </div>
-              </div>
-              <div class="shrink-0 text-error text-sm font-semibold">
-                {{ formatCurrency(transaction.amount) }}
-              </div>
-            </div>
-          </UCard>
+            :transaction="transaction"
+          />
         </div>
       </div>
     </template>
