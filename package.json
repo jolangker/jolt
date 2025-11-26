@@ -1,5 +1,6 @@
 {
   "name": "jolt",
+  "description": "Jolt is a web application built with Nuxt 4, TypeScript, and Tailwind CSS.",
   "private": true,
   "type": "module",
   "scripts": {
