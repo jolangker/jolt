@@ -2,7 +2,7 @@ FROM oven/bun AS build
 
 WORKDIR /app
 
-COPY package.json package-lock.json bun.lockb ./
+COPY package.json bun.lockb ./
 
 RUN bun install --verbose
 
@@ -15,7 +15,7 @@ FROM oven/bun AS production
 WORKDIR /app
 
 COPY --from=build /app/.output ./.output
-COPY --from=build /app/package.json /app/package-lock.json /app/bun.lockb ./
+COPY --from=build /app/package.json /app/bun.lockb ./
 
 RUN bun install --production --verbose
 
