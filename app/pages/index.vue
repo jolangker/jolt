@@ -4,47 +4,13 @@ definePageMeta({
   layout: 'authenticated',
 })
 
-// Get current month start and end dates
-const now = dayjs()
-const startOfMonth = now.startOf('month').format('YYYY-MM-DD')
-const endOfMonth = now.endOf('month').format('YYYY-MM-DD')
-
-// Fetch current month expenses
-const { data: expenses } = useFetch('/api/transactions', {
+const { data: transactions } = await useFetch('/api/transactions', {
   query: {
-    startDate: startOfMonth,
-    endDate: endOfMonth,
+    limit: 5,
   },
 })
 
-// Calculate metrics
-const totalSpent = computed<number>(() => {
-  if (!expenses.value?.data) return 0
-  let amount = 0
-  for (const expense of expenses.value.data) {
-    amount += parseFloat(expense.amount)
-  }
-  return amount
-})
-
-const transactionCount = computed(() => {
-  return expenses.value?.data?.length ?? 0
-})
-
-const averagePerTransaction = computed(() => {
-  if (!transactionCount.value) return 0
-  return totalSpent.value / transactionCount.value
-})
-
-const highestExpense = computed(() => {
-  if (!expenses.value?.data?.length) return 0
-  return Math.max(...expenses.value.data.map(e => parseFloat(e.amount)))
-})
-
-// Get recent 5 transactions
-const recentTransactions = computed(() => {
-  return expenses.value?.data?.slice(0, 5) ?? []
-})
+const { data: summary } = await useFetch('/api/summary')
 </script>
 
 <template>
@@ -63,49 +29,24 @@ const recentTransactions = computed(() => {
     </template>
     <template #body>
       <!-- This Month Header -->
-      <div class="mx-auto w-full max-w-2xl flex flex-col items-center gap-1 mb-6">
+      <div class="mx-auto w-full max-w-2xl flex flex-col items-center gap-1 mb-2">
         <div class="text-dimmed">
-          This Month Spend
+          Nett Balance
         </div>
-        <div class="text-4xl font-bold text-highlighted">
-          {{ formatCurrency(totalSpent) }}
-        </div>
-        <div class="text-xs text-dimmed">
-          {{ now.format('MMMM YYYY') }}
+        <div class="text-4xl font-bold text-primary">
+          {{ formatCurrency(summary?.data?.nett) }}
         </div>
       </div>
 
       <!-- Quick Metrics -->
-      <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="grid grid-cols-2 gap-4 mb-4">
         <UCard variant="subtle">
           <div class="flex flex-col gap-1">
             <div class="text-xs text-dimmed">
-              Transactions
-            </div>
-            <div class="text-2xl font-semibold text-highlighted">
-              {{ transactionCount }}
-            </div>
-          </div>
-        </UCard>
-
-        <UCard variant="subtle">
-          <div class="flex flex-col gap-1">
-            <div class="text-xs text-dimmed">
-              Average
-            </div>
-            <div class="text-2xl font-semibold text-highlighted">
-              {{ formatCurrency(averagePerTransaction) }}
-            </div>
-          </div>
-        </UCard>
-
-        <UCard variant="subtle">
-          <div class="flex flex-col gap-1">
-            <div class="text-xs text-dimmed">
-              Highest
+              Total Expense
             </div>
             <div class="text-2xl font-semibold text-error">
-              {{ formatCurrency(highestExpense) }}
+              {{ formatCurrency(summary?.data.expense) }}
             </div>
           </div>
         </UCard>
@@ -113,17 +54,17 @@ const recentTransactions = computed(() => {
         <UCard variant="subtle">
           <div class="flex flex-col gap-1">
             <div class="text-xs text-dimmed">
-              Daily Avg
+              Total Income
             </div>
-            <div class="text-2xl font-semibold text-primary">
-              {{ formatCurrency(totalSpent / now.date()) }}
+            <div class="text-2xl font-semibold text-success">
+              {{ formatCurrency(summary?.data.income) }}
             </div>
           </div>
         </UCard>
       </div>
 
       <!-- Recent Transactions -->
-      <div class="mt-6">
+      <div>
         <div class="flex justify-between items-center mb-3">
           <div class="text-lg font-semibold">
             Recent Transactions
@@ -136,14 +77,14 @@ const recentTransactions = computed(() => {
           </NuxtLink>
         </div>
         
-        <div v-if="recentTransactions.length === 0" class="text-center py-8 text-dimmed">
+        <div v-if="transactions?.data?.length === 0" class="text-center py-8 text-dimmed">
           No transactions this month
         </div>
         
         <div v-else class="flex flex-col gap-3">
           <UCard
-            v-for="expense in recentTransactions"
-            :key="expense.id"
+            v-for="transaction in transactions?.data"
+            :key="transaction.id"
             variant="subtle"
           >
             <div class="flex items-center gap-3">
@@ -154,14 +95,14 @@ const recentTransactions = computed(() => {
               />
               <div class="flex-1 overflow-hidden">
                 <div class="text-sm font-medium text-ellipsis whitespace-nowrap">
-                  {{ expense.note }}
+                  {{ transaction.note }}
                 </div>
                 <div class="text-xs text-dimmed">
-                  {{ formatDate(expense.date) }} • {{ expense.category.name }}
+                  {{ formatDate(transaction.date) }} • {{ transaction.category.name }}
                 </div>
               </div>
-              <div class="shrink-0 text-error text-sm font-semibold">
-                {{ formatCurrency(expense.amount) }}
+              <div class="shrink-0 text-sm font-semibold" :class="transaction.type === 'expense' ? 'text-error' : 'text-success'">
+                {{ formatCurrency(transaction.amount) }}
               </div>
             </div>
           </UCard>

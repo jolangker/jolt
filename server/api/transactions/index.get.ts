@@ -4,6 +4,7 @@ import z from 'zod'
 export default defineEventHandler(async (event) => {
   const userId = event.context.auth.userId
   const query = await getValidatedQuery(event, z.object({
+    limit: z.string().optional(),
     startDate: z.string().nullable().optional(),
     endDate: z.string().nullable().optional(),
     type: z.enum(['expense', 'income']).nullable().optional(),
@@ -27,7 +28,8 @@ export default defineEventHandler(async (event) => {
     orderBy: (transactions, { desc }) => [desc(transactions.date), desc(transactions.createdAt)],
     with: {
       category: true,
-    }
+    },
+    limit: query.limit ? parseInt(query.limit) : undefined,
   })
 
   return {
