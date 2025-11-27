@@ -71,12 +71,18 @@ const { data: summary } = await useFetch('/api/analytics/summary')
             View All
           </NuxtLink>
         </div>
-        
-        <div v-if="transactions?.data?.length === 0" class="text-center py-8 text-dimmed">
+
+        <div
+          v-if="transactions?.data?.length === 0"
+          class="text-center py-8 text-dimmed"
+        >
           No transactions this month
         </div>
-        
-        <div v-else class="flex flex-col gap-3">
+
+        <div
+          v-else
+          class="flex flex-col gap-3"
+        >
           <TransactionCard
             v-for="transaction in transactions?.data"
             :key="transaction.id"

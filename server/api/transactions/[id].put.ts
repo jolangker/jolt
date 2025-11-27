@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
     and(
       eq(transactions.userId, userId),
       eq(transactions.id, Number(transactionId)),
-    )
+    ),
   ).returning()
 
   return {

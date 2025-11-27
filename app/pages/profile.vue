@@ -66,7 +66,10 @@ const memberSince = computed(() => {
         <UCard variant="subtle">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <UIcon name="i-lucide:user" class="w-5 h-5 text-primary" />
+              <UIcon
+                name="i-lucide:user"
+                class="w-5 h-5 text-primary"
+              />
               <div>
                 <div class="text-xs text-dimmed">
                   Username
@@ -82,7 +85,10 @@ const memberSince = computed(() => {
         <UCard variant="subtle">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <UIcon name="i-lucide:hash" class="w-5 h-5 text-primary" />
+              <UIcon
+                name="i-lucide:hash"
+                class="w-5 h-5 text-primary"
+              />
               <div>
                 <div class="text-xs text-dimmed">
                   Telegram ID
@@ -98,7 +104,10 @@ const memberSince = computed(() => {
         <UCard variant="subtle">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <UIcon name="i-lucide:calendar" class="w-5 h-5 text-primary" />
+              <UIcon
+                name="i-lucide:calendar"
+                class="w-5 h-5 text-primary"
+              />
               <div>
                 <div class="text-xs text-dimmed">
                   Member Since
@@ -121,7 +130,10 @@ const memberSince = computed(() => {
         <UCard variant="subtle">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <UIcon name="i-lucide:receipt" class="w-5 h-5 text-primary" />
+              <UIcon
+                name="i-lucide:receipt"
+                class="w-5 h-5 text-primary"
+              />
               <div>
                 <div class="text-xs text-dimmed">
                   Total Transactions
@@ -137,7 +149,10 @@ const memberSince = computed(() => {
         <UCard variant="subtle">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <UIcon name="i-lucide:wallet" class="w-5 h-5 text-primary" />
+              <UIcon
+                name="i-lucide:wallet"
+                class="w-5 h-5 text-primary"
+              />
               <div>
                 <div class="text-xs text-dimmed">
                   Total Spent (All Time)
@@ -153,7 +168,10 @@ const memberSince = computed(() => {
         <UCard variant="subtle">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <UIcon name="i-lucide:trending-up" class="w-5 h-5 text-primary" />
+              <UIcon
+                name="i-lucide:trending-up"
+                class="w-5 h-5 text-primary"
+              />
               <div>
                 <div class="text-xs text-dimmed">
                   Average per Transaction

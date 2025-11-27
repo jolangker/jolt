@@ -6,7 +6,7 @@ definePageMeta({
 
 const timePeriod = ref<'7d' | '30d' | '3m' | '6m' | 'all'>('30d')
 
-const timePeriodOptions: { value: '7d' | '30d' | '3m' | '6m' | 'all'; label: string }[] = [
+const timePeriodOptions: { value: '7d' | '30d' | '3m' | '6m' | 'all', label: string }[] = [
   { value: '7d', label: 'Last 7 Days' },
   { value: '30d', label: 'Last 30 Days' },
   { value: '3m', label: 'Last 3 Months' },
@@ -33,10 +33,10 @@ const dateRange = computed(() => {
 })
 
 const { data: summary } = await useFetch('/api/analytics/summary', {
-    query: computed(() => ({
-        startDate: dateRange.value.start,
-        endDate: dateRange.value.end,
-    }))
+  query: computed(() => ({
+    startDate: dateRange.value.start,
+    endDate: dateRange.value.end,
+  })),
 })
 </script>
 
@@ -53,7 +53,13 @@ const { data: summary } = await useFetch('/api/analytics/summary', {
           </div>
         </template>
         <template #right>
-          <USelectMenu v-model="timePeriod" :items="timePeriodOptions" class="w-40" value-key="value" label-key="label" />
+          <USelectMenu
+            v-model="timePeriod"
+            :items="timePeriodOptions"
+            class="w-40"
+            value-key="value"
+            label-key="label"
+          />
         </template>
       </UDashboardNavbar>
     </template>
@@ -81,8 +87,14 @@ const { data: summary } = await useFetch('/api/analytics/summary', {
         </UCard>
       </div>
 
-      <AnalyticDailyChart :start-date="dateRange.start" :end-date="dateRange.end" />
-      <AnalyticCategoryChart :start-date="dateRange.start" :end-date="dateRange.end" />
+      <AnalyticDailyChart
+        :start-date="dateRange.start"
+        :end-date="dateRange.end"
+      />
+      <AnalyticCategoryChart
+        :start-date="dateRange.start"
+        :end-date="dateRange.end"
+      />
     </template>
   </UDashboardPanel>
 </template>

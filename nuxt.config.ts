@@ -6,8 +6,16 @@ export default defineNuxtConfig({
     'nuxt-auth-utils',
   ],
 
+  ssr: false,
+
   devtools: {
     enabled: true,
+  },
+
+  app: {
+    head: {
+      title: 'Jolt',
+    },
   },
 
   css: ['~/assets/css/main.css'],
@@ -25,12 +33,4 @@ export default defineNuxtConfig({
       stylistic: true,
     },
   },
-
-  app: {
-    head: {
-      title: 'Jolt',
-    },
-  },
-
-  ssr: false,
 })

@@ -32,7 +32,11 @@ const types = [
           </div>
         </template>
         <template #right>
-          <USelect v-model="type" :items="types" class="w-40"  />
+          <USelect
+            v-model="type"
+            :items="types"
+            class="w-40"
+          />
         </template>
       </UDashboardNavbar>
     </template>

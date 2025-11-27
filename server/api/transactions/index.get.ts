@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
       if (query.endDate) filters.push(lte(transactions.date, new Date(query.endDate)))
       if (query.type) filters.push(eq(transactions.type, query.type))
       if (query.categories) {
-        const categories = query.categories.split(',').map((category) => parseInt(category))
+        const categories = query.categories.split(',').map(category => parseInt(category))
         filters.push(inArray(transactions.categoryId, categories))
       }
 

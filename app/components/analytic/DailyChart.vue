@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { VisArea, VisAxis, VisCrosshair, VisLine, VisTooltip, VisXYContainer } from '@unovis/vue';
+import { VisArea, VisAxis, VisCrosshair, VisLine, VisTooltip, VisXYContainer } from '@unovis/vue'
 
 interface DataRecord {
-    date: string;
-    income: string;
-    expense: string;
+  date: string
+  income: string
+  expense: string
 }
 
 const props = defineProps<{
@@ -15,27 +15,27 @@ const props = defineProps<{
 const { data: categories } = await useFetch('/api/master/categories')
 const categoriesData = computed(() => {
   if (!categories.value) return []
-  return categories.value.data.map((category) => ({
+  return categories.value.data.map(category => ({
     label: category.name,
     value: category.id,
   }))
 })
 
-const category = ref<number[]>(categoriesData.value.map((category) => category.value))
+const category = ref<number[]>(categoriesData.value.map(category => category.value))
 
 const { data } = await useFetch('/api/analytics/daily', {
   query: computed(() => ({
     categories: category.value.join(','),
     startDate: props.startDate,
     endDate: props.endDate,
-  }))
+  })),
 })
 const daily = computed<DataRecord[]>(() => data.value?.data ?? [])
 
-const x = (_d: DataRecord , i: number) => i
+const x = (_d: DataRecord, i: number) => i
 const y = [
   (d: DataRecord) => parseFloat(d.income),
-  (d: DataRecord) => parseFloat(d.expense)
+  (d: DataRecord) => parseFloat(d.expense),
 ]
 
 const xFormat = (i: number) => daily.value[i]!.date
@@ -64,38 +64,59 @@ const colors = (d: undefined, i: number) => ['var(--ui-success)', 'var(--ui-erro
 </script>
 
 <template>
-    <UCard variant="subtle">
-      <template #header>
-        <div class="flex justify-between items-start">
-          <div>
-            <div class="text-sm font-semibold">
-              Daily Income & Expense
-            </div>
-            <div class="text-xs text-dimmed">
-              Track your income and expense over time
-            </div>
+  <UCard variant="subtle">
+    <template #header>
+      <div class="flex justify-between items-start">
+        <div>
+          <div class="text-sm font-semibold">
+            Daily Income & Expense
           </div>
-          <USelectMenu v-model="category" class="w-40" :items="categoriesData" multiple value-key="value" :search-input="{ placeholder: 'Search category' }" />
+          <div class="text-xs text-dimmed">
+            Track your income and expense over time
+          </div>
         </div>
-      </template>
-        <VisXYContainer :data="daily" :height="300">
-          <VisLine
-            :x="x"
-            :y="y"
-            :color="colors"
-          />
-          <VisArea
-            v-for="(yAxis, i) in y"
-            :key="yAxis"
-            :x="x"
-            :y="yAxis"
-            :opacity="0.1"
-            :color="colors(undefined, i)"
-          />
-          <VisTooltip />
-          <VisAxis type="x" :grid-line="false" :tick-format="xFormat" />
-          <VisAxis type="y" :grid-line="false" :tick-format="yFormat" />
-          <VisCrosshair :template="template" :color="colors" />
-        </VisXYContainer>
-      </UCard>
+        <USelectMenu
+          v-model="category"
+          class="w-40"
+          :items="categoriesData"
+          multiple
+          value-key="value"
+          :search-input="{ placeholder: 'Search category' }"
+        />
+      </div>
+    </template>
+    <VisXYContainer
+      :data="daily"
+      :height="300"
+    >
+      <VisLine
+        :x="x"
+        :y="y"
+        :color="colors"
+      />
+      <VisArea
+        v-for="(yAxis, i) in y"
+        :key="yAxis"
+        :x="x"
+        :y="yAxis"
+        :opacity="0.1"
+        :color="colors(undefined, i)"
+      />
+      <VisTooltip />
+      <VisAxis
+        type="x"
+        :grid-line="false"
+        :tick-format="xFormat"
+      />
+      <VisAxis
+        type="y"
+        :grid-line="false"
+        :tick-format="yFormat"
+      />
+      <VisCrosshair
+        :template="template"
+        :color="colors"
+      />
+    </VisXYContainer>
+  </UCard>
 </template>
