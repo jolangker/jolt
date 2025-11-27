@@ -28,7 +28,7 @@ const { data: summary } = await useFetch('/api/analytics/summary')
       </UDashboardNavbar>
     </template>
     <template #body>
-      <div class="mx-auto w-full max-w-2xl flex flex-col items-center gap-1">
+      <div class="mb-6 mx-auto w-full max-w-2xl flex flex-col items-center gap-1">
         <div class="text-dimmed">
           Nett Balance
         </div>
@@ -36,14 +36,13 @@ const { data: summary } = await useFetch('/api/analytics/summary')
           {{ formatCurrency(summary?.data?.nett) }}
         </div>
       </div>
-
       <div class="grid grid-cols-2 gap-4">
         <UCard variant="subtle">
           <div class="flex flex-col gap-1">
             <div class="text-xs text-dimmed">
               Total Income
             </div>
-            <div class="text-2xl font-semibold text-success">
+            <div class="text-xl font-semibold text-success">
               {{ formatCurrency(summary?.data.income) }}
             </div>
           </div>
@@ -53,7 +52,7 @@ const { data: summary } = await useFetch('/api/analytics/summary')
             <div class="text-xs text-dimmed">
               Total Expense
             </div>
-            <div class="text-2xl font-semibold text-error">
+            <div class="text-xl font-semibold text-error">
               {{ formatCurrency(summary?.data.expense) }}
             </div>
           </div>
