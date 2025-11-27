@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import type { Transaction } from '~~/shared/types';
 
-defineProps<{ transaction: Transaction }>()
+const props = defineProps<{ transaction: Transaction }>()
 </script>
 
 <template>
   <UCard variant="subtle">
     <div class="flex items-center gap-3">
       <UAvatar
-        icon="i-solar:cash-out-bold"
+        :icon="`${transaction.category.icon || 'i-solar:cash-out'}-outline`"
         size="2xl"
         :ui="{ root: 'bg-accented' }"
       />
