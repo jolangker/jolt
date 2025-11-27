@@ -41,16 +41,20 @@ const types = [
       </UDashboardNavbar>
     </template>
     <template #body>
-      <!-- Transactions List -->
-      <div>
-        <div class="flex flex-col gap-3">
-          <TransactionCard
-            v-for="transaction in transactions?.data"
-            :key="transaction.id"
-            :transaction="transaction"
-          />
-        </div>
-      </div>
+      <template v-if="transactions?.data?.length">
+        <TransactionCard
+          v-for="transaction in transactions?.data"
+          :key="transaction.id"
+          :transaction="transaction"
+        />
+      </template>
+      <UEmpty
+        v-else
+        icon="i-solar:wallet-2-outline"
+        title="No transactions found"
+        description="You have no transactions yet"
+        variant="naked"
+      />
     </template>
   </UDashboardPanel>
 </template>

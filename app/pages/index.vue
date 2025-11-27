@@ -73,14 +73,7 @@ const { data: summary } = await useFetch('/api/analytics/summary')
         </div>
 
         <div
-          v-if="transactions?.data?.length === 0"
-          class="text-center py-8 text-dimmed"
-        >
-          No transactions this month
-        </div>
-
-        <div
-          v-else
+          v-if="transactions?.data?.length"
           class="flex flex-col gap-3"
         >
           <TransactionCard
@@ -89,6 +82,13 @@ const { data: summary } = await useFetch('/api/analytics/summary')
             :transaction="transaction"
           />
         </div>
+        <UEmpty
+          v-else
+          icon="i-solar:wallet-2-outline"
+          title="No transactions found"
+          description="You have no transactions yet"
+          variant="naked"
+        />
       </div>
     </template>
   </UDashboardPanel>
