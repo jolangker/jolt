@@ -1,15 +1,23 @@
 <script setup lang="ts">
-import { LazyTransactionForm } from '#components'
+import { LazyTransactionDetails, LazyTransactionForm } from '#components'
 import type { Transaction } from '~~/shared/types'
 
 const props = defineProps<{ transaction: Transaction }>()
 
 const overlay = useOverlay()
 
-const transactionDetails = overlay.create(LazyTransactionForm)
+const transactionForm = overlay.create(LazyTransactionForm)
+const transactionDetails = overlay.create(LazyTransactionDetails)
+
 const openTransactionDetails = () => {
   transactionDetails.open({
     transaction: props.transaction,
+    onEdit: () => {
+      transactionDetails.close()
+      transactionForm.open({
+        transaction: props.transaction,
+      })
+    },
   })
 }
 </script>

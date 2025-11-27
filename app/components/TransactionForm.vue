@@ -84,8 +84,9 @@ const onSubmit = async () => {
   }
 }
 
-const onOpen = () => {
-  if (props.transaction) {
+const onOpen = (val: boolean) => {
+  emit('close', val)
+  if (val && props.transaction) {
     state.type = props.transaction.type
     state.amount = parseFloat(props.transaction.amount)
     state.date = dayjs(props.transaction.date).format('YYYY-MM-DD')
