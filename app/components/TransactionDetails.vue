@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { LazyConfirmationModal } from '#components'
 import type { Transaction } from '~~/shared/types'
 
 const props = defineProps<{
@@ -10,8 +11,33 @@ const emit = defineEmits<{
   edit: [Transaction]
 }>()
 
+const overlay = useOverlay()
+const toast = useToast()
+
+const confirmationModal = overlay.create(LazyConfirmationModal)
+
 const onEdit = () => {
   emit('edit', props.transaction)
+}
+
+const handleOnDelete = () => {
+  confirmationModal.open({
+    title: 'Delete Transaction',
+    description: 'Are you sure you want to delete this transaction?',
+    onConfirm: async () => {
+      await useFetch(`/api/transactions/${props.transaction.id}`, {
+        method: 'DELETE',
+      })
+      refreshNuxtData()
+      toast.add({
+        title: 'Transaction deleted',
+        description: 'The transaction has been deleted successfully',
+        color: 'success',
+        icon: 'i-solar:check-circle-outline',
+      })
+      emit('close', false)
+    },
+  })
 }
 </script>
 
@@ -21,7 +47,6 @@ const onEdit = () => {
   >
     <template #body>
       <div class="flex flex-col gap-6">
-        <!-- Amount Section -->
         <div class="flex flex-col items-center justify-center py-8 gap-2">
           <div class="text-sm text-muted uppercase tracking-wider font-medium">
             Amount
@@ -34,7 +59,6 @@ const onEdit = () => {
           </div>
         </div>
 
-        <!-- Details Grid -->
         <div class="grid gap-4">
           <div class="flex items-center gap-4 p-4 rounded-xl bg-elevated">
             <UIcon
@@ -88,7 +112,6 @@ const onEdit = () => {
           </div>
         </div>
 
-        <!-- Actions -->
         <div class="mt-auto pt-6 flex gap-2">
           <UButton
             size="xl"
@@ -96,6 +119,7 @@ const onEdit = () => {
             color="error"
             variant="subtle"
             icon="i-solar:trash-bin-2-outline"
+            @click="handleOnDelete"
           >
             Delete
           </UButton>
