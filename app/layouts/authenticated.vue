@@ -1,5 +1,14 @@
 <script setup lang="ts">
+import { LazyTransactionForm } from '#components'
+
 const route = useRoute()
+
+const overlay = useOverlay()
+
+const transactionDetails = overlay.create(LazyTransactionForm)
+const openTransactionDetails = () => {
+  transactionDetails.open()
+}
 
 const navItems = [
   {
@@ -16,7 +25,7 @@ const navItems = [
     icon: 'i-solar:add-circle-linear',
     label: 'Add',
     onClick: () => {
-      open.value = true
+      openTransactionDetails()
     }
   },
   {

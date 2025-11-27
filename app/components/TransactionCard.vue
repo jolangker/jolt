@@ -1,11 +1,21 @@
 <script setup lang="ts">
+import { LazyTransactionForm } from '#components';
 import type { Transaction } from '~~/shared/types';
 
 const props = defineProps<{ transaction: Transaction }>()
+
+const overlay = useOverlay()
+
+const transactionDetails = overlay.create(LazyTransactionForm)
+const openTransactionDetails = () => {
+  transactionDetails.open({ 
+    transaction: props.transaction
+  })
+}
 </script>
 
 <template>
-  <UCard variant="subtle">
+  <UCard variant="subtle" class="cursor-pointer hover:opacity-70 duration-300" @click="openTransactionDetails">
     <div class="flex items-center gap-3">
       <UAvatar
         :icon="`${transaction.category.icon || 'i-solar:cash-out'}-outline`"
