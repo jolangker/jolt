@@ -74,7 +74,7 @@ const { data: summary } = await useFetch('/api/analytics/summary')
 
         <div
           v-if="transactions?.data?.length"
-          class="flex flex-col gap-3"
+          class="flex flex-col gap-4"
         >
           <TransactionCard
             v-for="transaction in transactions?.data"

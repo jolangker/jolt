@@ -4,5 +4,10 @@ export default defineAppConfig({
       primary: 'yellow',
       neutral: 'neutral',
     },
+    dashboardPanel: {
+      slots: {
+        root: 'pb-16',
+      },
+    },
   },
 })

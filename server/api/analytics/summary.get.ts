@@ -25,6 +25,12 @@ export default defineEventHandler(async (event) => {
     .groupBy(transactions.type)
     .where(filterBuilder())
 
+  const [{ count }] = await db.select({
+    count: sql<number>`count(${transactions.id})`,
+  })
+    .from(transactions)
+    .where(filterBuilder())
+
   const income = sum.find(s => s.type === 'income')?.sum || 0
   const expense = sum.find(s => s.type === 'expense')?.sum || 0
   const nett = (income - expense).toString()
@@ -32,6 +38,7 @@ export default defineEventHandler(async (event) => {
   return {
     success: true,
     data: {
+      count,
       income,
       expense,
       nett,

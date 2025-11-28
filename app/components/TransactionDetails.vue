@@ -131,7 +131,7 @@ const handleOnDelete = () => {
             icon="i-solar:pen-new-square-outline"
             @click="onEdit"
           >
-            Edit Transaction
+            Edit
           </UButton>
         </div>
       </div>

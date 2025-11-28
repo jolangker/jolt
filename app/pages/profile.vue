@@ -4,18 +4,8 @@ definePageMeta({
   layout: 'authenticated',
 })
 
-// Fetch user data - assuming there's a user endpoint
 const { user } = useUserSession()
-
-// Fetch user statistics
-const { data: allExpenses } = await useFetch('/api/expenses')
-
-const totalTransactions = computed(() => allExpenses.value?.data?.length ?? 0)
-
-const totalSpent = computed(() => {
-  if (!allExpenses.value?.data) return 0
-  return allExpenses.value.data.reduce((sum, e) => sum + parseFloat(e.amount), 0)
-})
+const { data: summary } = await useFetch('/api/analytics/summary')
 
 const memberSince = computed(() => {
   if (!user.value?.createdAt) return 'N/A'
@@ -41,12 +31,10 @@ const memberSince = computed(() => {
       </UDashboardNavbar>
     </template>
     <template #body>
-      <!-- Profile Header -->
       <div class="flex flex-col items-center mb-8">
         <UAvatar
           icon="i-lucide:user"
           size="3xl"
-          :ui="{ root: 'bg-primary' }"
           class="mb-4"
         />
         <div class="text-xl font-bold text-highlighted">
@@ -57,7 +45,6 @@ const memberSince = computed(() => {
         </div>
       </div>
 
-      <!-- User Information -->
       <div class="space-y-4 mb-6">
         <div class="text-sm font-semibold mb-3">
           Account Information
@@ -139,7 +126,7 @@ const memberSince = computed(() => {
                   Total Transactions
                 </div>
                 <div class="text-2xl font-bold text-highlighted">
-                  {{ totalTransactions }}
+                  {{ summary?.data.count }}
                 </div>
               </div>
             </div>
@@ -158,26 +145,25 @@ const memberSince = computed(() => {
                   Total Spent (All Time)
                 </div>
                 <div class="text-2xl font-bold text-error">
-                  {{ formatCurrency(totalSpent) }}
+                  {{ formatCurrency(summary?.data.expense) }}
                 </div>
               </div>
             </div>
           </div>
         </UCard>
-
         <UCard variant="subtle">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
               <UIcon
-                name="i-lucide:trending-up"
+                name="i-lucide:wallet"
                 class="w-5 h-5 text-primary"
               />
               <div>
                 <div class="text-xs text-dimmed">
-                  Average per Transaction
+                  Total Income (All Time)
                 </div>
-                <div class="text-2xl font-bold text-primary">
-                  {{ formatCurrency(totalTransactions > 0 ? totalSpent / totalTransactions : 0) }}
+                <div class="text-2xl font-bold text-success">
+                  {{ formatCurrency(summary?.data.income) }}
                 </div>
               </div>
             </div>

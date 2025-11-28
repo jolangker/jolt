@@ -4,12 +4,30 @@ definePageMeta({
   layout: 'authenticated',
 })
 
-const type = ref('all')
+const limit = shallowRef(10)
+const offset = shallowRef(0)
+const type = shallowRef('all')
+const search = shallowRef('')
+const searchDebounced = refDebounced(search, 500)
 
-const { data: transactions } = await useFetch('/api/transactions', {
+const transactions = ref<Transaction[]>([])
+
+const { data, pending } = await useFetch('/api/transactions', {
   query: computed(() => ({
     type: type.value === 'all' ? undefined : type.value,
+    search: searchDebounced.value,
+    limit: limit.value,
+    offset: offset.value,
   })),
+  onResponse: ({ response }) => {
+    if (!response._data) return
+    transactions.value = [...transactions.value, ...response._data.data]
+  },
+})
+
+const canLoadMore = computed(() => {
+  if (!data.value?.meta?.total) return false
+  return (data.value.meta.total > transactions.value.length) && !pending.value
 })
 
 const types = [
@@ -17,10 +35,33 @@ const types = [
   { label: 'Income', value: 'income' },
   { label: 'Expense', value: 'expense' },
 ]
+
+const wrapper = useTemplateRef('wrapper')
+
+useInfiniteScroll(
+  wrapper,
+  () => {
+    offset.value += limit.value
+  },
+  {
+    distance: 20,
+    canLoadMore: () => {
+      return canLoadMore.value
+    },
+  },
+)
+
+watch(searchDebounced, () => {
+  transactions.value = []
+  offset.value = 0
+})
 </script>
 
 <template>
-  <UDashboardPanel>
+  <UDashboardPanel
+    id="transactions"
+    :ui="{ body: 'p-0!' }"
+  >
     <template #header>
       <UDashboardNavbar
         :toggle="false"
@@ -41,20 +82,36 @@ const types = [
       </UDashboardNavbar>
     </template>
     <template #body>
-      <template v-if="transactions?.data?.length">
-        <TransactionCard
-          v-for="transaction in transactions?.data"
-          :key="transaction.id"
-          :transaction="transaction"
+      <div
+        ref="wrapper"
+        class="flex-1 flex flex-col gap-4 overflow-auto p-4 sm:p-6"
+      >
+        <UInput
+          v-model="search"
+          placeholder="Search transactions"
+          icon="i-heroicons-magnifying-glass"
+          size="xl"
+          class="w-full"
         />
-      </template>
-      <UEmpty
-        v-else
-        icon="i-solar:wallet-2-outline"
-        title="No transactions found"
-        description="You have no transactions yet"
-        variant="naked"
-      />
+        <template v-if="data?.meta?.total">
+          <div
+            v-for="transaction in transactions"
+            :key="transaction.id"
+          >
+            <TransactionCard
+              :transaction="transaction"
+              class="flex-1"
+            />
+          </div>
+        </template>
+        <UEmpty
+          v-else
+          icon="i-solar:wallet-2-outline"
+          title="No transactions found"
+          variant="naked"
+          class="flex-1"
+        />
+      </div>
     </template>
   </UDashboardPanel>
 </template>
