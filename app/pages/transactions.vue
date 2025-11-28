@@ -86,13 +86,20 @@ watch(searchDebounced, () => {
         ref="wrapper"
         class="flex-1 flex flex-col gap-4 overflow-auto p-4 sm:p-6"
       >
-        <UInput
-          v-model="search"
-          placeholder="Search transactions"
-          icon="i-heroicons-magnifying-glass"
-          size="xl"
-          class="w-full"
-        />
+        <UFieldGroup size="xl">
+          <UInput
+            v-model="search"
+            placeholder="Search transactions"
+            icon="i-solar:magnifer-outline"
+            class="w-full"
+          />
+          <UButton
+            label="Filter"
+            icon="i-solar:filter-outline"
+            color="neutral"
+            variant="outline"
+          />
+        </UFieldGroup>
         <template v-if="data?.meta?.total">
           <div
             v-for="transaction in transactions"

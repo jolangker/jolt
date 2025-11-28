@@ -3,7 +3,7 @@ import z from 'zod'
 import type { Transaction } from '~~/shared/types'
 
 const props = defineProps<{
-  transaction: Transaction
+  transaction?: Transaction
 }>()
 
 const emit = defineEmits<{
@@ -86,6 +86,14 @@ const onSubmit = async () => {
 
 const onOpen = (val: boolean) => {
   emit('close', val)
+  if (!val) {
+    state.type = 'income'
+    state.amount = undefined
+    state.date = undefined
+    state.note = undefined
+    state.categoryId = undefined
+  }
+
   if (val && props.transaction) {
     state.type = props.transaction.type
     state.amount = parseFloat(props.transaction.amount)
