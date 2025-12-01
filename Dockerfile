@@ -15,9 +15,6 @@ FROM oven/bun AS production
 WORKDIR /app
 
 COPY --from=build /app/.output ./.output
-COPY --from=build /app/package.json /app/bun.lockb ./
-
-RUN bun install --production --verbose
 
 ENV NODE_ENV=production
 EXPOSE 3000
