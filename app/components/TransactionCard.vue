@@ -25,7 +25,7 @@ const openTransactionDetails = () => {
 <template>
   <UCard
     variant="subtle"
-    class="cursor-pointer hover:opacity-70 duration-300"
+    class="cursor-pointer"
     @click="openTransactionDetails"
   >
     <div class="flex items-center gap-3">
