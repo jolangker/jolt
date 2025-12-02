@@ -1,60 +1,282 @@
-# Nuxt Starter Template
+# Jolt
 
 [![Nuxt UI](https://img.shields.io/badge/Made%20with-Nuxt%20UI-00DC82?logo=nuxt&labelColor=020420)](https://ui.nuxt.com)
+[![Telegram Bot](https://img.shields.io/badge/Try%20it-Telegram%20Bot-26A5E4?logo=telegram&logoColor=white)](https://t.me/jollexpenser_bot)
 
-Use this template to get started with [Nuxt UI](https://ui.nuxt.com) quickly.
+**Jolt** is an AI-powered personal finance tracking system that operates primarily through a **Telegram chat bot**. Users interact naturally by sending messages about their expenses and income to the bot, which processes the information using AI workflows and stores it in a database. This repository contains the **web dashboard** component for visualizing and monitoring your financial data.
 
-- [Live demo](https://starter-template.nuxt.dev/)
-- [Documentation](https://ui.nuxt.com/docs/getting-started/installation/nuxt)
+## 📱 Preview
 
-<a href="https://starter-template.nuxt.dev/" target="_blank">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://ui.nuxt.com/assets/templates/nuxt/starter-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://ui.nuxt.com/assets/templates/nuxt/starter-light.png">
-    <img alt="Nuxt Starter Template" src="https://ui.nuxt.com/assets/templates/nuxt/starter-light.png">
-  </picture>
-</a>
+<p align="center">
+  <img src="./public/dashboard-preview.png" alt="Jolt Dashboard Preview" width="400">
+</p>
 
-> The starter template for Vue is on https://github.com/nuxt-ui-templates/starter-vue.
+**👉 Try it now:** [https://t.me/jollexpenser_bot](https://t.me/jollexpenser_bot)
 
-## Quick Start
+## 🤖 How Jolt Works
 
-```bash [Terminal]
-npm create nuxt@latest -- -t github:nuxt-ui-templates/starter
+Jolt is built on a three-part architecture:
+
+```
+┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐
+│  Telegram Bot   │ ───> │  n8n Workflow   │ ───> │  Web Dashboard  │
+│  (Primary UI)   │      │  (AI Processing)│      │  (This Repo)    │
+└─────────────────┘      └─────────────────┘      └─────────────────┘
+         │                        │                         │
+         └────────────────────────┴─────────────────────────┘
+                                  │
+                          ┌───────▼────────┐
+                          │  PostgreSQL    │
+                          │   Database     │
+                          └────────────────┘
 ```
 
-## Deploy your own
+### 1. **Telegram Bot** (Primary Interface)
+Users interact with Jolt by chatting with a Telegram bot. Simply send messages like:
+- "I spent $25 on lunch today"
+- "Received salary $3000"
+- "Coffee $5"
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-name=starter&repository-url=https%3A%2F%2Fgithub.com%2Fnuxt-ui-templates%2Fstarter&demo-image=https%3A%2F%2Fui.nuxt.com%2Fassets%2Ftemplates%2Fnuxt%2Fstarter-dark.png&demo-url=https%3A%2F%2Fstarter-template.nuxt.dev%2F&demo-title=Nuxt%20Starter%20Template&demo-description=A%20minimal%20template%20to%20get%20started%20with%20Nuxt%20UI.)
+The bot is the main entry point for all user interactions.
 
-## Setup
+### 2. **n8n Workflow** (AI Processing)
+When you send a message to the bot:
+- The message is forwarded to an n8n workflow
+- AI processes the natural language to extract:
+  - Amount
+  - Category (Food, Transport, Salary, etc.)
+  - Transaction type (expense or income)
+  - Date and notes
+- The structured data is then stored in the database
 
-Make sure to install the dependencies:
+### 3. **Web Dashboard** (This Repository)
+The web dashboard provides:
+- **Visualization**: Charts and graphs of your spending patterns
+- **Analytics**: Insights into your financial habits
+- **Monitoring**: Overview of income, expenses, and balance
+- **Transaction History**: Review and manage past transactions
+
+> **Note**: The dashboard is read-focused. While you can manage transactions here, the primary way to add new entries is through the Telegram bot.
+
+## ✨ Key Features
+
+### For Users
+- 🗣️ **Natural Language Input**: Just chat normally with the Telegram bot
+- 🤖 **AI-Powered**: Automatic categorization and data extraction
+- 📊 **Visual Analytics**: Beautiful charts showing spending trends and patterns
+- 📱 **Mobile-First**: Access your dashboard on any device
+- 🔒 **Secure**: Telegram authentication, no password needed
+
+### Dashboard Features
+- **Real-time Sync**: Data from Telegram appears instantly
+- **Monthly Overview**: Current month's spending summary
+- **Quick Metrics**: Balance, total income, total expenses at a glance
+- **Transaction History**: Complete list with filtering and pagination
+- **Category Breakdown**: See where your money goes
+- **Daily Trends**: Track spending patterns over time
+
+## 🛠️ Tech Stack
+
+### Web Dashboard (This Repository)
+- **Framework**: [Nuxt 4](https://nuxt.com) - Vue 3 full-stack framework
+- **Language**: TypeScript
+- **UI Library**: [Nuxt UI](https://ui.nuxt.com) v4.1.0
+- **Styling**: Tailwind CSS
+- **Charts**: [Unovis](https://unovis.dev) - Data visualization library
+- **Icons**: Iconify (Lucide, Solar, Simple Icons)
+- **Database ORM**: Drizzle ORM with PostgreSQL
+- **Validation**: Zod & Valibot
+- **Authentication**: nuxt-auth-utils (Telegram-based)
+- **Runtime**: Node.js with Bun package manager
+
+### External Components
+- **Chat Interface**: Telegram Bot API
+- **AI Processing**: n8n workflow automation
+- **Database**: Neon (Serverless PostgreSQL)
+- **Deployment**: Docker containerization
+
+## 📊 Database Schema
+
+All transaction data is stored in PostgreSQL:
+
+### Core Tables
+- **`users`**: Telegram user accounts
+- **`user_tokens`**: Authentication session management
+- **`transactions`**: All income and expense records
+- **`categories`**: Pre-defined transaction categories (Food, Transport, Salary, etc.)
+- **`expenses`**: Legacy table for backward compatibility
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ or Bun
+- PostgreSQL database (Neon account recommended)
+- Access to the Telegram bot and n8n workflow (for full system)
+
+### Running the Dashboard
+
+1. **Clone the repository**
+```bash
+git clone <repository-url>
+cd jolt
+```
+
+2. **Install dependencies**
+```bash
+bun install
+```
+
+3. **Configure environment**
+Create a `.env` file:
+```env
+DATABASE_URL="postgresql://..."
+# Add other required environment variables
+```
+
+4. **Set up database**
+```bash
+bun run db:generate
+bun run db:migrate
+```
+
+5. **Start development server**
+```bash
+bun dev
+# Dashboard available at http://localhost:3000
+```
+
+## 🛠️ Development Commands
 
 ```bash
-pnpm install
+# Development
+bun dev                  # Start dev server
+bun build                # Build for production
+bun preview              # Preview production build
+
+# Database
+bun run db:generate      # Generate migration files
+bun run db:migrate       # Run migrations
+bun run db:script        # Run database scripts
+
+# Code Quality
+bun run lint             # Run ESLint
+bun run lint:fix         # Fix ESLint errors
+bun run typecheck        # TypeScript type checking
+
+# Docker
+bun run docker:build     # Build Docker image
+bun run docker:push      # Push to registry
 ```
 
-## Development Server
+## 🐳 Docker Deployment
 
-Start the development server on `http://localhost:3000`:
+Deploy the dashboard using Docker:
 
 ```bash
-pnpm dev
+# Build and run
+docker build -t jolleyx/jolt:latest .
+docker compose up -d
 ```
 
-## Production
+## 📱 Dashboard Pages
 
-Build the application for production:
+### 🏠 Homepage (Dashboard)
+- Monthly spending summary
+- Quick metrics cards (balance, income, expenses)
+- 5 most recent transactions
+- Quick action buttons
 
-```bash
-pnpm build
+### 💳 Transactions
+- Complete transaction history
+- Pagination with "load more"
+- Filters: date range, category, transaction type
+- Transaction cards with icons and details
+
+### 📈 Analytics
+- Interactive charts powered by Unovis
+- Daily spending trends
+- Category-wise breakdown
+- Income vs. Expense comparison
+- Time period filters
+
+### 👤 Profile
+- Telegram account information
+- User statistics
+- Settings and preferences
+
+## 🏗️ Project Structure
+
+```
+jolt/
+├── app/                      # Frontend code
+│   ├── pages/               # Routes (Dashboard, Analytics, etc.)
+│   ├── components/          # Vue components
+│   └── layouts/             # Page layouts
+├── server/                  # Backend API
+│   ├── api/                # REST endpoints
+│   │   ├── transactions/   # Transaction CRUD
+│   │   ├── analytics/      # Analytics data
+│   │   └── auth/           # Authentication
+│   └── db/                 # Database schemas
+├── shared/                  # Shared types/utils
+└── docs/                    # Documentation
 ```
 
-Locally preview production build:
+## 🔌 API Endpoints
 
-```bash
-pnpm preview
-```
+The dashboard connects to these API endpoints:
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+- `GET /api/transactions` - List transactions (with pagination/filters)
+- `GET /api/analytics/daily` - Daily spending trends
+- `GET /api/analytics/categories-breakdown` - Category breakdown
+- `GET /api/analytics/summary` - Overall summary
+- `GET /api/master/categories` - Available categories
+- `POST/PUT/DELETE /api/transactions` - Manage transactions (optional)
+
+## 🎯 Use Cases
+
+1. **Daily Tracking**: Send expenses to Telegram bot throughout the day
+2. **Weekly Review**: Check dashboard to see spending patterns
+3. **Monthly Analysis**: Review analytics charts to understand your financial habits
+4. **Budget Monitoring**: Track if you're staying within budget
+5. **Category Insights**: See which categories consume most of your budget
+
+## 🔐 Security
+
+- Telegram authentication (no passwords)
+- Secure session token management
+- Environment-based configuration
+- Data encryption in transit and at rest
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to:
+- Report bugs or issues
+- Suggest new features
+- Submit pull requests
+- Improve documentation
+
+Please make sure to:
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## ⚠️ Security Note
+
+**Important**: Before deploying or making your repository public, ensure that you:
+- Never commit sensitive data (API keys, database credentials, etc.) to the repository
+- Use environment variables for all sensitive configuration
+- Review the `.env` file is in `.gitignore`
+- Check that `bun.lockb` and `node_modules` are gitignored
+
+## 💬 Support
+
+If you have any questions or need help, feel free to:
+- Open an issue on GitHub
+- Try the bot: [https://t.me/jollexpenser_bot](https://t.me/jollexpenser_bot)
