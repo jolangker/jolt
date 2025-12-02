@@ -120,6 +120,3 @@ The database is managed using Drizzle ORM with the following core tables:
 
 ### Master Data
 - `GET /api/master/categories`: Get list of available categories.
-
-### Payment (Integration)
-- `lynk`: Subdirectory for payment integration (details TBD).
