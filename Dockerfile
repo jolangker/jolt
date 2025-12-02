@@ -2,9 +2,10 @@ FROM oven/bun AS build
 
 WORKDIR /app
 
-COPY package.json bun.lockb ./
+COPY package.json ./
+COPY bun.lockb* ./
 
-RUN bun install --verbose
+RUN bun install --production --verbose
 
 COPY . .
 
