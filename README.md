@@ -252,29 +252,6 @@ The dashboard connects to these API endpoints:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to:
-- Report bugs or issues
-- Suggest new features
-- Submit pull requests
-- Improve documentation
-
-Please make sure to:
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## ⚠️ Security Note
-
-**Important**: Before deploying or making your repository public, ensure that you:
-- Never commit sensitive data (API keys, database credentials, etc.) to the repository
-- Use environment variables for all sensitive configuration
-- Review the `.env` file is in `.gitignore`
-- Check that `bun.lockb` and `node_modules` are gitignored
-
 ## 💬 Support
 
 If you have any questions or need help, feel free to:
