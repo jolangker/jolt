@@ -34,10 +34,10 @@ export default defineEventHandler(async (event) => {
       }
     }
     if (transaction.type === 'income') {
-      acc[date].income = transaction.amount.toString()
+      acc[date].income = (parseFloat(acc[date].income) + parseFloat(transaction.amount)).toString()
     }
     else {
-      acc[date].expense = transaction.amount.toString()
+      acc[date].expense = (parseFloat(acc[date].expense) + parseFloat(transaction.amount)).toString()
     }
     return acc
   }, {} as Record<string, { income: string, expense: string }>)
