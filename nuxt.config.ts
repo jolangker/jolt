@@ -21,6 +21,12 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  routeRules: {
+    '/api/**': {
+      cors: true,
+    },
+  },
+
   compatibilityDate: '2025-01-15',
 
   vite: {
