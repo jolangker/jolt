@@ -2,7 +2,7 @@
 
 > **Target Release:** December 2025  
 > **Priority:** High  
-> **Status:** Planned
+> **Status:** Implemented
 
 ---
 
@@ -140,8 +140,8 @@ GET /api/transactions/export
 
 ### 5.1 Export Button Location
 
-- **Primary:** Transactions page header (next to filter button)
-- **Secondary:** Analytics page (export current view)
+- **Primary:** Profile page (below user info)
+- **Secondary:** N/A
 
 ### 5.2 Export Modal
 

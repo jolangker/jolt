@@ -23,6 +23,7 @@
     "@iconify-json/solar": "^1.2.5",
     "@neondatabase/serverless": "^1.0.2",
     "@ngneat/falso": "^8.0.2",
+    "@nuxt/eslint": "^1.10.0",
     "@nuxt/ui": "^4.1.0",
     "@unovis/ts": "^1.6.2",
     "@unovis/vue": "^1.6.2",
@@ -32,11 +33,11 @@
     "drizzle-orm": "^0.44.7",
     "drizzle-seed": "^0.3.1",
     "drizzle-zod": "^0.8.3",
+    "exceljs": "^4.4.0",
     "nuxt": "^4.2.1",
     "nuxt-auth-utils": "^0.5.25",
     "valibot": "^1.1.0",
     "vue": "^3.5.25",
-    "@nuxt/eslint": "^1.10.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {

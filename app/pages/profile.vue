@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { LazyExportModal } from '#components'
+
 definePageMeta({
   middleware: 'auth',
   layout: 'authenticated',
@@ -11,6 +13,13 @@ const memberSince = computed(() => {
   if (!user.value?.createdAt) return 'N/A'
   return formatDate(user.value.createdAt)
 })
+
+const overlay = useOverlay()
+const exportModal = overlay.create(LazyExportModal)
+
+const openExportModal = () => {
+  exportModal.open()
+}
 </script>
 
 <template>
@@ -40,9 +49,17 @@ const memberSince = computed(() => {
         <div class="text-xl font-bold text-highlighted">
           {{ user?.telegramUsername || 'User' }}
         </div>
-        <div class="text-sm text-dimmed">
+        <div class="text-sm text-dimmed mb-4">
           @{{ user?.telegramUsername || 'username' }}
         </div>
+        <UButton
+          label="Export Data"
+          icon="i-solar:export-outline"
+          color="neutral"
+          variant="outline"
+          size="md"
+          @click="openExportModal"
+        />
       </div>
 
       <div class="space-y-4 mb-6">

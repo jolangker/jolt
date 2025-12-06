@@ -298,6 +298,15 @@ server/
 | **FR-PROF-002** | System shall provide secure logout functionality |
 | **FR-PROF-003** | System shall display user statistics (if available) |
 
+### 6.6 Export Module
+
+| Requirement | Description |
+|-------------|-------------|
+| **FR-EXP-001** | System shall allow exporting transactions to Excel (.xlsx) |
+| **FR-EXP-002** | Users can filter export by date, type, and categories |
+| **FR-EXP-003** | System shall optionally include a summary sheet with totals |
+| **FR-EXP-004** | Export file shall be named `jolt-transactions-{date}.xlsx` |
+
 ---
 
 ## 7. Non-Functional Requirements
@@ -838,7 +847,7 @@ All UI components use **Nuxt UI v4**:
 | Feature | Description | Status |
 |---------|-------------|--------|
 | **Custom Categories** | User-defined categories with LLM understanding — the AI can recognize and properly categorize transactions even with custom category names | 🔲 Planned |
-| **Export to Excel** | Export transaction data to Excel (.xlsx) format for external analysis and record-keeping | 🔲 Planned |
+| **Export to Excel** | Export transaction data to Excel (.xlsx) format for external analysis and record-keeping | ✅ Implemented |
 | **Budget Setting & Tracking** | Set monthly/weekly budgets per category and track spending against limits with visual progress indicators | 🔲 Planned |
 
 ---
