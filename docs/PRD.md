@@ -769,26 +769,34 @@ All UI components use **Nuxt UI v4**:
 
 ## 14. Future Roadmap
 
-### Phase 1: Core Enhancement (Q1 2026)
+### 🎯 Target: End of 2025
 
-- [ ] Budget setting and tracking
+| Feature | Description | Status |
+|---------|-------------|--------|
+| **Custom Categories** | User-defined categories with LLM understanding — the AI can recognize and properly categorize transactions even with custom category names | 🔲 Planned |
+| **Export to Excel** | Export transaction data to Excel (.xlsx) format for external analysis and record-keeping | 🔲 Planned |
+| **Budget Setting & Tracking** | Set monthly/weekly budgets per category and track spending against limits with visual progress indicators | 🔲 Planned |
+
+---
+
+### Phase 1: Enhanced Experience (Q1 2026)
+
 - [ ] Recurring transaction support
-- [ ] Export to CSV/Excel
-- [ ] Multiple currency support
+- [ ] Bill reminders and notifications
+- [ ] Savings goals tracking
 
 ### Phase 2: Intelligence (Q2 2026)
 
 - [ ] Spending predictions with AI
 - [ ] Anomaly detection for unusual transactions
-- [ ] Smart category suggestions
 - [ ] Financial health score
-
-### Phase 3: Social & Goals (Q3 2026)
-
-- [ ] Savings goals tracking
-- [ ] Bill reminders and notifications
-- [ ] Shared budgets for families/couples
 - [ ] Financial tips based on spending patterns
+
+### Phase 3: Social Features (Q3 2026)
+
+- [ ] Shared budgets for families/couples
+- [ ] Expense splitting with friends
+- [ ] Group financial goals
 
 ### Phase 4: Integrations (Q4 2026)
 
