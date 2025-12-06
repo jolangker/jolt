@@ -1,24 +1,15 @@
-import { db } from '~~/server/utils/db'
 import z from 'zod'
+import { authService } from '~~/server/services'
 
 export default defineEventHandler(async (event) => {
   const body = await readValidatedBody(event, z.object({
     token: z.string({ error: 'Missing token' }),
   }).parse)
 
-  const userToken = await db.query.userTokens.findFirst({
-    where: ({ token }, { eq }) => eq(token, body.token),
-    with: {
-      user: true,
-    },
-  })
-  if (!userToken) throw createError({ statusCode: 404, statusMessage: 'Invalid token' })
-
-  if (userToken.expiresAt < new Date())
-    throw createError({ statusCode: 410, statusMessage: 'Token expired' })
+  const user = await authService.loginWithToken(body.token)
 
   await setUserSession(event, {
-    user: userToken.user,
+    user,
   }, {
     maxAge: 60 * 60,
   })

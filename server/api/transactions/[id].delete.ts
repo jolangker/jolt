@@ -1,6 +1,4 @@
-import { transactions } from '~~/server/db/schema'
-import { db } from '~~/server/utils/db'
-import { and, eq } from 'drizzle-orm'
+import { transactionService } from '~~/server/services'
 
 export default defineEventHandler(async (event) => {
   const userId = event.context.auth.userId
@@ -20,14 +18,5 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  await db.delete(transactions).where(
-    and(
-      eq(transactions.userId, userId),
-      eq(transactions.id, Number(transactionId)),
-    ),
-  )
-
-  return {
-    success: true,
-  }
+  return transactionService.delete(userId, Number(transactionId))
 })

@@ -1,7 +1,5 @@
-import { transactions } from '~~/server/db/schema'
-import { db } from '~~/server/utils/db'
 import { transactionInsertSchema } from '~~/server/db/schemas/transactions'
-import { and, eq } from 'drizzle-orm'
+import { transactionService } from '~~/server/services'
 
 export default defineEventHandler(async (event) => {
   const userId = event.context.auth.userId
@@ -23,21 +21,5 @@ export default defineEventHandler(async (event) => {
 
   const body = await readValidatedBody(event, transactionInsertSchema.parse)
 
-  const [data] = await db.update(transactions).set({
-    categoryId: body.categoryId,
-    amount: body.amount,
-    type: body.type,
-    date: new Date(body.date),
-    note: body.note,
-  }).where(
-    and(
-      eq(transactions.userId, userId),
-      eq(transactions.id, Number(transactionId)),
-    ),
-  ).returning()
-
-  return {
-    success: true,
-    data,
-  }
+  return transactionService.update(userId, Number(transactionId), body)
 })
