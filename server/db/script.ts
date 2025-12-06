@@ -1,7 +1,10 @@
+/* eslint-disable @stylistic/arrow-parens */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { drizzle } from 'drizzle-orm/neon-http'
 import { neon } from '@neondatabase/serverless'
 import * as schema from './schema'
 import { rand, randNumber, randBetweenDate, randCatchPhrase } from '@ngneat/falso'
+import { eq } from 'drizzle-orm'
 
 const sql = neon(process.env.DATABASE_URL!)
 const db = drizzle(sql, { schema })
@@ -31,9 +34,17 @@ const generateTrxs = (count: number) => {
 }
 
 async function main() {
-  const trxs = generateTrxs(100)
-  await db.delete(schema.transactions)
-  await db.insert(schema.transactions).values(trxs)
+  db.select().from(schema.categories)
+    .where(eq(schema.categories.isDefault, true))
+    .then(async (res) => {
+      res.forEach(async (cat) => {
+        if (cat.icon) {
+          await db.update(schema.categories)
+            .set({ icon: `${cat.icon}-outline` })
+            .where(eq(schema.categories.id, cat.id))
+        }
+      })
+    })
 }
 
 main()

@@ -410,10 +410,12 @@ server/
 | Column | Type | Constraints | Description |
 |--------|------|-------------|-------------|
 | `id` | SERIAL | PRIMARY KEY | Category identifier |
+| `userId` | UUID | FOREIGN KEY → users.id | Owner user (null for defaults) |
 | `name` | TEXT | NOT NULL | Category display name |
 | `description` | TEXT | NOT NULL | Category description |
 | `type` | ENUM('expense', 'income') | NOT NULL | Category type |
 | `icon` | TEXT | | Icon identifier (Iconify) |
+| `isDefault` | BOOLEAN | DEFAULT false | System default category |
 | `createdAt` | TIMESTAMP | DEFAULT NOW() | Creation timestamp |
 
 #### `transactions`
@@ -635,12 +637,12 @@ GET /api/analytics/summary
 }
 ```
 
-### Master Data Endpoints
+### Category Endpoints
 
 #### List Categories
 
 ```http
-GET /api/master/categories
+GET /api/categories
 ```
 
 **Response:**
@@ -650,12 +652,54 @@ GET /api/master/categories
     {
       "id": 1,
       "name": "Food & Dining",
-      "description": "Restaurants, groceries, food delivery",
       "type": "expense",
+      "isDefault": true,
       "icon": "i-solar:hamburger-outline"
+    },
+    {
+      "id": 101,
+      "name": "My Anime Merch",
+      "type": "expense",
+      "isDefault": false,
+      "userId": "uuid",
+      "icon": "i-solar:cart-outline"
     }
   ]
 }
+```
+
+#### Create Category
+
+```http
+POST /api/categories
+```
+
+**Request:**
+```json
+{
+  "name": "New Category",
+  "description": "Category Description",
+  "type": "income",
+  "icon": "i-solar:star-outline"
+}
+```
+
+#### Update Category
+
+```http
+PUT /api/categories/:id
+```
+
+#### Delete Category
+
+```http
+DELETE /api/categories/:id
+```
+
+#### List Icons
+
+```http
+GET /api/icons
 ```
 
 ---

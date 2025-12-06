@@ -125,6 +125,39 @@ const openExportModal = () => {
         </UCard>
       </div>
 
+      <div class="space-y-4 mb-6">
+        <div class="text-sm font-semibold mb-3">
+          Settings
+        </div>
+
+        <UCard
+          variant="subtle"
+          class="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          @click="navigateTo('/categories')"
+        >
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <UIcon
+                name="i-lucide:tag"
+                class="w-5 h-5 text-primary"
+              />
+              <div>
+                <div class="text-sm font-medium">
+                  Manage Categories
+                </div>
+                <div class="text-xs text-dimmed">
+                  Customize your income and expense categories
+                </div>
+              </div>
+            </div>
+            <UIcon
+              name="i-lucide:chevron-right"
+              class="w-5 h-5 text-dimmed"
+            />
+          </div>
+        </UCard>
+      </div>
+
       <!-- Statistics -->
       <div class="space-y-4">
         <div class="text-sm font-semibold mb-3">

@@ -9,7 +9,7 @@ const emit = defineEmits<{
 const toast = useToast()
 const loading = ref(false)
 
-const { data } = await useFetch('/api/master/categories')
+const { data } = await useFetch('/api/categories')
 
 const schema = z.object({
   type: z.enum(['all', 'income', 'expense']),
@@ -69,7 +69,7 @@ const handleExport = async () => {
     const url = window.URL.createObjectURL(response)
     const link = document.createElement('a')
     link.href = url
-    
+
     // Create filename
     const date = dayjs().format('YYYY-MM-DD')
     link.setAttribute('download', `jolt-transactions-${date}.xlsx`)

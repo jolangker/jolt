@@ -32,7 +32,7 @@ const state = reactive<Partial<Schema>>({
   categoryId: undefined,
 })
 
-const { data } = await useFetch('/api/master/categories')
+const { data } = await useFetch('/api/categories')
 const categories = computed(() => {
   if (!data.value) return []
   return data.value.data
@@ -71,7 +71,7 @@ const onSubmit = async () => {
       icon: 'i-solar:check-circle-outline',
     })
   }
-  catch (error) {
+  catch {
     toast.add({
       title: 'Transaction saved failed',
       description: 'Your transaction has been saved failed',

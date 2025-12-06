@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm'
-import { pgEnum, pgTable, serial, text, timestamp, decimal, uuid } from 'drizzle-orm/pg-core'
+import { pgEnum, pgTable, serial, text, timestamp, decimal, uuid, boolean } from 'drizzle-orm/pg-core'
 import { users } from './users'
 import z from 'zod'
 import { createInsertSchema } from 'drizzle-zod'
@@ -8,6 +8,8 @@ export const categoryTypeEnum = pgEnum('category_type', ['expense', 'income'])
 
 export const categories = pgTable('categories', {
   id: serial('id').primaryKey(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  isDefault: boolean('is_default').default(false),
   name: text('name').notNull(),
   description: text('description').notNull(),
   type: categoryTypeEnum('type').notNull(),

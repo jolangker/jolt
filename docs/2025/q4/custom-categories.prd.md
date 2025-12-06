@@ -2,7 +2,7 @@
 
 > **Target Release:** December 2025  
 > **Priority:** High  
-> **Status:** Planned
+> **Status:** Completed
 
 ---
 
@@ -93,6 +93,7 @@ CREATE INDEX idx_categories_user ON categories(user_id);
 | `/api/categories` | POST | Create custom category |
 | `/api/categories/:id` | PUT | Update custom category |
 | `/api/categories/:id` | DELETE | Delete custom category |
+| `/api/icons` | GET | List available Solar icons (outline collection) |
 
 ### 4.3 LLM Prompt Enhancement
 
@@ -113,18 +114,18 @@ When categorizing, prefer user's custom categories if they match the transaction
 
 - Accessible from Profile → Manage Categories
 - List view showing all custom categories with icons
-- "Add Category" button with modal form
+- "Add Category" button triggers a **Side Drawer**
 - Edit/Delete actions per category
-- Search/filter by category type
+- Search/filter by category type and source (Default vs Custom)
 
-### 5.2 Category Creation Form
+### 5.2 Category Creation Form (Drawer)
 
 | Field | Type | Required | Validation |
 |-------|------|----------|------------|
 | Name | Text | ✅ | 2-50 chars, unique per user |
 | Description | Text | ✅ | Max 200 chars |
-| Type | Select | ✅ | income / expense |
-| Icon | Icon Picker | ❌ | From icon library |
+| Type | Radio/Select | ✅ | income / expense |
+| Icon | **Icon Picker** | ❌ | Visual picker using Solar "Outline" icons |
 
 ---
 
@@ -132,7 +133,7 @@ When categorizing, prefer user's custom categories if they match the transaction
 
 | Scenario | Handling |
 |----------|----------|
-| Delete category with existing transactions | Prompt to reassign or keep as "Uncategorized" |
+| Delete category with existing transactions | Transactions preserved but category link might break (TODO: reassign feature) |
 | LLM cannot match to any category | Use "Other" default category |
 | Category name conflicts with default | Allow but warn user |
 | User hits 50 category limit | Show error, suggest deleting unused |

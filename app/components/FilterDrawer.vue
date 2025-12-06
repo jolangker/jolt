@@ -6,7 +6,7 @@ const emit = defineEmits<{
   apply: [Schema]
 }>()
 
-const { data } = await useFetch('/api/master/categories')
+const { data } = await useFetch('/api/categories')
 
 const schema = z.object({
   type: z.enum(['all', 'income', 'expense']),

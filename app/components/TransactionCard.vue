@@ -30,7 +30,7 @@ const openTransactionDetails = () => {
   >
     <div class="flex items-center gap-3">
       <UAvatar
-        :icon="`${transaction.category.icon || 'i-solar:cash-out'}-outline`"
+        :icon="transaction.category.icon"
         size="2xl"
         :ui="{ root: 'bg-accented' }"
       />
