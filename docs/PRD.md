@@ -97,6 +97,70 @@
 | **Web Dashboard** | Visualization, analytics, transaction management | Nuxt 4, Vue 3 |
 | **Database** | Persistent data storage | PostgreSQL (Neon Serverless) |
 
+### Server Architecture
+
+The server follows a **Service-Repository Pattern** for clean separation of concerns:
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                         API Routes (server/api/)                     │
+│                    Validation & Orchestration Only                   │
+└─────────────────────────────────────┬───────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                      Services (server/services/)                     │
+│                         Business Logic Layer                         │
+└─────────────────────────────────────┬───────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                   Repositories (server/repositories/)                │
+│                        Data Access Layer                             │
+└─────────────────────────────────────┬───────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                         Database (Drizzle ORM)                       │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+| Layer | Location | Responsibility |
+|-------|----------|----------------|
+| **API Routes** | `server/api/` | Request validation via Zod, authentication context, service orchestration |
+| **Services** | `server/services/` | Business logic, data transformation, error handling |
+| **Repositories** | `server/repositories/` | Database queries via Drizzle ORM, CRUD operations |
+| **Schemas** | `server/db/schemas/` | Database table definitions, Zod insert schemas |
+
+#### Server Directory Structure
+
+```
+server/
+├── api/                    # HTTP layer (orchestration only)
+│   ├── analytics/          # Analytics endpoints
+│   ├── auth/               # Authentication endpoints
+│   ├── master/             # Master data endpoints
+│   └── transactions/       # Transaction CRUD endpoints
+├── db/                     # Database definitions
+│   ├── schema.ts           # Barrel export
+│   └── schemas/            # Table definitions
+├── repositories/           # Data access layer
+│   ├── analytics.repository.ts
+│   ├── auth-token.repository.ts
+│   ├── category.repository.ts
+│   ├── transaction.repository.ts
+│   ├── user.repository.ts
+│   └── index.ts
+├── services/               # Business logic layer
+│   ├── analytics.service.ts
+│   ├── auth.service.ts
+│   ├── category.service.ts
+│   ├── transaction.service.ts
+│   └── index.ts
+├── middleware/             # Server middleware
+└── utils/                  # Shared utilities
+```
+
 ---
 
 ## 4. User Personas
