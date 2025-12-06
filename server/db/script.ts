@@ -35,12 +35,12 @@ const generateTrxs = (count: number) => {
 
 async function main() {
   db.select().from(schema.categories)
-    .where(eq(schema.categories.isDefault, true))
+    .where(eq(schema.categories.isDefault, false))
     .then(async (res) => {
       res.forEach(async (cat) => {
         if (cat.icon) {
           await db.update(schema.categories)
-            .set({ icon: `${cat.icon}-outline` })
+            .set({ icon: `${cat.icon}-outline`, isDefault: true })
             .where(eq(schema.categories.id, cat.id))
         }
       })
