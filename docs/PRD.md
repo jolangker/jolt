@@ -890,7 +890,7 @@ All UI components use **Nuxt UI v4**:
 
 | Feature | Description | Status |
 |---------|-------------|--------|
-| **Custom Categories** | User-defined categories with LLM understanding — the AI can recognize and properly categorize transactions even with custom category names | 🔲 Planned |
+| **Custom Categories** | User-defined categories with LLM understanding — the AI can recognize and properly categorize transactions even with custom category names | ✅ Implemented |
 | **Export to Excel** | Export transaction data to Excel (.xlsx) format for external analysis and record-keeping | ✅ Implemented |
 | **Budget Setting & Tracking** | Set monthly/weekly budgets per category and track spending against limits with visual progress indicators | 🔲 Planned |
 

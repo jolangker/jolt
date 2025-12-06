@@ -2,7 +2,7 @@
 
 > **Target Release:** December 2025  
 > **Priority:** High  
-> **Status:** Completed
+> **Status:** Implemented
 
 ---
 
