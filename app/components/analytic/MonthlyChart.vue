@@ -33,7 +33,16 @@ const yFormat = (d: number) => formatCurrency(d, true)
         Last 6 months spending
       </div>
     </div>
+    <UEmpty
+      v-if="!data?.length"
+      icon="i-lucide-bar-chart-3"
+      title="No data available"
+      description="There's no spending data for the last 6 months. Start tracking your expenses to see the comparison."
+      variant="naked"
+      class="h-[300px]"
+    />
     <VisXYContainer
+      v-else
       :data="data"
       :height="300"
     >

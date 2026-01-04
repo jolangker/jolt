@@ -67,7 +67,16 @@ const items = [
         />
       </div>
     </template>
+    <UEmpty
+      v-if="!categories.length"
+      icon="i-lucide-pie-chart"
+      title="No data available"
+      :description="`There's no ${type} data for the selected period. Try adjusting the date range.`"
+      variant="naked"
+      class="h-[300px]"
+    />
     <VisSingleContainer
+      v-else
       :data="categories"
       :height="300"
     >

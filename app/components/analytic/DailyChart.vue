@@ -85,7 +85,16 @@ const colors = (d: undefined, i: number) => ['var(--ui-success)', 'var(--ui-erro
         />
       </div>
     </template>
+    <UEmpty
+      v-if="!daily.length"
+      icon="i-lucide-chart-line"
+      title="No data available"
+      description="There's no income or expense data for the selected period. Try adjusting the date range or categories."
+      variant="naked"
+      class="h-[300px]"
+    />
     <VisXYContainer
+      v-else
       :data="daily"
       :height="300"
     >
