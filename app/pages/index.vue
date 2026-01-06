@@ -10,7 +10,12 @@ const { data: transactions } = await useFetch('/api/transactions', {
   },
 })
 
-const { data: summary } = await useFetch('/api/analytics/summary')
+const { data: summary } = await useFetch('/api/analytics/summary', {
+  query: {
+    startDate: dayjs().startOf('month').format('YYYY-MM-DD'),
+    endDate: dayjs().format('YYYY-MM-DD'),
+  },
+})
 </script>
 
 <template>
@@ -30,7 +35,7 @@ const { data: summary } = await useFetch('/api/analytics/summary')
     <template #body>
       <div class="mb-6 mx-auto w-full max-w-2xl flex flex-col items-center gap-1">
         <div class="text-dimmed">
-          Nett Balance
+          Nett Balance ({{ dayjs().format('MMMM YYYY') }})
         </div>
         <div class="text-4xl font-bold text-primary">
           {{ formatCurrency(summary?.data?.nett) }}
@@ -40,7 +45,7 @@ const { data: summary } = await useFetch('/api/analytics/summary')
         <UCard variant="subtle">
           <div class="flex flex-col gap-1">
             <div class="text-xs text-dimmed">
-              Total Income
+              This Month Income
             </div>
             <div class="text-xl font-semibold text-success">
               {{ formatCurrency(summary?.data.income) }}
@@ -50,7 +55,7 @@ const { data: summary } = await useFetch('/api/analytics/summary')
         <UCard variant="subtle">
           <div class="flex flex-col gap-1">
             <div class="text-xs text-dimmed">
-              Total Expense
+              This Month Expense
             </div>
             <div class="text-xl font-semibold text-error">
               {{ formatCurrency(summary?.data.expense) }}
