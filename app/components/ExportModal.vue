@@ -172,7 +172,7 @@ const handleExport = async () => {
         <UFormField name="includeSummary">
           <UCheckbox
             v-model="state.includeSummary"
-            label="Sertakan sheet ringkasan"
+            label="Sertakan sheet 'ringkasan'"
             size="lg"
           />
         </UFormField>

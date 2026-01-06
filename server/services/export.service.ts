@@ -14,11 +14,11 @@ export const exportService = {
     const sheet = workbook.addWorksheet('Transactions')
 
     sheet.columns = [
-      { header: 'Date', key: 'date', width: 15 },
-      { header: 'Type', key: 'type', width: 10 },
-      { header: 'Category', key: 'category', width: 20 },
-      { header: 'Amount', key: 'amount', width: 15 },
-      { header: 'Note', key: 'note', width: 40 },
+      { header: 'Tanggal', key: 'date', width: 15 },
+      { header: 'Tipe', key: 'type', width: 10 },
+      { header: 'Kategori', key: 'category', width: 20 },
+      { header: 'Jumlah', key: 'amount', width: 15 },
+      { header: 'Catatan', key: 'note', width: 40 },
     ]
 
     // Style header
@@ -46,8 +46,8 @@ export const exportService = {
     if (filters.includeSummary) {
       const summarySheet = workbook.addWorksheet('Summary')
       summarySheet.columns = [
-        { header: 'Metric', key: 'metric', width: 25 },
-        { header: 'Value', key: 'value', width: 20 },
+        { header: 'Metrik', key: 'metric', width: 25 },
+        { header: 'Nilai', key: 'value', width: 20 },
       ]
 
       summarySheet.getRow(1).font = { bold: true }
@@ -68,11 +68,11 @@ export const exportService = {
       const netBalance = totalIncome - totalExpense
 
       summarySheet.addRows([
-        { metric: 'Total Transactions', value: transactions.length },
-        { metric: 'Total Income', value: totalIncome },
-        { metric: 'Total Expenses', value: totalExpense },
-        { metric: 'Net Balance', value: netBalance },
-        { metric: 'Date Range', value: `${filters.startDate || 'All time'} to ${filters.endDate || 'Now'}` },
+        { metric: 'Total Transaksi', value: transactions.length },
+        { metric: 'Total Pemasukan', value: totalIncome },
+        { metric: 'Total Pengeluaran', value: totalExpense },
+        { metric: 'Saldo Net', value: netBalance },
+        { metric: 'Range Tanggal', value: `${filters.startDate || 'Semua Waktu'} to ${filters.endDate || 'Now'}` },
       ])
 
       summarySheet.getColumn('value').numFmt = '#,##0'

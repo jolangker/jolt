@@ -2,6 +2,9 @@
 const props = defineProps<{
   title: string
   description: string
+  confirmText?: string
+  cancelText?: string
+  countdown?: number
   onConfirm: () => Promise<void>
 }>()
 
@@ -10,6 +13,17 @@ const emit = defineEmits<{
 }>()
 
 const loading = ref(false)
+const disabled = ref(false)
+
+const cdTimeout = ref<NodeJS.Timeout>()
+
+if (props.countdown) {
+  disabled.value = true
+  cdTimeout.value = setTimeout(() => {
+    disabled.value = false
+    clearTimeout(cdTimeout.value)
+  }, props.countdown * 1000)
+}
 
 const handleOnConfirm = async () => {
   try {
@@ -41,14 +55,15 @@ const handleOnConfirm = async () => {
           variant="subtle"
           @click="emit('close', false)"
         >
-          Batalkan
+          {{ props.cancelText || 'Batalkan' }}
         </UButton>
         <UButton
           color="error"
+          :disabled="disabled"
           :loading="loading"
           @click="handleOnConfirm"
         >
-          Ya
+          {{ props.confirmText || 'Ya' }}
         </UButton>
       </div>
     </template>

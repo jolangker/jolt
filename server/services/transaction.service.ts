@@ -137,4 +137,9 @@ export const transactionService = {
       },
     }
   },
+
+  async reset(userId: string) {
+    await transactionRepository.reset(userId)
+    return { success: true }
+  },
 }

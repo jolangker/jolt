@@ -106,4 +106,11 @@ export const transactionRepository = {
       .where(buildFilters(userId, filters))
       .groupBy(transactions.type)
   },
+
+  async reset(userId: string) {
+    await db
+      .update(transactions)
+      .set({ deletedAt: new Date() })
+      .where(eq(transactions.userId, userId))
+  },
 }
