@@ -45,7 +45,7 @@ const { data: summary } = await useFetch('/api/analytics/summary', {
         <UCard variant="subtle">
           <div class="flex flex-col gap-1">
             <div class="text-xs text-dimmed">
-              Pendapatan Bulan Ini
+              Pemasukkan Bulan Ini
             </div>
             <div class="text-xl font-semibold text-success">
               {{ formatCurrency(summary?.data.income) }}
