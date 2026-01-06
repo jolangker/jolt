@@ -12,7 +12,7 @@ const props = defineProps<{
   endDate?: string
 }>()
 
-const { data: categories } = await useFetch('/api/master/categories')
+const { data: categories } = await useFetch('/api/categories')
 const categoriesData = computed(() => {
   if (!categories.value) return []
   return categories.value.data.map(category => ({

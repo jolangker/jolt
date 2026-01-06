@@ -62,24 +62,58 @@ const { data: summary } = await useFetch('/api/analytics/summary', {
       </UDashboardNavbar>
     </template>
     <template #body>
-      <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col gap-4">
         <UCard variant="subtle">
-          <div class="flex flex-col gap-1">
-            <div class="text-xs text-dimmed">
-              Pemasukan
+          <div class="flex items-center gap-4">
+            <div class="flex items-center justify-center size-12 rounded-xl bg-primary/10">
+              <UIcon
+                name="i-lucide-wallet"
+                class="size-6 text-primary"
+              />
             </div>
-            <div class="text-2xl font-semibold text-success">
-              {{ formatCurrency(summary?.data.income) }}
+            <div class="flex flex-col gap-1">
+              <div class="text-sm text-dimmed">
+                Saldo
+              </div>
+              <div class="text-2xl font-semibold text-primary">
+                {{ formatCurrency(summary?.data.nett) }}
+              </div>
             </div>
           </div>
         </UCard>
         <UCard variant="subtle">
-          <div class="flex flex-col gap-1">
-            <div class="text-xs text-dimmed">
-              Pengeluaran
+          <div class="flex items-center gap-4">
+            <div class="flex items-center justify-center size-12 rounded-xl bg-success/10">
+              <UIcon
+                name="i-lucide-trending-up"
+                class="size-6 text-success"
+              />
             </div>
-            <div class="text-2xl font-semibold text-error">
-              {{ formatCurrency(summary?.data.expense) }}
+            <div class="flex flex-col gap-1">
+              <div class="text-sm text-dimmed">
+                Pemasukan
+              </div>
+              <div class="text-2xl font-semibold text-success">
+                {{ formatCurrency(summary?.data.income) }}
+              </div>
+            </div>
+          </div>
+        </UCard>
+        <UCard variant="subtle">
+          <div class="flex items-center gap-4">
+            <div class="flex items-center justify-center size-12 rounded-xl bg-error/10">
+              <UIcon
+                name="i-lucide-trending-down"
+                class="size-6 text-error"
+              />
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-sm text-dimmed">
+                Pengeluaran
+              </div>
+              <div class="text-2xl font-semibold text-error">
+                {{ formatCurrency(summary?.data.expense) }}
+              </div>
             </div>
           </div>
         </UCard>
