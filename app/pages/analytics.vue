@@ -86,7 +86,6 @@ const { data: summary } = await useFetch('/api/analytics/summary', {
           </div>
         </UCard>
       </div>
-
       <div>
         <AnalyticDailyChart
           :start-date="dateRange.start"
@@ -98,6 +97,9 @@ const { data: summary } = await useFetch('/api/analytics/summary', {
           :start-date="dateRange.start"
           :end-date="dateRange.end"
         />
+      </div>
+      <div>
+        <AnalyticAIInsights />
       </div>
     </template>
   </UDashboardPanel>

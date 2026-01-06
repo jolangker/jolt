@@ -1,6 +1,7 @@
 import { db } from '~~/server/utils/db'
-import { transactions, categories } from '~~/server/db/schema'
+import { transactions, categories, insights } from '~~/server/db/schema'
 import { and, eq, gte, inArray, lte, sql } from 'drizzle-orm'
+import type { InsightPayload } from '~~/shared/types'
 
 export interface AnalyticsFilters {
   startDate?: string | null
@@ -63,12 +64,30 @@ export const analyticsRepository = {
     return db
       .select({
         category: categories.name,
+        type: categories.type,
         sum: sql<number>`sum(${transactions.amount})`.mapWith(Number),
         count: sql<number>`count(${transactions.id})`.mapWith(Number),
       })
       .from(transactions)
       .where(buildFilters(userId, filters))
       .innerJoin(categories, eq(transactions.categoryId, categories.id))
-      .groupBy(categories.name)
+      .groupBy(categories.name, categories.type)
+  },
+
+  async getUserInsights(userId: string) {
+    const result = await db.query.insights.findFirst({
+      where: (insights, { eq }) => eq(insights.userId, userId),
+      orderBy: (insights, { desc }) => [desc(insights.lastGenerated)],
+    })
+    return result
+  },
+
+  async createUserInsights(userId: string, data: InsightPayload) {
+    const [result] = await db.insert(insights).values({
+      userId,
+      ...data,
+    }).returning()
+
+    return result
   },
 }
