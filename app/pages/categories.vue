@@ -1,6 +1,6 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
-import { LazyCategoryModal } from '#components'
+import { LazyCategoryModal, LazyConfirmationModal } from '#components'
 
 definePageMeta({
   middleware: 'auth',
@@ -28,6 +28,7 @@ const filteredCategories = computed(() => {
 
 const overlay = useOverlay()
 const categoryModal = overlay.create(LazyCategoryModal)
+const confirmationModal = overlay.create(LazyConfirmationModal)
 
 const openModal = (category?: any) => {
   categoryModal.open({
@@ -38,29 +39,22 @@ const openModal = (category?: any) => {
 
 const toast = useToast()
 
-interface ApiError {
-  data?: {
-    statusMessage?: string
-  }
-}
-
-const deleteCategory = async (id: number) => {
-  if (!confirm('Apakah Anda yakin ingin menghapus kategori ini?')) return
-
-  try {
-    await $fetch(`/api/categories/${id}`, { method: 'DELETE' })
-    toast.add({ title: 'Kategori berhasil dihapus', color: 'success', icon: 'i-solar:check-circle-outline' })
-    refresh()
-  }
-  catch (err: unknown) {
-    const error = err as ApiError
-    toast.add({
-      title: 'Error',
-      description: error.data?.statusMessage || 'Could not delete category',
-      color: 'error',
-      icon: 'i-solar:close-circle-outline',
-    })
-  }
+const deleteCategory = (id: number) => {
+  confirmationModal.open({
+    title: 'Hapus Kategori',
+    description: 'Apakah kamu yakin ingin menghapus kategori ini?',
+    onConfirm: async () => {
+      await useFetch(`/api/categories/${id}`, {
+        method: 'DELETE',
+      })
+      refreshNuxtData()
+      toast.add({
+        title: 'Kategori berhasil dihapus',
+        color: 'success',
+        icon: 'i-solar:check-circle-outline',
+      })
+    },
+  })
 }
 
 const typeItems = [
@@ -102,7 +96,7 @@ const sourceItems = [
     </template>
 
     <template #body>
-      <div class="flex flex-col gap-4 mb-6">
+      <div class="flex flex-col gap-2">
         <UInput
           v-model="search"
           icon="i-lucide:search"
@@ -110,18 +104,16 @@ const sourceItems = [
           class="w-full"
           size="lg"
         />
-        <div class="flex flex-col sm:flex-row gap-4">
-          <USelect
-            v-model="typeFilter"
-            :items="typeItems"
-            class="w-full sm:w-48"
-          />
-          <USelect
-            v-model="sourceFilter"
-            :items="sourceItems"
-            class="w-full sm:w-48"
-          />
-        </div>
+        <USelect
+          v-model="typeFilter"
+          :items="typeItems"
+          class="w-full"
+        />
+        <USelect
+          v-model="sourceFilter"
+          :items="sourceItems"
+          class="w-full"
+        />
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
