@@ -1,6 +1,6 @@
 import { db } from '~~/server/utils/db'
 import { transactions } from '~~/server/db/schema'
-import { and, eq, gte, ilike, inArray, lte, sql } from 'drizzle-orm'
+import { and, eq, gte, ilike, inArray, isNull, lte, sql } from 'drizzle-orm'
 import type { TransactionPayload } from '~~/shared/types/transaction'
 
 export interface TransactionFilters {
@@ -17,7 +17,7 @@ export interface PaginationOptions {
 }
 
 function buildFilters(userId: string, filters: TransactionFilters) {
-  const conditions = [eq(transactions.userId, userId)]
+  const conditions = [eq(transactions.userId, userId), isNull(transactions.deletedAt)]
 
   if (filters.startDate) {
     conditions.push(gte(transactions.date, new Date(filters.startDate)))
@@ -91,7 +91,8 @@ export const transactionRepository = {
 
   async delete(userId: string, id: number) {
     await db
-      .delete(transactions)
+      .update(transactions)
+      .set({ deletedAt: new Date() })
       .where(and(eq(transactions.userId, userId), eq(transactions.id, id)))
   },
 

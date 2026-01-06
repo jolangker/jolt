@@ -1,6 +1,6 @@
 import { db } from '~~/server/utils/db'
 import { transactions, categories, insights } from '~~/server/db/schema'
-import { and, eq, gte, inArray, lte, sql } from 'drizzle-orm'
+import { and, eq, gte, inArray, isNull, lte, sql } from 'drizzle-orm'
 import type { InsightPayload } from '~~/shared/types'
 
 export interface AnalyticsFilters {
@@ -11,7 +11,7 @@ export interface AnalyticsFilters {
 }
 
 function buildFilters(userId: string, filters: AnalyticsFilters) {
-  const conditions = [eq(transactions.userId, userId)]
+  const conditions = [eq(transactions.userId, userId), isNull(transactions.deletedAt)]
 
   if (filters.startDate) {
     conditions.push(gte(transactions.date, new Date(filters.startDate)))

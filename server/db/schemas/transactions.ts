@@ -15,6 +15,7 @@ export const categories = pgTable('categories', {
   type: categoryTypeEnum('type').notNull(),
   icon: text('icon'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at'),
 })
 
 export const transactions = pgTable('transactions', {
@@ -26,6 +27,7 @@ export const transactions = pgTable('transactions', {
   amount: decimal('amount').notNull(),
   date: timestamp('date').notNull(),
   createdAt: timestamp('createdAt').defaultNow().notNull(),
+  deletedAt: timestamp('deletedAt'),
 })
 
 export const transactionRelations = relations(transactions, ({ one }) => ({

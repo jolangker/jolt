@@ -1,6 +1,6 @@
 import { db } from '~~/server/utils/db'
 import { categories } from '~~/server/db/schema'
-import { eq, and, or } from 'drizzle-orm'
+import { eq, and, or, isNull, desc, asc } from 'drizzle-orm'
 
 export const categoryRepository = {
   async findAll(userId?: string) {
@@ -8,11 +8,15 @@ export const categoryRepository = {
       return db.select().from(categories).where(eq(categories.isDefault, true))
     }
     return db.select().from(categories).where(
-      or(
-        eq(categories.isDefault, true),
-        eq(categories.userId, userId),
+      and(
+        or(
+          eq(categories.isDefault, true),
+          eq(categories.userId, userId),
+        ),
+        isNull(categories.deletedAt),
       ),
     )
+      .orderBy(asc(categories.isDefault), desc(categories.createdAt))
   },
 
   async create(data: typeof categories.$inferInsert) {
@@ -27,7 +31,8 @@ export const categoryRepository = {
   },
 
   async delete(id: number, userId: string) {
-    return db.delete(categories)
+    return db.update(categories)
+      .set({ deletedAt: new Date() })
       .where(and(eq(categories.id, id), eq(categories.userId, userId)))
       .returning()
   },
