@@ -43,8 +43,8 @@ const triggers = {
 }
 
 const items = [
-  { label: 'Income', value: 'income' as const },
-  { label: 'Expense', value: 'expense' as const },
+  { label: 'Pemasukan', value: 'income' as const },
+  { label: 'Pengeluaran', value: 'expense' as const },
 ]
 </script>
 
@@ -54,10 +54,10 @@ const items = [
       <div class="flex justify-between items-start">
         <div>
           <div class="text-sm font-semibold capitalize">
-            {{ type }} Breakdown
+            Pembagian per kategori
           </div>
           <div class="text-xs text-dimmed">
-            See the breakdown of your {{ type }}
+            Lihat pembagian pemasukan/pengeluaran per kategori
           </div>
         </div>
         <USelect
@@ -70,8 +70,8 @@ const items = [
     <UEmpty
       v-if="!categories.length"
       icon="i-lucide-pie-chart"
-      title="No data available"
-      :description="`There's no ${type} data for the selected period. Try adjusting the date range.`"
+      title="Tidak ada data"
+      :description="`Tidak ada data ${type} untuk periode yang dipilih. Coba perbarui rentang tanggal.`"
       variant="naked"
       class="h-[300px]"
     />

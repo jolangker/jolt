@@ -94,7 +94,7 @@ const openFilterDrawer = () => {
       >
         <template #left>
           <div class="font-bold text-xl">
-            All Transactions
+            Semua Transaksi
           </div>
         </template>
       </UDashboardNavbar>
@@ -107,7 +107,7 @@ const openFilterDrawer = () => {
         <UFieldGroup size="xl">
           <UInput
             v-model="search"
-            placeholder="Search transactions"
+            placeholder="Cari transaksi"
             icon="i-solar:magnifer-outline"
             class="w-full"
           />
@@ -133,7 +133,8 @@ const openFilterDrawer = () => {
         <UEmpty
           v-else
           icon="i-solar:wallet-2-outline"
-          title="No transactions found"
+          title="Tidak ada transaksi"
+          description="Kamu belum memiliki transaksi"
           variant="naked"
           class="flex-1"
         />

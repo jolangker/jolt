@@ -17,10 +17,10 @@ const insights = computed(() => data.value?.data ?? [])
           </div>
           <div>
             <div class="text-sm font-semibold">
-              AI Insights
+              Jolt AI Insights
             </div>
             <div class="text-xs text-dimmed">
-              Personalized financial analysis
+              Analisis keuangan yang disesuaikan secara pribadi
             </div>
           </div>
         </div>

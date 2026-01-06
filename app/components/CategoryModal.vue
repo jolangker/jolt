@@ -21,8 +21,8 @@ const loading = ref(false)
 const isEdit = computed(() => !!props.category)
 
 const schema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters').max(50, 'Name too long'),
-  description: z.string().max(200, 'Description too long').default(''),
+  name: z.string().min(2, 'Nama harus minimal 2 karakter').max(50, 'Nama terlalu panjang'),
+  description: z.string().max(200, 'Deskripsi terlalu panjang').default(''),
   type: z.enum(['income', 'expense']),
   icon: z.string().optional(),
 })
@@ -37,8 +37,8 @@ const state = reactive<Schema>({
 })
 
 const typeItems = [
-  { label: 'Expense', value: 'expense' },
-  { label: 'Income', value: 'income' },
+  { label: 'Pengeluaran', value: 'expense' },
+  { label: 'Pemasukan', value: 'income' },
 ]
 
 interface ApiError {
@@ -56,7 +56,7 @@ const onSubmit = async () => {
         body: state,
       })
       toast.add({
-        title: 'Category updated',
+        title: 'Kategori diperbarui',
         color: 'success',
         icon: 'i-solar:check-circle-outline',
       })
@@ -67,7 +67,7 @@ const onSubmit = async () => {
         body: state,
       })
       toast.add({
-        title: 'Category created',
+        title: 'Kategori dibuat',
         color: 'success',
         icon: 'i-solar:check-circle-outline',
       })
@@ -78,7 +78,7 @@ const onSubmit = async () => {
   catch (err: unknown) {
     const error = err as ApiError
     toast.add({
-      title: 'Error',
+      title: 'Gagal',
       description: error.data?.statusMessage || 'Something went wrong',
       color: 'error',
       icon: 'i-solar:close-circle-outline',
@@ -91,7 +91,7 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <UDrawer :title="isEdit ? 'Edit Category' : 'New Category'">
+  <UDrawer :title="isEdit ? 'Ubah Kategori' : 'Tambah Kategori'">
     <template #body>
       <UForm
         :state="state"
@@ -102,12 +102,12 @@ const onSubmit = async () => {
         <div class="flex-1 space-y-4">
           <UFormField
             name="name"
-            label="Name"
+            label="Nama"
             required
           >
             <UInput
               v-model="state.name"
-              placeholder="e.g. Online Subscriptions"
+              placeholder="Contoh: Langganan Online"
               size="xl"
               class="w-full"
             />
@@ -115,12 +115,13 @@ const onSubmit = async () => {
 
           <UFormField
             name="description"
-            label="Description"
+            label="Deskripsi"
+            hint="Bantu AI memahami kategori ini"
             required
           >
             <UTextarea
               v-model="state.description"
-              placeholder="Short description..."
+              placeholder="Deskripsi singkat..."
               size="xl"
               class="w-full"
             />
@@ -128,7 +129,7 @@ const onSubmit = async () => {
 
           <UFormField
             name="type"
-            label="Type"
+            label="Tipe"
             required
           >
             <URadioGroup
@@ -142,7 +143,7 @@ const onSubmit = async () => {
 
           <UFormField
             name="icon"
-            label="Icon"
+            label="Ikon"
           >
             <div
               v-if="state.icon"
@@ -169,14 +170,14 @@ const onSubmit = async () => {
 
         <div class="flex justify-end gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
           <UButton
-            label="Cancel"
+            label="Batal"
             color="neutral"
             variant="ghost"
             @click="emit('close', false)"
           />
           <UButton
             type="submit"
-            :label="isEdit ? 'Save Changes' : 'Create Category'"
+            :label="isEdit ? 'Simpan Perubahan' : 'Buat Kategori'"
             :loading="loading"
           />
         </div>

@@ -41,15 +41,15 @@ const categories = computed(() => {
 
 const typeItems = [
   {
-    label: 'All',
+    label: 'Semua',
     value: 'all',
   },
   {
-    label: 'Income',
+    label: 'Pemasukan',
     value: 'income',
   },
   {
-    label: 'Expense',
+    label: 'Pengeluaran',
     value: 'expense',
   },
 ]
@@ -68,7 +68,7 @@ const handleApply = () => {
 </script>
 
 <template>
-  <UDrawer title="Apply Filter">
+  <UDrawer title="Terapkan Filter">
     <template #body>
       <UForm
         :state="state"
@@ -78,19 +78,20 @@ const handleApply = () => {
       >
         <UFormField
           name="type"
-          label="Type"
+          label="Tipe"
         >
           <URadioGroup
             v-model="state.type"
             :items="typeItems"
             orientation="horizontal"
             variant="card"
+            size="sm"
             @change="state.categories = undefined"
           />
         </UFormField>
         <UFormField
           name="categoryId"
-          label="Category"
+          label="Kategori"
         >
           <USelectMenu
             v-model="state.categories"
@@ -105,7 +106,7 @@ const handleApply = () => {
         <div class="flex gap-4 *:flex-1">
           <UFormField
             name="startDate"
-            label="Start Date"
+            label="Tanggal Mulai"
           >
             <UInput
               v-model="state.startDate"
@@ -116,7 +117,7 @@ const handleApply = () => {
           </UFormField>
           <UFormField
             name="startDate"
-            label="End Date"
+            label="Tanggal Selesai"
           >
             <UInput
               v-model="state.endDate"
@@ -137,7 +138,7 @@ const handleApply = () => {
           />
           <UButton
             type="submit"
-            label="Apply"
+            label="Terapkan"
             variant="solid"
             size="xl"
             block

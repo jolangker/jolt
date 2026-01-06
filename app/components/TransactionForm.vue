@@ -15,11 +15,21 @@ const loading = ref(false)
 const toast = useToast()
 
 const schema = z.object({
-  type: z.enum(['income', 'expense']),
-  amount: z.number(),
-  date: z.string(),
-  note: z.string(),
-  categoryId: z.number(),
+  type: z.enum(['income', 'expense'], {
+    error: 'Tipe tidak valid',
+  }),
+  amount: z.number({
+    error: 'Jumlah tidak valid',
+  }),
+  date: z.string({
+    error: 'Tanggal tidak valid',
+  }),
+  note: z.string({
+    error: 'Catatan tidak valid',
+  }),
+  categoryId: z.number({
+    error: 'Kategori tidak valid',
+  }),
 })
 
 type Schema = z.infer<typeof schema>
@@ -65,16 +75,16 @@ const onSubmit = async () => {
     refreshNuxtData()
     emit('close', false)
     toast.add({
-      title: 'Transaction saved successfully',
-      description: 'Your transaction has been saved successfully',
+      title: 'Transaksi berhasil disimpan',
+      description: 'Transaksi berhasil disimpan',
       color: 'success',
       icon: 'i-solar:check-circle-outline',
     })
   }
   catch {
     toast.add({
-      title: 'Transaction saved failed',
-      description: 'Your transaction has been saved failed',
+      title: 'Transaksi gagal disimpan',
+      description: 'Transaksi gagal disimpan',
       color: 'error',
       icon: 'i-solar:close-circle-outline',
     })
@@ -102,6 +112,17 @@ const onOpen = (val: boolean) => {
     state.categoryId = props.transaction.categoryId
   }
 }
+
+const types = [
+  {
+    label: 'Pemasukan',
+    value: 'income' as const,
+  },
+  {
+    label: 'Pengeluaran',
+    value: 'expense' as const,
+  },
+]
 </script>
 
 <template>
@@ -119,11 +140,11 @@ const onOpen = (val: boolean) => {
         <UFormField
           size="lg"
           name="type"
-          label="Type"
+          label="Tipe"
         >
           <USelect
             v-model="state.type"
-            :items="['income', 'expense']"
+            :items="types"
             class="w-full capitalize"
             :ui="{ item: 'capitalize' }"
             @change="state.categoryId = undefined"
@@ -132,7 +153,7 @@ const onOpen = (val: boolean) => {
         <UFormField
           size="lg"
           name="categoryId"
-          label="Category"
+          label="Kategori"
         >
           <USelect
             v-model="state.categoryId"
@@ -145,12 +166,12 @@ const onOpen = (val: boolean) => {
             class="flex-1"
             size="lg"
             name="amount"
-            label="Amount"
+            label="Jumlah"
           >
             <UInput
               v-model="state.amount"
               type="number"
-              placeholder="Amount"
+              placeholder="Jumlah"
               class="w-full"
             />
           </UFormField>
@@ -158,12 +179,12 @@ const onOpen = (val: boolean) => {
             class="flex-1"
             size="lg"
             name="date"
-            label="Date"
+            label="Tanggal"
           >
             <UInput
               v-model="state.date"
               type="date"
-              placeholder="Date"
+              placeholder="Tanggal"
               class="w-full"
             />
           </UFormField>
@@ -171,11 +192,11 @@ const onOpen = (val: boolean) => {
         <UFormField
           size="lg"
           name="note"
-          label="Note"
+          label="Catatan"
         >
           <UTextarea
             v-model="state.note"
-            placeholder="Note"
+            placeholder="Catatan"
             class="w-full"
             :rows="4"
           />
@@ -187,7 +208,7 @@ const onOpen = (val: boolean) => {
           size="xl"
           block
         >
-          Save Transaction
+          Simpan Transaksi
         </UButton>
       </UForm>
     </template>

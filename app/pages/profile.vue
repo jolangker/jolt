@@ -7,7 +7,6 @@ definePageMeta({
 })
 
 const { user } = useUserSession()
-const { data: summary } = await useFetch('/api/analytics/summary')
 
 const memberSince = computed(() => {
   if (!user.value?.createdAt) return 'N/A'
@@ -64,7 +63,7 @@ const openExportModal = () => {
 
       <div class="space-y-4 mb-6">
         <div class="text-sm font-semibold mb-3">
-          Account Information
+          Informasi Akun
         </div>
 
         <UCard variant="subtle">
@@ -143,10 +142,10 @@ const openExportModal = () => {
               />
               <div>
                 <div class="text-sm font-medium">
-                  Manage Categories
+                  Sesuaikan Kategori
                 </div>
                 <div class="text-xs text-dimmed">
-                  Customize your income and expense categories
+                  Sesuaikan kategori pemasukan dan pengeluaran
                 </div>
               </div>
             </div>
@@ -154,69 +153,6 @@ const openExportModal = () => {
               name="i-lucide:chevron-right"
               class="w-5 h-5 text-dimmed"
             />
-          </div>
-        </UCard>
-      </div>
-
-      <!-- Statistics -->
-      <div class="space-y-4">
-        <div class="text-sm font-semibold mb-3">
-          Your Statistics
-        </div>
-
-        <UCard variant="subtle">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <UIcon
-                name="i-lucide:receipt"
-                class="w-5 h-5 text-primary"
-              />
-              <div>
-                <div class="text-xs text-dimmed">
-                  Total Transactions
-                </div>
-                <div class="text-2xl font-bold text-highlighted">
-                  {{ summary?.data.count }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </UCard>
-
-        <UCard variant="subtle">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <UIcon
-                name="i-lucide:wallet"
-                class="w-5 h-5 text-primary"
-              />
-              <div>
-                <div class="text-xs text-dimmed">
-                  Total Spent (All Time)
-                </div>
-                <div class="text-2xl font-bold text-error">
-                  {{ formatCurrency(summary?.data.expense) }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </UCard>
-        <UCard variant="subtle">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <UIcon
-                name="i-lucide:wallet"
-                class="w-5 h-5 text-primary"
-              />
-              <div>
-                <div class="text-xs text-dimmed">
-                  Total Income (All Time)
-                </div>
-                <div class="text-2xl font-bold text-success">
-                  {{ formatCurrency(summary?.data.income) }}
-                </div>
-              </div>
-            </div>
           </div>
         </UCard>
       </div>

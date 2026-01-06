@@ -45,11 +45,11 @@ interface ApiError {
 }
 
 const deleteCategory = async (id: number) => {
-  if (!confirm('Are you sure you want to delete this category?')) return
+  if (!confirm('Apakah Anda yakin ingin menghapus kategori ini?')) return
 
   try {
     await $fetch(`/api/categories/${id}`, { method: 'DELETE' })
-    toast.add({ title: 'Category deleted', color: 'success', icon: 'i-solar:check-circle-outline' })
+    toast.add({ title: 'Kategori berhasil dihapus', color: 'success', icon: 'i-solar:check-circle-outline' })
     refresh()
   }
   catch (err: unknown) {
@@ -64,15 +64,15 @@ const deleteCategory = async (id: number) => {
 }
 
 const typeItems = [
-  { label: 'All Types', value: 'all' },
-  { label: 'Income', value: 'income' },
-  { label: 'Expense', value: 'expense' },
+  { label: 'Semua', value: 'all' },
+  { label: 'Pemasukan', value: 'income' },
+  { label: 'Pengeluaran', value: 'expense' },
 ]
 
 const sourceItems = [
-  { label: 'All Sources', value: 'all' },
-  { label: 'Default', value: 'default' },
-  { label: 'Custom', value: 'custom' },
+  { label: 'Bawaan & Kustom', value: 'all' },
+  { label: 'Bawaan', value: 'default' },
+  { label: 'Kustom', value: 'custom' },
 ]
 </script>
 
@@ -80,7 +80,7 @@ const sourceItems = [
   <UDashboardPanel>
     <template #header>
       <UDashboardNavbar
-        title="Manage Categories"
+        title="Sesuaikan Kategori"
         :toggle="false"
       >
         <template #leading>
@@ -93,7 +93,7 @@ const sourceItems = [
         </template>
         <template #right>
           <UButton
-            label="Add Category"
+            label="Tambah Kategori"
             icon="i-lucide:plus"
             @click="openModal()"
           />
@@ -106,7 +106,7 @@ const sourceItems = [
         <UInput
           v-model="search"
           icon="i-lucide:search"
-          placeholder="Search categories..."
+          placeholder="Cari kategori..."
           class="w-full"
           size="lg"
         />
@@ -167,7 +167,7 @@ const sourceItems = [
             </div>
             <div v-else>
               <UBadge
-                label="Default"
+                label="Bawaan"
                 color="neutral"
                 variant="subtle"
                 size="xs"

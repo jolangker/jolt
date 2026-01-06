@@ -45,9 +45,9 @@ const categories = computed(() => {
 })
 
 const typeItems = [
-  { label: 'All', value: 'all' },
-  { label: 'Income', value: 'income' },
-  { label: 'Expense', value: 'expense' },
+  { label: 'Semua', value: 'all' },
+  { label: 'Pemasukan', value: 'income' },
+  { label: 'Pengeluaran', value: 'expense' },
 ]
 
 const handleExport = async () => {
@@ -113,20 +113,21 @@ const handleExport = async () => {
       >
         <UFormField
           name="type"
-          label="Type"
+          label="Tipe"
         >
           <URadioGroup
             v-model="state.type"
             :items="typeItems"
             orientation="horizontal"
             variant="card"
+            size="sm"
             @change="state.categories = undefined"
           />
         </UFormField>
 
         <UFormField
           name="categories"
-          label="Categories"
+          label="Kategori"
         >
           <USelectMenu
             v-model="state.categories"
@@ -135,34 +136,34 @@ const handleExport = async () => {
             value-key="value"
             class="w-full"
             max-height="200"
-            size="xl"
+            size="lg"
             multiple
-            placeholder="Select categories (optional)"
+            placeholder="Pilih kategori (opsional)"
           />
         </UFormField>
 
         <div class="flex gap-4">
           <UFormField
             name="startDate"
-            label="Start Date"
+            label="Tanggal Mulai"
             class="flex-1"
           >
             <UInput
               v-model="state.startDate"
               class="w-full"
-              size="xl"
+              size="lg"
               type="date"
             />
           </UFormField>
           <UFormField
             name="endDate"
-            label="End Date"
+            label="Tanggal Selesai"
             class="flex-1"
           >
             <UInput
               v-model="state.endDate"
               class="w-full"
-              size="xl"
+              size="lg"
               type="date"
             />
           </UFormField>
@@ -171,14 +172,14 @@ const handleExport = async () => {
         <UFormField name="includeSummary">
           <UCheckbox
             v-model="state.includeSummary"
-            label="Include summary sheet"
-            size="xl"
+            label="Sertakan sheet ringkasan"
+            size="lg"
           />
         </UFormField>
 
         <div class="flex justify-end gap-3 mt-4">
           <UButton
-            label="Cancel"
+            label="Batal"
             color="neutral"
             variant="ghost"
             @click="emit('close', false)"

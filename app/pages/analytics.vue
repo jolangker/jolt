@@ -7,11 +7,11 @@ definePageMeta({
 const timePeriod = ref<'7d' | '30d' | '3m' | '6m' | 'all'>('30d')
 
 const timePeriodOptions: { value: '7d' | '30d' | '3m' | '6m' | 'all', label: string }[] = [
-  { value: '7d', label: 'Last 7 Days' },
-  { value: '30d', label: 'Last 30 Days' },
-  { value: '3m', label: 'Last 3 Months' },
-  { value: '6m', label: 'Last 6 Months' },
-  { value: 'all', label: 'All Time' },
+  { value: '7d', label: '7 Hari Terakhir' },
+  { value: '30d', label: '30 Hari Terakhir' },
+  { value: '3m', label: '3 Bulan Terakhir' },
+  { value: '6m', label: '6 Bulan Terakhir' },
+  { value: 'all', label: 'Semua Waktu' },
 ]
 
 const dateRange = computed(() => {
@@ -49,16 +49,14 @@ const { data: summary } = await useFetch('/api/analytics/summary', {
       >
         <template #left>
           <div class="font-bold text-xl">
-            Analytics
+            Analisis
           </div>
         </template>
         <template #right>
-          <USelectMenu
+          <USelect
             v-model="timePeriod"
             :items="timePeriodOptions"
             class="w-40"
-            value-key="value"
-            label-key="label"
           />
         </template>
       </UDashboardNavbar>
@@ -68,7 +66,7 @@ const { data: summary } = await useFetch('/api/analytics/summary', {
         <UCard variant="subtle">
           <div class="flex flex-col gap-1">
             <div class="text-xs text-dimmed">
-              Income
+              Pemasukan
             </div>
             <div class="text-2xl font-semibold text-success">
               {{ formatCurrency(summary?.data.income) }}
@@ -78,7 +76,7 @@ const { data: summary } = await useFetch('/api/analytics/summary', {
         <UCard variant="subtle">
           <div class="flex flex-col gap-1">
             <div class="text-xs text-dimmed">
-              Expense
+              Pengeluaran
             </div>
             <div class="text-2xl font-semibold text-error">
               {{ formatCurrency(summary?.data.expense) }}

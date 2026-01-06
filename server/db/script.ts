@@ -24,7 +24,7 @@ const generateTrx = (): typeof schema.transactions.$inferInsert => {
     categoryId,
     note: `${randCatchPhrase()}`,
     amount: randNumber({ min: 20000, max: 300000 }).toString(),
-    date: randBetweenDate({ from: new Date('2025-11-01'), to: new Date('2025-11-25') }),
+    date: randBetweenDate({ from: new Date('2025-12-01'), to: new Date('2026-01-07') }),
     userId: '11e778d5-7d39-4a6d-a92f-25330b14cdf1',
   }
 }
@@ -34,17 +34,8 @@ const generateTrxs = (count: number) => {
 }
 
 async function main() {
-  db.select().from(schema.categories)
-    .where(eq(schema.categories.isDefault, false))
-    .then(async (res) => {
-      res.forEach(async (cat) => {
-        if (cat.icon) {
-          await db.update(schema.categories)
-            .set({ icon: `${cat.icon}-outline`, isDefault: true })
-            .where(eq(schema.categories.id, cat.id))
-        }
-      })
-    })
+  await db.delete(schema.transactions)
+  await db.insert(schema.transactions).values(generateTrxs(100))
 }
 
 main()

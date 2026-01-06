@@ -35,6 +35,13 @@ const selectIcon = (icon: string) => {
   emit('update:modelValue', icon)
 }
 
+const selectRandomIcon = () => {
+  if (allIcons.value.length === 0) return
+  const randomIndex = Math.floor(Math.random() * allIcons.value.length)
+  const randomIcon = allIcons.value[randomIndex]!
+  emit('update:modelValue', randomIcon)
+}
+
 // Reset page when search changes
 watch(search, () => {
   page.value = 1
@@ -43,13 +50,24 @@ watch(search, () => {
 
 <template>
   <div class="space-y-4">
-    <UInput
-      v-model="search"
-      icon="i-lucide:search"
-      placeholder="Search icons..."
-      class="w-full"
-      size="xl"
-    />
+    <div class="flex gap-2">
+      <UInput
+        v-model="search"
+        icon="i-lucide:search"
+        placeholder="Cari ikon..."
+        class="flex-1"
+        size="xl"
+      />
+      <UButton
+        icon="i-lucide:dice-5"
+        size="xl"
+        color="neutral"
+        variant="outline"
+        @click="selectRandomIcon"
+      >
+        Acak
+      </UButton>
+    </div>
 
     <div class="h-64 overflow-y-auto border border-gray-200 dark:border-gray-800 rounded-lg p-4">
       <div
@@ -79,7 +97,7 @@ watch(search, () => {
           name="i-lucide:frown"
           class="w-8 h-8 mb-2"
         />
-        <span class="text-sm">No icons found</span>
+        <span class="text-sm">Tidak ada ikon ditemukan</span>
       </div>
 
       <div
@@ -90,7 +108,7 @@ watch(search, () => {
           variant="ghost"
           color="neutral"
           size="xs"
-          label="Load more"
+          label="Lihat Lebih Banyak"
           @click="loadMore"
         />
       </div>

@@ -41,14 +41,14 @@ const handleOnConfirm = async () => {
           variant="subtle"
           @click="emit('close', false)"
         >
-          Cancel
+          Batalkan
         </UButton>
         <UButton
           color="error"
           :loading="loading"
           @click="handleOnConfirm"
         >
-          Yes
+          Ya
         </UButton>
       </div>
     </template>

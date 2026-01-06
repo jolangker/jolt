@@ -17,24 +17,24 @@ const navItems = [
     to: '/',
   },
   {
-    label: 'Transactions',
+    label: 'Transaksi',
     icon: 'i-solar:dollar-linear',
     to: '/transactions',
   },
   {
     icon: 'i-solar:add-circle-linear',
-    label: 'Add',
+    label: 'Tambah',
     onClick: () => {
       openTransactionDetails()
     },
   },
   {
-    label: 'Analytics',
+    label: 'Analisis',
     icon: 'i-solar:graph-linear',
     to: '/analytics',
   },
   {
-    label: 'Profile',
+    label: 'Profil',
     icon: 'i-solar:user-linear',
     to: '/profile',
   },
