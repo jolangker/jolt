@@ -3,7 +3,14 @@ import ExcelJS from 'exceljs'
 import dayjs from 'dayjs'
 
 export const exportService = {
-  async exportToExcel(userId: string, filters: TransactionFilters & { includeSummary?: boolean }) {
+  async exportToExcel(userId: string, tier: 'FREE' | 'PRO', filters: TransactionFilters & { includeSummary?: boolean }) {
+    if (tier === 'FREE') {
+      throw createError({
+        statusCode: 402,
+        statusMessage: 'Export hanya tersedia untuk pengguna PRO. Upgrade untuk membuka fitur ini.',
+      })
+    }
+
     const transactions = await transactionRepository.findMany(userId, filters)
 
     const workbook = new ExcelJS.Workbook()

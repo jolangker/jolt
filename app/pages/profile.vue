@@ -7,6 +7,7 @@ definePageMeta({
 })
 
 const { user } = useUserSession()
+const { tier, isPro } = useAuth()
 
 const memberSince = computed(() => {
   if (!user.value?.createdAt) return 'N/A'
@@ -74,6 +75,24 @@ const openResetConfirmModal = () => {
         <div class="text-sm text-dimmed">
           @{{ user?.telegramUsername || 'username' }}
         </div>
+        <UBadge
+          :label="tier"
+          :color="isPro ? 'primary' : 'neutral'"
+          :variant="isPro ? 'solid' : 'subtle'"
+          class="mt-2"
+        />
+        <div
+          v-if="isPro && user?.subscriptionEndsAt"
+          class="text-xs text-dimmed mt-1"
+        >
+          Berakhir {{ formatDate(user.subscriptionEndsAt) }}
+        </div>
+        <UButton
+          v-if="!isPro"
+          label="Upgrade ke PRO"
+          icon="i-lucide-sparkles"
+          class="mt-3"
+        />
       </div>
 
       <div class="flex flex-col gap-6">

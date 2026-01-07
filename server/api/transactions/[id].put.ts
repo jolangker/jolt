@@ -3,6 +3,7 @@ import { transactionService } from '~~/server/services'
 
 export default defineEventHandler(async (event) => {
   const userId = event.context.auth.userId
+  const tier = event.context.auth.tier
   const transactionId = getRouterParam(event, 'id')
 
   if (!transactionId) {
@@ -21,5 +22,5 @@ export default defineEventHandler(async (event) => {
 
   const body = await readValidatedBody(event, transactionInsertSchema.parse)
 
-  return transactionService.update(userId, Number(transactionId), body)
+  return transactionService.update(userId, tier, Number(transactionId), body)
 })

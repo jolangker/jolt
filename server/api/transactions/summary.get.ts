@@ -3,6 +3,7 @@ import { transactionService } from '~~/server/services'
 
 export default defineEventHandler(async (event) => {
   const userId = event.context.auth.userId
+  const tier = event.context.auth.tier
   const query = await getValidatedQuery(event, z.object({
     startDate: z.string().nullable().optional(),
     endDate: z.string().nullable().optional(),
@@ -10,5 +11,5 @@ export default defineEventHandler(async (event) => {
     categories: z.string().nullable().optional(),
   }).parse)
 
-  return transactionService.getSummaryReport(userId, query)
+  return transactionService.getSummaryReport(userId, tier, query)
 })

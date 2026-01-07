@@ -2,6 +2,7 @@ import { transactionService } from '~~/server/services'
 
 export default defineEventHandler(async (event) => {
   const userId = event.context.auth.userId
+  const tier = event.context.auth.tier
   const transactionId = getRouterParam(event, 'id')
 
   if (!transactionId) {
@@ -18,5 +19,5 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  return transactionService.delete(userId, Number(transactionId))
+  return transactionService.delete(userId, tier, Number(transactionId))
 })

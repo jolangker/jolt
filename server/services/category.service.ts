@@ -11,7 +11,14 @@ export const categoryService = {
     }
   },
 
-  async create(userId: string, data: typeof categories.$inferInsert) {
+  async create(userId: string, tier: 'FREE' | 'PRO', data: typeof categories.$inferInsert) {
+    if (tier === 'FREE') {
+      throw createError({
+        statusCode: 402,
+        statusMessage: 'Kategori kustom hanya tersedia untuk pengguna PRO. Upgrade untuk membuat kategori sendiri.',
+      })
+    }
+
     const allCategories = await categoryRepository.findAll(userId)
     const customCategories = allCategories.filter(c => c.userId === userId)
 

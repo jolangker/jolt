@@ -4,15 +4,23 @@ definePageMeta({
   layout: 'authenticated',
 })
 
-const timePeriod = ref<'7d' | '30d' | '3m' | '6m' | 'all'>('30d')
+const { isFree } = useAuth()
 
-const timePeriodOptions: { value: '7d' | '30d' | '3m' | '6m' | 'all', label: string }[] = [
+const timePeriod = ref<'7d' | '30d' | '3m' | '6m' | 'all'>('7d')
+
+// Time period options - all enabled, but charts will be locked for FREE on >7d
+const timePeriodOptions = [
   { value: '7d', label: '7 Hari Terakhir' },
   { value: '30d', label: '30 Hari Terakhir' },
   { value: '3m', label: '3 Bulan Terakhir' },
   { value: '6m', label: '6 Bulan Terakhir' },
   { value: 'all', label: 'Semua Waktu' },
 ]
+
+// Charts should be locked if FREE user selects period > 7 days
+const isChartsLocked = computed(() => {
+  return isFree.value && timePeriod.value !== '7d'
+})
 
 const dateRange = computed(() => {
   const now = dayjs()
@@ -122,12 +130,14 @@ const { data: summary } = await useFetch('/api/analytics/summary', {
         <AnalyticDailyChart
           :start-date="dateRange.start"
           :end-date="dateRange.end"
+          :is-locked="isChartsLocked"
         />
       </div>
       <div>
         <AnalyticCategoryChart
           :start-date="dateRange.start"
           :end-date="dateRange.end"
+          :is-locked="isChartsLocked"
         />
       </div>
       <div>

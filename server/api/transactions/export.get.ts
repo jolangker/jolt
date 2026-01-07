@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 
 export default defineEventHandler(async (event) => {
   const userId = event.context.auth.userId
+  const tier = event.context.auth.tier
   const query = await getValidatedQuery(event, z.object({
     startDate: z.string().nullable().optional(),
     endDate: z.string().nullable().optional(),
@@ -12,7 +13,7 @@ export default defineEventHandler(async (event) => {
     includeSummary: z.string().optional().transform(val => val === 'true'),
   }).parse)
 
-  const buffer = await exportService.exportToExcel(userId, query)
+  const buffer = await exportService.exportToExcel(userId, tier, query)
 
   const date = dayjs().format('YYYY-MM-DD')
   const filename = `jolt-transactions-${date}.xlsx`

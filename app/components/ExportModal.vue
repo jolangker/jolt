@@ -6,8 +6,12 @@ const emit = defineEmits<{
   close: [boolean]
 }>()
 
+const { isFree } = useAuth()
 const toast = useToast()
 const loading = ref(false)
+
+// Show PRO required screen if FREE user
+const showProRequired = computed(() => isFree.value)
 
 const { data } = await useFetch('/api/categories')
 
@@ -105,7 +109,35 @@ const handleExport = async () => {
 <template>
   <UModal title="Export Transactions">
     <template #body>
+      <!-- PRO Required Notice -->
+      <div
+        v-if="showProRequired"
+        class="flex flex-col items-center justify-center gap-4 py-8 text-center"
+      >
+        <div class="size-16 rounded-full bg-primary/10 flex items-center justify-center">
+          <UIcon
+            name="i-lucide-lock"
+            class="size-8 text-primary"
+          />
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg">
+            Fitur PRO
+          </h3>
+          <p class="text-sm text-dimmed mt-1">
+            Export data hanya tersedia untuk pengguna PRO.
+          </p>
+        </div>
+        <UButton
+          label="Upgrade ke PRO"
+          icon="i-lucide-sparkles"
+          to="/profile"
+          @click="emit('close', false)"
+        />
+      </div>
+
       <UForm
+        v-else
         :state="state"
         :schema="schema"
         class="flex flex-col gap-4"

@@ -16,9 +16,13 @@ const emit = defineEmits<{
   success: []
 }>()
 
+const { isFree } = useAuth()
 const toast = useToast()
 const loading = ref(false)
 const isEdit = computed(() => !!props.category)
+
+// FREE users cannot create new categories (but can view existing ones)
+const isBlocked = computed(() => isFree.value && !isEdit.value)
 
 const schema = z.object({
   name: z.string().min(2, 'Nama harus minimal 2 karakter').max(50, 'Nama terlalu panjang'),
@@ -93,7 +97,35 @@ const onSubmit = async () => {
 <template>
   <UDrawer :title="isEdit ? 'Ubah Kategori' : 'Tambah Kategori'">
     <template #body>
+      <!-- PRO Required Notice for FREE users -->
+      <div
+        v-if="isBlocked"
+        class="flex flex-col items-center justify-center gap-4 py-8 text-center"
+      >
+        <div class="size-16 rounded-full bg-primary/10 flex items-center justify-center">
+          <UIcon
+            name="i-lucide-lock"
+            class="size-8 text-primary"
+          />
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg">
+            Fitur PRO
+          </h3>
+          <p class="text-sm text-dimmed mt-1">
+            Kategori kustom hanya tersedia untuk pengguna PRO.
+          </p>
+        </div>
+        <UButton
+          label="Upgrade ke PRO"
+          icon="i-lucide-sparkles"
+          to="/profile"
+          @click="emit('close', false)"
+        />
+      </div>
+
       <UForm
+        v-else
         :state="state"
         :schema="schema"
         class="flex flex-col gap-4 h-full"

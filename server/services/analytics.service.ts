@@ -71,7 +71,21 @@ export const analyticsService = {
     }
   },
 
-  async getDailyTrends(userId: string, filters: AnalyticsFilters) {
+  async getDailyTrends(userId: string, tier: 'FREE' | 'PRO', filters: AnalyticsFilters) {
+    // Enforce 7-day limit for FREE users
+    if (tier === 'FREE') {
+      const sevenDaysAgo = dayjs().subtract(7, 'days').format('YYYY-MM-DD')
+      if (filters.startDate && dayjs(filters.startDate).isBefore(sevenDaysAgo)) {
+        throw createError({
+          statusCode: 402,
+          statusMessage: 'FREE user tidak dapat mengakses data sebelum 7 hari. Upgrade ke PRO untuk mengakses semua data.',
+        })
+      }
+      if (!filters.startDate) {
+        filters.startDate = sevenDaysAgo
+      }
+    }
+
     const transactions = await analyticsRepository.getDailyTransactions(userId, filters)
 
     const grouped = transactions.reduce((acc, transaction) => {
@@ -101,7 +115,21 @@ export const analyticsService = {
     }
   },
 
-  async getCategoryBreakdown(userId: string, filters: AnalyticsFilters) {
+  async getCategoryBreakdown(userId: string, tier: 'FREE' | 'PRO', filters: AnalyticsFilters) {
+    // Enforce 7-day limit for FREE users
+    if (tier === 'FREE') {
+      const sevenDaysAgo = dayjs().subtract(7, 'days').format('YYYY-MM-DD')
+      if (filters.startDate && dayjs(filters.startDate).isBefore(sevenDaysAgo)) {
+        throw createError({
+          statusCode: 402,
+          statusMessage: 'FREE user tidak dapat mengakses data sebelum 7 hari. Upgrade ke PRO untuk mengakses semua data.',
+        })
+      }
+      if (!filters.startDate) {
+        filters.startDate = sevenDaysAgo
+      }
+    }
+
     const breakdown = await analyticsRepository.getCategoryBreakdown(userId, filters)
 
     return {
@@ -110,7 +138,14 @@ export const analyticsService = {
     }
   },
 
-  async generateAIInsights(userId: string) {
+  async generateAIInsights(userId: string, tier: 'FREE' | 'PRO') {
+    if (tier === 'FREE') {
+      throw createError({
+        statusCode: 402,
+        statusMessage: 'AI Insights hanya tersedia untuk pengguna PRO. Upgrade untuk membuka fitur ini.',
+      })
+    }
+
     const cachedInsights = await analyticsRepository.getUserInsights(userId)
     if (cachedInsights && dayjs().diff(dayjs(cachedInsights.lastGenerated), 'hour') <= 24) {
       return {

@@ -10,7 +10,8 @@ const createCategorySchema = z.object({
 
 export default defineEventHandler(async (event) => {
   const userId = event.context.auth.userId
+  const tier = event.context.auth.tier
   const body = await readValidatedBody(event, createCategorySchema.parse)
 
-  return categoryService.create(userId, body)
+  return categoryService.create(userId, tier, body)
 })

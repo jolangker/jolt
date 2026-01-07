@@ -7,8 +7,30 @@ export interface ListTransactionsParams extends TransactionFilters {
   offset?: string
 }
 
+// Helper to enforce 7-day limit for FREE users
+function enforceFreeTierLimit(tier: 'FREE' | 'PRO', filters: { startDate?: string | null, endDate?: string | null }) {
+  if (tier === 'FREE') {
+    const sevenDaysAgo = dayjs().subtract(7, 'days').format('YYYY-MM-DD')
+
+    // Check if trying to access data older than 7 days
+    if (filters.startDate && dayjs(filters.startDate).isBefore(sevenDaysAgo)) {
+      throw createError({
+        statusCode: 402,
+        statusMessage: 'FREE user tidak dapat mengakses transaksi sebelum 7 hari. Upgrade ke PRO untuk mengakses semua transaksi.',
+      })
+    }
+
+    // Auto-set startDate if not provided
+    if (!filters.startDate) {
+      filters.startDate = sevenDaysAgo
+    }
+  }
+}
+
 export const transactionService = {
-  async list(userId: string, params: ListTransactionsParams) {
+  async list(userId: string, tier: 'FREE' | 'PRO', params: ListTransactionsParams) {
+    enforceFreeTierLimit(tier, params)
+
     const pagination = {
       limit: params.limit ? parseInt(params.limit) : undefined,
       offset: params.offset ? parseInt(params.offset) : 0,
@@ -29,13 +51,21 @@ export const transactionService = {
     }
   },
 
-  async getById(userId: string, id: number) {
+  async getById(userId: string, tier: 'FREE' | 'PRO', id: number) {
     const transaction = await transactionRepository.findById(userId, id)
 
     if (!transaction) {
       throw createError({
         statusCode: 404,
         statusMessage: 'Transaction not found',
+      })
+    }
+
+    // Check if FREE user trying to access old transaction
+    if (tier === 'FREE' && dayjs(transaction.date).isBefore(dayjs().subtract(7, 'days'))) {
+      throw createError({
+        statusCode: 402,
+        statusMessage: 'FREE user tidak dapat mengakses transaksi sebelum 7 hari. Upgrade ke PRO untuk mengakses semua transaksi.',
       })
     }
 
@@ -48,18 +78,55 @@ export const transactionService = {
     return { success: true, data: transaction }
   },
 
-  async update(userId: string, id: number, data: TransactionPayload) {
-    const transaction = await transactionRepository.update(userId, id, data)
+  async update(userId: string, tier: 'FREE' | 'PRO', id: number, data: TransactionPayload) {
+    // First check if transaction exists and is accessible
+    const existing = await transactionRepository.findById(userId, id)
 
+    if (!existing) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Transaction not found',
+      })
+    }
+
+    // Check if FREE user trying to update old transaction
+    if (tier === 'FREE' && dayjs(existing.date).isBefore(dayjs().subtract(7, 'days'))) {
+      throw createError({
+        statusCode: 402,
+        statusMessage: 'FREE user tidak dapat mengubah transaksi sebelum 7 hari. Upgrade ke PRO untuk mengakses semua transaksi.',
+      })
+    }
+
+    const transaction = await transactionRepository.update(userId, id, data)
     return { success: true, data: transaction }
   },
 
-  async delete(userId: string, id: number) {
+  async delete(userId: string, tier: 'FREE' | 'PRO', id: number) {
+    // First check if transaction exists and is accessible
+    const existing = await transactionRepository.findById(userId, id)
+
+    if (!existing) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Transaction not found',
+      })
+    }
+
+    // Check if FREE user trying to delete old transaction
+    if (tier === 'FREE' && dayjs(existing.date).isBefore(dayjs().subtract(7, 'days'))) {
+      throw createError({
+        statusCode: 402,
+        statusMessage: 'FREE user tidak dapat menghapus transaksi sebelum 7 hari. Upgrade ke PRO untuk mengakses semua transaksi.',
+      })
+    }
+
     await transactionRepository.delete(userId, id)
     return { success: true }
   },
 
-  async getSummaryReport(userId: string, params: TransactionFilters) {
+  async getSummaryReport(userId: string, tier: 'FREE' | 'PRO', params: TransactionFilters) {
+    enforceFreeTierLimit(tier, params)
+
     const data = await transactionRepository.findMany(userId, params)
 
     const count = data.length

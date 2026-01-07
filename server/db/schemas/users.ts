@@ -1,11 +1,15 @@
 import { relations } from 'drizzle-orm'
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { boolean, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   telegramUserId: text('telegramUserId').notNull(),
   telegramUsername: text('telegramUsername').notNull(),
   createdAt: timestamp('createdAt').defaultNow().notNull(),
+  tier: text('tier').notNull().default('FREE'), // FREE | PRO
+  subscriptionEndsAt: timestamp('subscriptionEndsAt'),
+  voiceQuota: integer('voiceQuota').notNull().default(3),
+  isTrialUsed: boolean('isTrialUsed').notNull().default(false),
 })
 
 export const userTokens = pgTable('user_tokens', {

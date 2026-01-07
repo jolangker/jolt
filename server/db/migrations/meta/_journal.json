@@ -134,6 +134,13 @@
       "when": 1767739447395,
       "tag": "0018_bumpy_blur",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1767745620187,
+      "tag": "0019_even_triton",
+      "breakpoints": true
     }
   ]
 }

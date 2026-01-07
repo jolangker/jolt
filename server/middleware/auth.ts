@@ -15,11 +15,14 @@ export default defineEventHandler(async (event) => {
   const telegramUserId = getHeader(event, 'x-telegram-user-id')
   const telegramUsername = getHeader(event, 'x-telegram-username')
 
+  let currentUserId: string | null = null
+  let authSource: 'web' | 'n8n' | null = null
+  let currentUserTier: 'FREE' | 'PRO' | null = null
+
   if (session.user) {
-    event.context.auth = {
-      userId: session.user.id,
-      source: 'web',
-    }
+    currentUserId = session.user.id
+    authSource = 'web'
+    currentUserTier = session.user.tier
   }
   else if (secret === process.env.APP_SECRET) {
     if (!telegramUserId || !telegramUsername) throw createError({ statusCode: 400, statusMessage: 'Missing telegram credentials' })
@@ -35,12 +38,17 @@ export default defineEventHandler(async (event) => {
       }).returning()
     }
 
-    event.context.auth = {
-      userId: user.id,
-      source: 'n8n',
-    }
+    currentUserId = user.id
+    currentUserTier = user.tier as 'FREE' | 'PRO'
+    authSource = 'n8n'
   }
   else {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+  }
+
+  event.context.auth = {
+    userId: currentUserId,
+    source: authSource,
+    tier: currentUserTier,
   }
 })

@@ -1,7 +1,19 @@
 <script setup lang="ts">
-const { data, pending } = await useLazyFetch('/api/analytics/insights')
+const { isFree } = useAuth()
+
+// Only fetch for PRO users to avoid 402 errors in console
+const { data, pending } = isFree.value
+  ? { data: ref(null), pending: ref(false) }
+  : await useLazyFetch('/api/analytics/insights')
 
 const insights = computed(() => data.value?.data ?? [])
+
+// Mock insights for FREE users preview
+const mockInsights = [
+  'Pengeluaran bulan ini naik 15% dibanding bulan lalu...',
+  'Kategori terbesar adalah Makanan dengan 45% dari total...',
+  'Pemasukan rata-rata Rp 5.000.000 per bulan...',
+]
 </script>
 
 <template>
@@ -16,8 +28,17 @@ const insights = computed(() => data.value?.data ?? [])
             />
           </div>
           <div>
-            <div class="text-sm font-semibold">
-              Jolt AI Insights
+            <div class="flex items-center gap-2">
+              <div class="text-sm font-semibold">
+                Jolt AI Insights
+              </div>
+              <UBadge
+                v-if="isFree"
+                label="PRO"
+                color="primary"
+                variant="subtle"
+                size="xs"
+              />
             </div>
             <div class="text-xs text-dimmed">
               Analisis keuangan yang disesuaikan secara pribadi
@@ -27,9 +48,48 @@ const insights = computed(() => data.value?.data ?? [])
       </div>
     </template>
 
-    <!-- Loading State -->
+    <!-- FREE User: Blurred Preview with Upgrade Prompt -->
     <div
-      v-if="pending"
+      v-if="isFree"
+      class="relative"
+    >
+      <!-- Blurred mock content -->
+      <div class="blur-sm pointer-events-none select-none space-y-3">
+        <div
+          v-for="(insight, index) in mockInsights"
+          :key="index"
+          class="flex gap-3 items-start"
+        >
+          <div class="size-6 rounded-full bg-primary/10 text-primary text-xs font-semibold flex items-center justify-center shrink-0">
+            {{ index + 1 }}
+          </div>
+          <p class="text-sm text-muted leading-relaxed">
+            {{ insight }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Upgrade overlay -->
+      <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-elevated/60 backdrop-blur-[2px] rounded-lg">
+        <div class="flex items-center gap-2">
+          <UIcon
+            name="i-lucide-lock"
+            class="size-5 text-primary"
+          />
+          <span class="text-sm font-medium">Insights Terkunci</span>
+        </div>
+        <UButton
+          label="Upgrade ke PRO"
+          icon="i-lucide-sparkles"
+          size="sm"
+          to="/profile"
+        />
+      </div>
+    </div>
+
+    <!-- Loading State (PRO only) -->
+    <div
+      v-else-if="pending"
       class="space-y-3"
     >
       <div
@@ -45,7 +105,7 @@ const insights = computed(() => data.value?.data ?? [])
       </div>
     </div>
 
-    <!-- Empty State -->
+    <!-- Empty State (PRO only) -->
     <UEmpty
       v-else-if="!insights.length"
       icon="i-lucide-brain"
@@ -54,7 +114,7 @@ const insights = computed(() => data.value?.data ?? [])
       variant="naked"
     />
 
-    <!-- Insights List -->
+    <!-- Insights List (PRO only) -->
     <div
       v-else
       class="space-y-3"
