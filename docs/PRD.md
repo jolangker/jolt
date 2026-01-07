@@ -338,51 +338,7 @@ When FREE users attempt to access PRO features:
 
 ---
 
-## 7. Future Roadmap
-
-### Phase 1: Core Enhancements
-- [ ] Budget planning and alerts
-- [ ] Recurring transactions
-- [ ] Multi-currency support
-
-### Phase 2: Advanced Features
-- [ ] Shared household budgets
-- [ ] Receipt image scanning (OCR)
-- [ ] Bank account integration
-
-### Phase 3: Intelligence Upgrades
-- [ ] Predictive spending analysis
-- [ ] Smart budget recommendations
-- [ ] Savings goal tracking
-
----
-
-## 8. Success Metrics
-
-### User Engagement
-| Metric | Target |
-|--------|--------|
-| Daily Active Users (DAU) | Growth of 10% MoM |
-| Transactions per user/week | 5+ |
-| Dashboard visits/week | 3+ |
-
-### Feature Adoption
-| Metric | Target |
-|--------|--------|
-| AI categorization accuracy | >90% |
-| PRO conversion rate | >5% of active users |
-| Custom category creation | >50% of users |
-
-### User Satisfaction
-| Metric | Target |
-|--------|--------|
-| App Store rating | 4.5+ stars |
-| Feature request completion | 2+ per month |
-| Support response time | <24 hours |
-
----
-
-## 9. Appendix
+## 7. Appendix
 
 ### A. Glossary
 
