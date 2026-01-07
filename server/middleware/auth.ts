@@ -1,3 +1,4 @@
+import { eq } from 'drizzle-orm'
 import { users } from '../db/schema'
 
 export default defineEventHandler(async (event) => {
@@ -18,11 +19,13 @@ export default defineEventHandler(async (event) => {
   let currentUserId: string | null = null
   let authSource: 'web' | 'n8n' | null = null
   let currentUserTier: 'FREE' | 'PRO' | null = null
+  let subscriptionEndsAt: Date | null = null
 
   if (session.user) {
     currentUserId = session.user.id
     authSource = 'web'
     currentUserTier = session.user.tier
+    subscriptionEndsAt = session.user.subscriptionEndsAt ? new Date(session.user.subscriptionEndsAt) : null
   }
   else if (secret === process.env.APP_SECRET) {
     if (!telegramUserId || !telegramUsername) throw createError({ statusCode: 400, statusMessage: 'Missing telegram credentials' })
@@ -40,10 +43,34 @@ export default defineEventHandler(async (event) => {
 
     currentUserId = user.id
     currentUserTier = user.tier as 'FREE' | 'PRO'
+    subscriptionEndsAt = user.subscriptionEndsAt
     authSource = 'n8n'
   }
   else {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+  }
+
+  // Handle subscription expiration - downgrade PRO to FREE if expired
+  if (currentUserTier === 'PRO' && subscriptionEndsAt) {
+    const now = new Date()
+    if (subscriptionEndsAt < now) {
+      // Subscription has expired, downgrade to FREE
+      await db.update(users)
+        .set({ tier: 'FREE' })
+        .where(eq(users.id, currentUserId!))
+
+      currentUserTier = 'FREE'
+
+      // Update session if it's a web user
+      if (authSource === 'web' && session.user) {
+        await setUserSession(event, {
+          user: {
+            ...session.user,
+            tier: 'FREE',
+          },
+        })
+      }
+    }
   }
 
   event.context.auth = {
