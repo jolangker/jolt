@@ -76,6 +76,16 @@ export const transactionRepository = {
     return result
   },
 
+  async createMany(userId: string, data: TransactionPayload[]) {
+    const [result] = await db.insert(transactions).values(data.map(d => ({
+      userId,
+      ...d,
+      date: new Date(d.date),
+    }))).returning()
+
+    return result
+  },
+
   async update(userId: string, id: number, data: TransactionPayload) {
     const [result] = await db
       .update(transactions)

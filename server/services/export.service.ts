@@ -1,4 +1,4 @@
-import { transactionRepository, type TransactionFilters } from '~~/server/repositories'
+import { transactionRepository, categoryRepository, type TransactionFilters } from '~~/server/repositories'
 import ExcelJS from 'exceljs'
 import dayjs from 'dayjs'
 
@@ -86,5 +86,87 @@ export const exportService = {
     }
 
     return await workbook.xlsx.writeBuffer()
+  },
+
+  async importTransactions(userId: string, buffer: Buffer) {
+    const workbook = new ExcelJS.Workbook()
+    await workbook.xlsx.load(buffer)
+
+    const sheet = workbook.getWorksheet('Transactions')
+    if (!sheet) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Format file tidak valid: Sheet "Transactions" tidak ditemukan',
+      })
+    }
+
+    // Get existing categories to map names to IDs
+    const existingCategories = await categoryRepository.findAll(userId)
+    const categoryMap = new Map(existingCategories.map(c => [c.name.toLowerCase(), c.id]))
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const transactionsToInsert: any[] = []
+    let newCategoriesCount = 0
+
+    // Iterate rows (skip header)
+    // sheet.eachRow starts from 1, header is 1, so data starts from 2
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rows: any[] = []
+    sheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return // Skip header
+
+      const date = row.getCell(1).value
+      const type = row.getCell(2).value?.toString().toLowerCase()
+      const categoryName = row.getCell(3).value?.toString()
+      const amount = row.getCell(4).value
+      const note = row.getCell(5).value?.toString() || ''
+
+      if (date && type && categoryName && amount) {
+        rows.push({ date, type, categoryName, amount, note })
+      }
+    })
+
+    for (const row of rows) {
+      let categoryId = categoryMap.get(row.categoryName.toLowerCase())
+
+      // If category doesn't exist, create it
+      if (!categoryId) {
+        if (row.type !== 'income' && row.type !== 'expense') {
+          // Default to expense if invalid type, or skip?
+          // For safety assume expense if ambiguous, but here strictly check
+          continue
+        }
+
+        const [newCategory] = await categoryRepository.create({
+          userId,
+          name: row.categoryName,
+          description: 'Imported from Excel',
+          type: row.type as 'income' | 'expense',
+          isDefault: false,
+          icon: 'i-heroicons-tag', // Default icon
+        })
+
+        categoryId = newCategory.id
+        categoryMap.set(row.categoryName.toLowerCase(), categoryId)
+        newCategoriesCount++
+      }
+
+      transactionsToInsert.push({
+        categoryId,
+        type: row.type,
+        note: row.note,
+        amount: row.amount.toString(),
+        date: row.date,
+      })
+    }
+
+    if (transactionsToInsert.length > 0) {
+      await transactionRepository.createMany(userId, transactionsToInsert)
+    }
+
+    return {
+      imported: transactionsToInsert.length,
+      createdCategories: newCategoriesCount,
+    }
   },
 }

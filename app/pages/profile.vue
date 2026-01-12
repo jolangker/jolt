@@ -44,6 +44,56 @@ const openResetConfirmModal = () => {
     },
   })
 }
+
+const fileInput = ref<HTMLInputElement | null>(null)
+
+const triggerFileInput = () => {
+  fileInput.value?.click()
+}
+
+const handleFileImport = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (!target.files || target.files.length === 0) return
+
+  const file = target.files[0]
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const loadingToast = toast.add({
+    title: 'Mengimport data...',
+    description: 'Mohon tunggu sebentar',
+    loading: true,
+  })
+
+  try {
+    const { data } = await $fetch('/api/transactions/import', {
+      method: 'POST',
+      body: formData,
+    })
+
+    toast.remove(loadingToast.id)
+    toast.add({
+      title: 'Import Berhasil',
+      description: `${data.imported} transaksi berhasil diimport. ${data.createdCategories} kategori baru dibuat.`,
+      color: 'success',
+      icon: 'i-solar:check-circle-outline',
+    })
+    
+    // Refresh data if needed, or maybe just let user navigate
+    refreshNuxtData()
+  } catch (error: any) {
+    toast.remove(loadingToast.id)
+    toast.add({
+      title: 'Import Gagal',
+      description: error.statusMessage || 'Terjadi kesalahan saat mengimport data',
+      color: 'error',
+      icon: 'i-solar:danger-circle-outline',
+    })
+  } finally {
+    // Reset input
+    target.value = ''
+  }
+}
 </script>
 
 <template>
@@ -65,6 +115,13 @@ const openResetConfirmModal = () => {
     </template>
     <template #body>
       <div class="flex flex-col items-center">
+        <input
+          ref="fileInput"
+          type="file"
+          class="hidden"
+          accept=".xlsx"
+          @change="handleFileImport"
+        >
         <UAvatar
           icon="i-lucide:user"
           size="3xl"
@@ -182,6 +239,32 @@ const openResetConfirmModal = () => {
                   </div>
                   <div class="text-xs text-dimmed">
                     Unduh dan simpan seluruh riwayat transaksi Anda
+                  </div>
+                </div>
+              </div>
+              <UIcon
+                name="i-lucide:chevron-right"
+                class="w-5 h-5 text-dimmed"
+              />
+            </div>
+          </UCard>
+          <UCard
+            variant="subtle"
+            class="cursor-pointer"
+            @click="triggerFileInput"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <UIcon
+                  name="i-solar:import-outline"
+                  class="w-5 h-5 text-primary"
+                />
+                <div>
+                  <div class="text-sm font-medium">
+                    Import Data
+                  </div>
+                  <div class="text-xs text-dimmed">
+                    Import riwayat transaksi dari file Excel
                   </div>
                 </div>
               </div>
