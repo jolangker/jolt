@@ -58,7 +58,7 @@ const y = [
   (d: DataRecord) => parseFloat(d.expense),
 ]
 
-const xFormat = (i: number) => daily.value[i]!.date
+const xFormat = (i: number) => daily.value[i]?.date || ''
 const yFormat = (d: number) => formatCurrency(d, true)
 
 const template = (d: DataRecord) => {
