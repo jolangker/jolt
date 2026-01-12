@@ -3,8 +3,7 @@ import { boolean, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
-  telegramUserId: text('telegramUserId').notNull(),
-  telegramUsername: text('telegramUsername').notNull(),
+  phoneNumber: text('phoneNumber'),
   createdAt: timestamp('createdAt').defaultNow().notNull(),
   tier: text('tier').notNull().default('FREE'), // FREE | PRO
   subscriptionEndsAt: timestamp('subscriptionEndsAt'),

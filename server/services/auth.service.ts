@@ -2,8 +2,8 @@ import { userRepository, authTokenRepository } from '~~/server/repositories'
 import { generateShortToken } from '~~/server/utils/token'
 
 export const authService = {
-  async requestLoginToken(telegramUserId: string) {
-    const user = await userRepository.findByTelegramId(telegramUserId)
+  async requestLoginToken(phoneNumber: string) {
+    const user = await userRepository.findByPhoneNumber(phoneNumber)
 
     if (!user) {
       throw createError({

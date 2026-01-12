@@ -13,13 +13,13 @@ export default defineEventHandler(async (event) => {
 
   const session = await getUserSession(event)
   const secret = getHeader(event, 'x-api-key')
-  const telegramUserId = getHeader(event, 'x-telegram-user-id')
-  const telegramUsername = getHeader(event, 'x-telegram-username')
+  const phoneNumber = getHeader(event, 'x-phone-number')
 
   let currentUserId: string | null = null
-  let authSource: 'web' | 'n8n' | null = null
   let currentUserTier: 'FREE' | 'PRO' | null = null
   let subscriptionEndsAt: Date | null = null
+  let isNewUser = false
+  let authSource: 'web' | 'n8n' | null = null
 
   if (session.user) {
     currentUserId = session.user.id
@@ -28,17 +28,17 @@ export default defineEventHandler(async (event) => {
     subscriptionEndsAt = session.user.subscriptionEndsAt ? new Date(session.user.subscriptionEndsAt) : null
   }
   else if (secret === process.env.APP_SECRET) {
-    if (!telegramUserId || !telegramUsername) throw createError({ statusCode: 400, statusMessage: 'Missing telegram credentials' })
+    if (!phoneNumber) throw createError({ statusCode: 400, statusMessage: 'Missing phone number' })
 
     let user = await db.query.users.findFirst({
-      where: (user, { eq }) => eq(user.telegramUserId, telegramUserId),
+      where: (user, { eq }) => eq(user.phoneNumber, phoneNumber),
     })
 
     if (!user) {
       [user] = await db.insert(users).values({
-        telegramUserId,
-        telegramUsername: telegramUsername,
+        phoneNumber,
       }).returning()
+      isNewUser = true
     }
 
     currentUserId = user.id
@@ -50,18 +50,15 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
-  // Handle subscription expiration - downgrade PRO to FREE if expired
   if (currentUserTier === 'PRO' && subscriptionEndsAt) {
     const now = new Date()
     if (subscriptionEndsAt < now) {
-      // Subscription has expired, downgrade to FREE
       await db.update(users)
         .set({ tier: 'FREE' })
         .where(eq(users.id, currentUserId!))
 
       currentUserTier = 'FREE'
 
-      // Update session if it's a web user
       if (authSource === 'web' && session.user) {
         await setUserSession(event, {
           user: {
@@ -77,5 +74,6 @@ export default defineEventHandler(async (event) => {
     userId: currentUserId,
     source: authSource,
     tier: currentUserTier,
+    isNewUser,
   }
 })

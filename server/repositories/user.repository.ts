@@ -9,11 +9,11 @@ export const userRepository = {
     })
   },
 
-  async findByTelegramId(telegramUserId: string) {
+  async findByPhoneNumber(phoneNumber: string) {
     const [user] = await db
       .select()
       .from(users)
-      .where(eq(users.telegramUserId, telegramUserId))
+      .where(eq(users.phoneNumber, phoneNumber))
 
     return user
   },
