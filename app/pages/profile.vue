@@ -77,9 +77,6 @@ const handleFileImport = async (event: Event) => {
       color: 'success',
       icon: 'i-solar:check-circle-outline',
     })
-
-    // Refresh data if needed, or maybe just let user navigate
-    refreshNuxtData()
   }
   catch (error: any) {
     toast.remove(loadingToast.id)
