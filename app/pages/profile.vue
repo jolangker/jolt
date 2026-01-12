@@ -55,14 +55,13 @@ const handleFileImport = async (event: Event) => {
   const target = event.target as HTMLInputElement
   if (!target.files || target.files.length === 0) return
 
-  const file = target.files[0]
+  const file = target.files[0]!
   const formData = new FormData()
   formData.append('file', file)
 
   const loadingToast = toast.add({
     title: 'Mengimport data...',
     description: 'Mohon tunggu sebentar',
-    loading: true,
   })
 
   try {
@@ -78,10 +77,11 @@ const handleFileImport = async (event: Event) => {
       color: 'success',
       icon: 'i-solar:check-circle-outline',
     })
-    
+
     // Refresh data if needed, or maybe just let user navigate
     refreshNuxtData()
-  } catch (error: any) {
+  }
+  catch (error: any) {
     toast.remove(loadingToast.id)
     toast.add({
       title: 'Import Gagal',
@@ -89,7 +89,8 @@ const handleFileImport = async (event: Event) => {
       color: 'error',
       icon: 'i-solar:danger-circle-outline',
     })
-  } finally {
+  }
+  finally {
     // Reset input
     target.value = ''
   }
