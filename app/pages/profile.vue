@@ -69,12 +69,6 @@ const openResetConfirmModal = () => {
           icon="i-lucide:user"
           size="3xl"
         />
-        <div class="text-xl font-bold text-highlighted">
-          {{ user?.telegramUsername || 'User' }}
-        </div>
-        <div class="text-sm text-dimmed">
-          @{{ user?.telegramUsername || 'username' }}
-        </div>
         <UBadge
           :label="tier"
           :color="isPro ? 'primary' : 'neutral'"
@@ -110,29 +104,10 @@ const openResetConfirmModal = () => {
                 />
                 <div>
                   <div class="text-xs text-dimmed">
-                    Username
+                    Nomor Telepon
                   </div>
                   <div class="text-sm font-medium">
-                    {{ user?.telegramUsername || 'N/A' }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </UCard>
-
-          <UCard variant="subtle">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <UIcon
-                  name="i-lucide:hash"
-                  class="w-5 h-5 text-primary"
-                />
-                <div>
-                  <div class="text-xs text-dimmed">
-                    Telegram ID
-                  </div>
-                  <div class="text-sm font-medium font-mono">
-                    {{ user?.telegramUserId || 'N/A' }}
+                    {{ user?.phoneNumber }}
                   </div>
                 </div>
               </div>
@@ -148,7 +123,7 @@ const openResetConfirmModal = () => {
                 />
                 <div>
                   <div class="text-xs text-dimmed">
-                    Member Since
+                    Member Sejak
                   </div>
                   <div class="text-sm font-medium">
                     {{ memberSince }}
