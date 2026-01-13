@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary
 
-**Jolt AI** is an intelligent personal finance management application that makes tracking expenses effortless. By combining a conversational **Telegram bot** with a beautiful **web dashboard**, Jolt AI enables users to log transactions naturally through chat and gain powerful insights into their spending habits.
+**Jolt AI** is an intelligent personal finance management application that makes tracking expenses effortless. By combining a conversational **WhatsApp bot** with a beautiful **web dashboard**, Jolt AI enables users to log transactions naturally through chat and gain powerful insights into their spending habits.
 
 ### Vision
 *Making personal finance management as simple as sending a message.*
@@ -53,7 +53,7 @@
 
 ### 3.1 AI-Powered Transaction Tracking
 
-The heart of Jolt AI is its conversational interface through Telegram, allowing users to log transactions naturally through multiple input methods.
+The heart of Jolt AI is its conversational interface through WhatsApp, allowing users to log transactions naturally through multiple input methods.
 
 #### Input Methods
 
@@ -74,7 +74,7 @@ The heart of Jolt AI is its conversational interface through Telegram, allowing 
 | **Receipt OCR** | Scans receipt images to extract transaction details (PRO) |
 
 **User Flow (Text):**
-1. User opens Telegram and messages the Jolt bot
+1. User opens WhatsApp and messages the Jolt bot
 2. Types naturally: *"Lunch with team 150k"*
 3. AI processes and extracts: Amount (Rp 150,000), Category (Food & Dining), Note (Lunch with team)
 4. Transaction is saved and synced to dashboard instantly
@@ -106,7 +106,7 @@ The dashboard provides an at-a-glance overview of the user's financial status.
 **User Benefits:**
 - Instant understanding of financial health
 - No need to navigate through multiple screens
-- Real-time sync with Telegram transactions
+- Real-time sync with WhatsApp transactions
 
 ---
 
@@ -214,16 +214,22 @@ Flexible category system with both default and custom options.
 
 ---
 
-### 3.7 Data Export
+### 3.7 Data Import & Export
 
-Export transaction data for external analysis or record-keeping.
+Import and export transaction data for external analysis or record-keeping.
 
 | Feature | Description |
 |---------|-------------|
-| **Excel Format** | Export to .xlsx file |
+| **Bulk Import** | Import transactions from Excel (.xlsx) files |
+| **Excel Export** | Export to .xlsx file |
 | **Filter Options** | Export by type, category, or date range |
 | **Summary Sheet** | Optional summary statistics sheet |
 | **Date-Stamped Files** | Automatic filename with export date |
+
+**Import Capabilities:**
+- **File Support**: Excel (.xlsx)
+- **Auto-Categorization**: Automatically anticipates or creates categories based on imported data
+- **Duplicate Detection**: Prevents importing the same transaction twice (based on unique identifiers if present)
 
 ---
 
@@ -233,7 +239,7 @@ Account management and preferences.
 
 | Feature | Description |
 |---------|-------------|
-| **Profile Display** | Username and Telegram information |
+| **Profile Display** | Username and WhatsApp information |
 | **Membership Status** | View current tier (FREE/PRO) |
 | **Theme Toggle** | Switch between dark and light mode |
 | **Category Management** | Quick access to customize categories |
@@ -318,12 +324,12 @@ When FREE users attempt to access PRO features:
 
 ## 6. Authentication & Security
 
-### 6.1 Telegram Authentication
+### 6.1 WhatsApp Integration
 
 | Feature | Description |
 |---------|-------------|
-| **One-Click Login** | No passwords to remember |
-| **Secure OAuth** | Industry-standard Telegram OAuth flow |
+| **Seamless Linking** | Easy-to-use WhatsApp linking flow |
+| **Secure Auth** | Verified WhatsApp identity |
 | **Session Management** | Encrypted session tokens |
 | **Cross-Device Sync** | Same account, any device |
 

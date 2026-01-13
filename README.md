@@ -3,10 +3,10 @@
 [![Nuxt UI](https://img.shields.io/badge/Made%20with-Nuxt%20UI%204-00DC82?logo=nuxt&labelColor=020420)](https://ui.nuxt.com)
 [![Nuxt](https://img.shields.io/badge/Nuxt-4.2-00DC82?logo=nuxt.js&logoColor=white)](https://nuxt.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Telegram Bot](https://img.shields.io/badge/Try%20it-Telegram%20Bot-26A5E4?logo=telegram&logoColor=white)](https://t.me/jollexpenser_bot)
+[![WhatsApp Bot](https://img.shields.io/badge/Try%20it-WhatsApp%20Bot-25D366?logo=whatsapp&logoColor=white)](https://wa.me/something)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**Jolt** is an AI-powered personal finance management application that combines the convenience of a **Telegram bot** with a beautiful **web dashboard**. Track your expenses naturally through chat, and visualize your financial data with powerful analytics.
+**Jolt** is an AI-powered personal finance management application that combines the convenience of a **WhatsApp bot** with a beautiful **web dashboard**. Track your expenses naturally through chat, and visualize your financial data with powerful analytics.
 
 <p align="center">
   <img src="./public/dashboard-preview.png" alt="Jolt Dashboard Preview" width="600">
@@ -21,6 +21,10 @@
 - **Smart Categorization** – AI automatically categorizes your transactions
 - **Context-Aware** – Extracts amount, category, date, and notes intelligently
 
+### 📥 Data Import & Export
+- **Bulk Import** – Easily import transactions from Excel files
+- **Data Export** – Download your financial history for external analysis
+
 ### 📊 Comprehensive Analytics
 - **Daily Trends** – Interactive charts showing spending patterns over time
 - **Category Breakdown** – Visualize where your money goes with pie/donut charts
@@ -31,7 +35,7 @@
 - **Responsive Design** – Works seamlessly on desktop, tablet, and mobile
 - **Dark/Light Mode** – Choose your preferred theme
 - **Bottom Navigation** – Intuitive mobile navigation experience
-- **Real-time Updates** – Instant sync with your Telegram transactions
+- **Real-time Updates** – Instant sync with your WhatsApp transactions
 
 ### 🏷️ Category Management
 - **Custom Categories** – Create and manage your own categories with icons
@@ -44,7 +48,7 @@
 
 ```
 ┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐
-│  Telegram Bot   │ ───▶ │  n8n Workflow   │ ───▶ │  Web Dashboard  │
+│  WhatsApp Bot   │ ───▶ │  n8n Workflow   │ ───▶ │  Web Dashboard  │
 │  (Primary UI)   │      │  (AI Engine)    │      │  (This Repo)    │
 └─────────────────┘      └─────────────────┘      └─────────────────┘
          │                        │                         │
@@ -60,7 +64,7 @@
 
 | Component | Description |
 |-----------|-------------|
-| **Telegram Bot** | Primary user interface for logging transactions via natural language |
+| **WhatsApp Bot** | Primary user interface for logging transactions via natural language |
 | **n8n Workflow** | AI processing pipeline that extracts structured data from messages |
 | **Web Dashboard** | Full-featured analytics and transaction management (this repository) |
 | **PostgreSQL** | Serverless database powered by Neon |
@@ -84,7 +88,7 @@
 | [Nitro](https://nitro.unjs.io) | Server engine (built into Nuxt) |
 | [Drizzle ORM](https://orm.drizzle.team) | Type-safe database ORM |
 | [Zod](https://zod.dev) & [Valibot](https://valibot.dev) | Schema validation |
-| [nuxt-auth-utils](https://github.com/atinux/nuxt-auth-utils) | Telegram authentication |
+| [nuxt-auth-utils](https://github.com/atinux/nuxt-auth-utils) | Authentication |
 | [AI SDK](https://sdk.vercel.ai) | AI/LLM integration |
 
 ### Infrastructure
@@ -142,7 +146,7 @@ jolt/
 
 - [Bun](https://bun.sh) (recommended) or Node.js 20+
 - PostgreSQL database ([Neon](https://neon.tech) recommended)
-- Telegram Bot Token (for authentication)
+- WhatsApp Business API / Provider (for bot integration)
 
 ### Installation
 
@@ -166,7 +170,8 @@ jolt/
    ```env
    DATABASE_URL=your_neon_database_url
    NUXT_SESSION_PASSWORD=your_session_secret_min_32_chars
-   NUXT_OAUTH_TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+   # NUXT_OAUTH_TELEGRAM_BOT_TOKEN=... (Replaced by WhatsApp config)
+   WHATSAPP_API_KEY=your_whatsapp_api_key
    NUXT_OPENAI_API_KEY=your_openai_api_key
    ```
 
@@ -258,14 +263,14 @@ services:
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - NUXT_SESSION_PASSWORD=${NUXT_SESSION_PASSWORD}
-      - NUXT_OAUTH_TELEGRAM_BOT_TOKEN=${NUXT_OAUTH_TELEGRAM_BOT_TOKEN}
+      # - NUXT_OAUTH_TELEGRAM_BOT_TOKEN=${NUXT_OAUTH_TELEGRAM_BOT_TOKEN}
 ```
 
 ---
 
 ## 🔒 Security
 
-- **Telegram Authentication** – No passwords, secure OAuth via Telegram
+- **WhatsApp Integration** – Secure messaging integration
 - **Session Management** – Encrypted session tokens with nuxt-auth-utils
 - **Environment Variables** – Sensitive config never committed to source
 - **Protected Routes** – Server middleware validates authentication
@@ -277,7 +282,8 @@ services:
 - [ ] Budget planning and alerts
 - [ ] Recurring transactions
 - [ ] Multi-currency support
-- [ ] Export to CSV/Excel
+- [x] Export to CSV/Excel
+- [x] Bulk Import from Excel
 - [ ] Shared household budgets
 - [ ] Receipt image scanning
 
@@ -304,7 +310,7 @@ This project is licensed under the MIT License – see the [LICENSE](LICENSE) fi
 ## 💬 Support
 
 - 🐛 **Bug Reports**: [Open an issue](https://github.com/yourusername/jolt/issues)
-- 🤖 **Try the Bot**: [t.me/jollexpenser_bot](https://t.me/jollexpenser_bot)
+- 🤖 **Try the Bot**: [wa.me/something](https://wa.me/something)
 - 💡 **Feature Requests**: [Start a discussion](https://github.com/yourusername/jolt/discussions)
 
 ---
