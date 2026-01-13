@@ -10,6 +10,7 @@ export default defineEventHandler(async (event) => {
 
   if (url.pathname.startsWith('/api/auth')) return
   if (url.pathname.startsWith('/api/master')) return
+  if (url.pathname.startsWith('/api/webhooks')) return
 
   const session = await getUserSession(event)
   const secret = getHeader(event, 'x-api-key')

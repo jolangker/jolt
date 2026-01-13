@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { LazyConfirmationModal, LazyExportModal } from '#components'
+import { LazyConfirmationModal, LazyExportModal, LazyUpgradeModal } from '#components'
 
 definePageMeta({
   middleware: 'auth',
   layout: 'authenticated',
 })
 
-const { user } = useUserSession()
+const { user, fetch } = useUserSession()
 const { tier, isPro } = useAuth()
 
 const memberSince = computed(() => {
@@ -14,11 +14,16 @@ const memberSince = computed(() => {
   return formatDate(user.value.createdAt)
 })
 
+onMounted(() => {
+  // fetch()
+})
+
 const toast = useToast()
 
 const overlay = useOverlay()
 const exportModal = overlay.create(LazyExportModal)
 const confirmModal = overlay.create(LazyConfirmationModal)
+const upgradeModal = overlay.create(LazyUpgradeModal)
 
 const openExportModal = () => {
   exportModal.open()
@@ -141,6 +146,7 @@ const handleFileImport = async (event: Event) => {
           label="Upgrade ke PRO"
           icon="i-lucide-sparkles"
           class="mt-3"
+          @click="upgradeModal.open()"
         />
       </div>
 

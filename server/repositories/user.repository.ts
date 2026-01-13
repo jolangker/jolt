@@ -17,4 +17,15 @@ export const userRepository = {
 
     return user
   },
+
+  async upgradeToPro(userId: string, subscriptionEndsAt: Date) {
+    await db
+      .update(users)
+      .set({
+        tier: 'PRO',
+        subscriptionEndsAt,
+        voiceQuota: 999999, // Unlimited for PRO
+      })
+      .where(eq(users.id, userId))
+  },
 }

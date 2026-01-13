@@ -148,6 +148,13 @@
       "when": 1768176421195,
       "tag": "0020_futuristic_dexter_bennett",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1768324595740,
+      "tag": "0021_omniscient_scarlet_witch",
+      "breakpoints": true
     }
   ]
 }
