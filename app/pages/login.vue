@@ -43,7 +43,7 @@ async function validateToken() {
 type OtpStep = 'phone' | 'code'
 const otpStep = ref<OtpStep>('phone')
 const phoneNumber = ref('')
-const otpCode = ref('')
+const otpCode = ref<string[]>([])
 const isLoading = ref(false)
 const otpError = ref<string | null>(null)
 const resendTimer = ref(0)
@@ -70,10 +70,10 @@ async function sendOtp() {
   // Normalize phone number
   let phone = phoneNumber.value.trim()
   if (phone.startsWith('0')) {
-    phone = '+62' + phone.slice(1)
+    phone = '62' + phone.slice(1)
   }
-  if (!phone.startsWith('+')) {
-    phone = '+62' + phone
+  if (!phone.startsWith('62')) {
+    phone = '62' + phone
   }
 
   isLoading.value = true
@@ -104,7 +104,8 @@ async function sendOtp() {
 }
 
 async function verifyOtp() {
-  if (!otpCode.value || otpCode.value.length !== 6) {
+  const code = otpCode.value.join('')
+  if (!code || code.length !== 6) {
     otpError.value = 'Masukkan 6 digit kode OTP'
     return
   }
@@ -117,7 +118,7 @@ async function verifyOtp() {
       method: 'POST',
       body: {
         phoneNumber: phoneNumber.value,
-        code: otpCode.value,
+        code,
       },
     })
 
@@ -134,7 +135,7 @@ async function verifyOtp() {
   }
   catch (error: any) {
     otpError.value = error.data?.message || 'Verifikasi gagal'
-    otpCode.value = ''
+    otpCode.value = []
   }
   finally {
     isLoading.value = false
@@ -143,7 +144,7 @@ async function verifyOtp() {
 
 function goBackToPhone() {
   otpStep.value = 'phone'
-  otpCode.value = ''
+  otpCode.value = []
   otpError.value = null
   if (resendInterval) {
     clearInterval(resendInterval)
@@ -267,9 +268,11 @@ onUnmounted(() => {
               placeholder="08123456789"
               icon="i-lucide-phone"
               size="lg"
+              inputmode="numeric"
               :disabled="isLoading"
               autofocus
               class="w-full"
+              @input="phoneNumber = phoneNumber.replace(/[^0-9]/g, '')"
             />
           </UFormField>
 
@@ -306,15 +309,14 @@ onUnmounted(() => {
           </div>
 
           <UFormField label="Kode OTP">
-            <UInput
+            <UPinInput
               v-model="otpCode"
-              placeholder="123456"
-              icon="i-lucide-key-round"
-              size="lg"
-              maxlength="6"
+              :length="6"
+              otp
+              size="xl"
               :disabled="isLoading"
-              autofocus
-              class="text-center tracking-widest text-xl w-full"
+              placeholder="○"
+              @complete="verifyOtp"
             />
           </UFormField>
 
