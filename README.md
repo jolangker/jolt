@@ -90,6 +90,7 @@
 | [Zod](https://zod.dev) & [Valibot](https://valibot.dev) | Schema validation |
 | [nuxt-auth-utils](https://github.com/atinux/nuxt-auth-utils) | Authentication |
 | [AI SDK](https://sdk.vercel.ai) | AI/LLM integration |
+| [Midtrans](https://midtrans.com) | Payment gateway (Snap) |
 
 ### Infrastructure
 | Technology | Purpose |
@@ -173,6 +174,13 @@ jolt/
    # NUXT_OAUTH_TELEGRAM_BOT_TOKEN=... (Replaced by WhatsApp config)
    WHATSAPP_API_KEY=your_whatsapp_api_key
    NUXT_OPENAI_API_KEY=your_openai_api_key
+   
+   # Midtrans Payment Gateway
+   MIDTRANS_SERVER_KEY=SB-Mid-server-xxxxx
+   MIDTRANS_CLIENT_KEY=SB-Mid-client-xxxxx
+   MIDTRANS_MERCHANT_ID=G00000000
+   MIDTRANS_IS_PRODUCTION=false
+   PRO_SUBSCRIPTION_PRICE=19000
    ```
 
 4. **Run database migrations**
@@ -237,6 +245,13 @@ jolt/
 | `DELETE` | `/api/categories/:id` | Delete category |
 | `GET` | `/api/master/categories` | List default categories |
 
+### Payments
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/payments/create` | Create Snap transaction token |
+| `POST` | `/api/webhooks/midtrans` | Midtrans webhook handler |
+
 ---
 
 ## 🐳 Docker Deployment
@@ -284,6 +299,7 @@ services:
 - [ ] Multi-currency support
 - [x] Export to CSV/Excel
 - [x] Bulk Import from Excel
+- [x] PRO subscription with Midtrans payment
 - [ ] Shared household budgets
 - [ ] Receipt image scanning
 

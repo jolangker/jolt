@@ -1,7 +1,7 @@
 # Jolt AI – Product Requirements Document (PRD)
 
-> **Version:** 1.0  
-> **Date:** January 7, 2026  
+> **Version:** 1.1  
+> **Date:** January 14, 2026  
 > **Product Name:** Jolt AI  
 > **Tagline:** *Your AI-Powered Personal Finance Companion*
 
@@ -245,6 +245,36 @@ Account management and preferences.
 | **Category Management** | Quick access to customize categories |
 | **Export Data** | Access data export functionality |
 | **Data Reset** | Option to clear all transaction data |
+
+---
+
+### 3.9 PRO Subscription & Payment
+
+Seamless in-app upgrade to PRO tier with secure payment processing.
+
+| Feature | Description |
+|---------|-------------|
+| **In-App Upgrade** | One-tap upgrade from profile page |
+| **Midtrans Integration** | Secure payment gateway (Snap popup) |
+| **Multiple Payment Methods** | Credit card, GoPay, bank transfer, and more |
+| **Instant Activation** | PRO features enabled immediately after payment |
+| **Subscription Management** | View subscription status and expiry date |
+
+**Pricing:**
+- **Monthly:** Rp 19,000/month (61% off from Rp 49,000)
+
+**Payment Flow:**
+1. User clicks "Upgrade ke PRO" on profile page
+2. Upgrade modal displays PRO benefits and pricing
+3. User clicks "Lanjutkan Pembayaran"
+4. Midtrans Snap popup opens with payment options
+5. User completes payment
+6. Account instantly upgraded to PRO
+
+**Security:**
+- SHA512 signature verification for webhooks
+- Idempotent payment processing
+- Server-side API keys (never exposed to frontend)
 
 ---
 
