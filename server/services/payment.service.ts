@@ -14,8 +14,7 @@ export const paymentService = {
    * Create a new payment transaction for PRO subscription
    */
   async createTransaction(userId: string, userPhone?: string) {
-    const config = useRuntimeConfig()
-    const amount = Number(config.proSubscriptionPrice) || 19000
+    const amount = Number(process.env.PRO_SUBSCRIPTION_PRICE) || 19000
 
     // Generate unique order ID
     const orderId = generateOrderId()

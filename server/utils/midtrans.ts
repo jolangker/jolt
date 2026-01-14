@@ -4,11 +4,10 @@ import crypto from 'node:crypto'
  * Midtrans configuration from environment
  */
 export function getMidtransConfig() {
-  const config = useRuntimeConfig()
   return {
-    serverKey: config.midtransServerKey as string,
-    clientKey: config.public.midtransClientKey as string,
-    isProduction: config.public.midtransIsProduction === true,
+    serverKey: process.env.MIDTRANS_SERVER_KEY as string,
+    clientKey: process.env.NUXT_PUBLIC_MIDTRANS_CLIENT_KEY as string,
+    isProduction: process.env.NUXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true',
   }
 }
 

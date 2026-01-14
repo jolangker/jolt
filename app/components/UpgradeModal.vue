@@ -10,10 +10,10 @@ const emit = defineEmits<{
 }>()
 
 const toast = useToast()
-const config = useRuntimeConfig()
 
 // Load Midtrans Snap.js based on environment
-const isProduction = config.public.midtransIsProduction === true
+const isProduction = import.meta.env.NUXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true'
+const clientKey = import.meta.env.NUXT_PUBLIC_MIDTRANS_CLIENT_KEY as string
 const snapUrl = isProduction
   ? 'https://app.midtrans.com/snap/snap.js'
   : 'https://app.sandbox.midtrans.com/snap/snap.js'
@@ -28,7 +28,7 @@ useScriptTag(snapUrl, () => {
   console.log('[Midtrans] Snap.js loaded')
 }, {
   attrs: {
-    'data-client-key': config.public.midtransClientKey as string,
+    'data-client-key': clientKey,
   },
 })
 

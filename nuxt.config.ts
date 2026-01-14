@@ -21,17 +21,6 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  runtimeConfig: {
-    // Server-side only (keep secret!)
-    midtransServerKey: process.env.MIDTRANS_SERVER_KEY,
-    proSubscriptionPrice: process.env.PRO_SUBSCRIPTION_PRICE,
-    // Public (exposed to frontend)
-    public: {
-      midtransClientKey: process.env.MIDTRANS_CLIENT_KEY,
-      midtransIsProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true',
-    },
-  },
-
   routeRules: {
     '/api/**': {
       cors: true,
