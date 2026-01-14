@@ -50,6 +50,15 @@ export const authService = {
   },
 
   async sendOtp(phoneNumber: string) {
+    // Check phone-based rate limit (max 3 per 10 minutes)
+    const recentCount = await otpRepository.countRecentByPhoneNumber(phoneNumber, 10)
+    if (recentCount >= 3) {
+      throw createError({
+        statusCode: 429,
+        statusMessage: 'Too many OTP requests for this number. Please wait before trying again.',
+      })
+    }
+
     // Invalidate any existing OTPs for this phone number
     await otpRepository.invalidateAllForPhoneNumber(phoneNumber)
 

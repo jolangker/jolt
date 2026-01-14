@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm'
+import { and, eq, gte, sql } from 'drizzle-orm'
 import { db } from '~~/server/utils/db'
 import { otpCodes } from '~~/server/db/schema'
 
@@ -47,5 +47,17 @@ export const otpRepository = {
         eq(otpCodes.phoneNumber, phoneNumber),
         eq(otpCodes.verified, false),
       ))
+  },
+
+  async countRecentByPhoneNumber(phoneNumber: string, withinMinutes: number) {
+    const since = new Date(Date.now() - withinMinutes * 60 * 1000)
+    const result = await db
+      .select({ count: sql<number>`count(*)`.mapWith(Number) })
+      .from(otpCodes)
+      .where(and(
+        eq(otpCodes.phoneNumber, phoneNumber),
+        gte(otpCodes.createdAt, since),
+      ))
+    return result[0]?.count ?? 0
   },
 }
