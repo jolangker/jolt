@@ -245,6 +245,14 @@ jolt/
 | `DELETE` | `/api/categories/:id` | Delete category |
 | `GET` | `/api/master/categories` | List default categories |
 
+### Authentication
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/auth/send-otp` | Request OTP code via WhatsApp |
+| `POST` | `/api/auth/verify-otp` | Verify OTP and create session |
+| `POST` | `/api/auth/login-with-token` | Login with bot-generated token |
+
 ### Payments
 
 | Method | Endpoint | Description |
@@ -283,10 +291,15 @@ services:
 
 ---
 
-## 🔒 Security
+## 🔒 Security & Authentication
 
-- **WhatsApp Integration** – Secure messaging integration
+### Login Methods
+- **OTP Login** – Direct dashboard access via WhatsApp OTP (6-digit code, 5-min expiry)
+- **Token Login** – One-click login via bot-generated links
+
+### Security Features
 - **Session Management** – Encrypted session tokens with nuxt-auth-utils
+- **OTP Rate Limiting** – Max 3 attempts per code, 60-second resend cooldown
 - **Environment Variables** – Sensitive config never committed to source
 - **Protected Routes** – Server middleware validates authentication
 
@@ -300,6 +313,7 @@ services:
 - [x] Export to CSV/Excel
 - [x] Bulk Import from Excel
 - [x] PRO subscription with Midtrans payment
+- [x] WhatsApp OTP Login
 - [ ] Shared household budgets
 - [ ] Receipt image scanning
 

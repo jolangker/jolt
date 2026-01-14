@@ -354,16 +354,51 @@ When FREE users attempt to access PRO features:
 
 ## 6. Authentication & Security
 
-### 6.1 WhatsApp Integration
+### 6.1 Login Methods
+
+Jolt AI supports two authentication methods, allowing users to access the dashboard flexibly.
+
+#### WhatsApp OTP Login (Direct Access)
+| Feature | Description |
+|---------|-------------|
+| **Phone Number Entry** | Enter WhatsApp number directly on login page |
+| **OTP via WhatsApp** | 6-digit code sent via WhatsApp message |
+| **Auto Phone Format** | Automatic normalization (0812 → +62812) |
+| **Resend Timer** | 60-second cooldown between OTP requests |
+| **Max Attempts** | 3 attempts per OTP, then must request new |
+| **User Auto-Create** | New users created automatically on first login |
+
+**User Flow:**
+1. Navigate to `/login` on the dashboard
+2. Enter WhatsApp phone number
+3. Receive 6-digit OTP via WhatsApp
+4. Enter OTP to verify and log in
+5. Session created, redirect to dashboard
+
+#### Token-Based Login (Via Bot)
+| Feature | Description |
+|---------|-------------|
+| **Request via Bot** | Chat with Jolt AI bot to request login link |
+| **Single-Use Token** | Secure, one-time use authentication token |
+| **5-Minute Expiry** | Token expires after 5 minutes |
+| **Instant Access** | Click link to auto-login |
+
+**User Flow:**
+1. Message Jolt AI bot on WhatsApp
+2. Request login link
+3. Receive unique login URL
+4. Click link to authenticate instantly
+
+### 6.2 Session Management
 
 | Feature | Description |
 |---------|-------------|
-| **Seamless Linking** | Easy-to-use WhatsApp linking flow |
-| **Secure Auth** | Verified WhatsApp identity |
-| **Session Management** | Encrypted session tokens |
+| **Secure Sessions** | Encrypted session tokens via nuxt-auth-utils |
+| **1-Hour Duration** | Session expires after 1 hour of inactivity |
 | **Cross-Device Sync** | Same account, any device |
+| **Logout Option** | Clear session from profile page |
 
-### 6.2 Data Protection
+### 6.3 Data Protection
 
 | Measure | Implementation |
 |---------|----------------|
