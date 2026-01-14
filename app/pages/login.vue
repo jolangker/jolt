@@ -1,58 +1,165 @@
 <script setup lang="ts">
 const route = useRoute()
+const toast = useToast()
 
-const isValidating = ref(true)
-const validationError = ref<string | null>(null)
-const isValid = ref(false)
+// Mode: 'token' when ?t=xxx in URL, 'otp' otherwise
+const mode = computed(() => route.query.t ? 'token' : 'otp')
 
-const token = computed(() => route.query.t as string)
+// ============ TOKEN LOGIN ============
+const isValidating = ref(false)
+const tokenValid = ref(false)
+const tokenError = ref<string | null>(null)
 
 async function validateToken() {
-  if (!token.value) {
-    validationError.value = 'No token provided in URL'
-    isValidating.value = false
+  const token = route.query.t as string
+  if (!token || token.length < 8) {
+    tokenError.value = 'Invalid token format'
     return
   }
 
-  if (token.value.length < 8) {
-    validationError.value = 'Invalid token format'
-    isValidating.value = false
-    return
-  }
+  isValidating.value = true
+  tokenError.value = null
 
   try {
     await $fetch('/api/auth/login-with-token', {
       method: 'POST',
-      body: {
-        token: token.value,
-      },
+      body: { token },
     })
 
-    isValid.value = true
-
+    tokenValid.value = true
     setTimeout(() => {
       location.href = '/'
-    }, 2000)
+    }, 1500)
   }
   catch (error: any) {
-    validationError.value = error.data?.message || 'Invalid or expired token'
-    isValid.value = false
+    tokenError.value = error.data?.message || 'Invalid or expired token'
   }
   finally {
     isValidating.value = false
   }
 }
 
+// ============ OTP LOGIN ============
+type OtpStep = 'phone' | 'code'
+const otpStep = ref<OtpStep>('phone')
+const phoneNumber = ref('')
+const otpCode = ref('')
+const isLoading = ref(false)
+const otpError = ref<string | null>(null)
+const resendTimer = ref(0)
+
+let resendInterval: ReturnType<typeof setInterval> | null = null
+
+function startResendTimer() {
+  resendTimer.value = 60
+  resendInterval = setInterval(() => {
+    resendTimer.value--
+    if (resendTimer.value <= 0 && resendInterval) {
+      clearInterval(resendInterval)
+      resendInterval = null
+    }
+  }, 1000)
+}
+
+async function sendOtp() {
+  if (!phoneNumber.value) {
+    otpError.value = 'Phone number is required'
+    return
+  }
+
+  // Normalize phone number
+  let phone = phoneNumber.value.trim()
+  if (phone.startsWith('0')) {
+    phone = '+62' + phone.slice(1)
+  }
+  if (!phone.startsWith('+')) {
+    phone = '+62' + phone
+  }
+
+  isLoading.value = true
+  otpError.value = null
+
+  try {
+    await $fetch('/api/auth/send-otp', {
+      method: 'POST',
+      body: { phoneNumber: phone },
+    })
+
+    phoneNumber.value = phone
+    otpStep.value = 'code'
+    startResendTimer()
+    toast.add({
+      title: 'OTP Terkirim',
+      description: 'Kode verifikasi telah dikirim ke WhatsApp kamu.',
+      icon: 'i-lucide-check-circle',
+      color: 'success',
+    })
+  }
+  catch (error: any) {
+    otpError.value = error.data?.message || 'Gagal mengirim OTP'
+  }
+  finally {
+    isLoading.value = false
+  }
+}
+
+async function verifyOtp() {
+  if (!otpCode.value || otpCode.value.length !== 6) {
+    otpError.value = 'Masukkan 6 digit kode OTP'
+    return
+  }
+
+  isLoading.value = true
+  otpError.value = null
+
+  try {
+    await $fetch('/api/auth/verify-otp', {
+      method: 'POST',
+      body: {
+        phoneNumber: phoneNumber.value,
+        code: otpCode.value,
+      },
+    })
+
+    toast.add({
+      title: 'Login Berhasil',
+      description: 'Mengalihkan ke dashboard...',
+      icon: 'i-lucide-check-circle',
+      color: 'success',
+    })
+
+    setTimeout(() => {
+      location.href = '/'
+    }, 1000)
+  }
+  catch (error: any) {
+    otpError.value = error.data?.message || 'Verifikasi gagal'
+    otpCode.value = ''
+  }
+  finally {
+    isLoading.value = false
+  }
+}
+
+function goBackToPhone() {
+  otpStep.value = 'phone'
+  otpCode.value = ''
+  otpError.value = null
+  if (resendInterval) {
+    clearInterval(resendInterval)
+    resendInterval = null
+  }
+}
+
 onMounted(() => {
-  validateToken()
+  if (mode.value === 'token') {
+    validateToken()
+  }
 })
 
-watch(() => route.query.token, () => {
-  if (route.query.token) {
-    isValidating.value = true
-    validationError.value = null
-    isValid.value = false
-    validateToken()
+onUnmounted(() => {
+  if (resendInterval) {
+    clearInterval(resendInterval)
   }
 })
 </script>
@@ -60,63 +167,50 @@ watch(() => route.query.token, () => {
 <template>
   <UDashboardPanel :ui="{ body: 'flex items-center justify-center' }">
     <template #body>
-      <UCard class="w-full max-w-md">
+      <!-- TOKEN LOGIN MODE -->
+      <UCard
+        v-if="mode === 'token'"
+        class="w-full max-w-md"
+      >
         <template #header>
           <div class="flex items-center gap-3">
             <UIcon
-              :name="isValidating ? 'i-lucide-loader-circle' : isValid ? 'i-lucide-shield-check' : 'i-lucide-shield-alert'"
+              :name="isValidating ? 'i-lucide-loader-circle' : tokenValid ? 'i-lucide-shield-check' : 'i-lucide-shield-alert'"
               class="size-6"
               :class="{
                 'animate-spin text-primary': isValidating,
-                'text-success': isValid,
-                'text-error': !isValidating && !isValid,
+                'text-success': tokenValid,
+                'text-error': !isValidating && !tokenValid && tokenError,
               }"
             />
             <h2 class="text-xl font-semibold">
-              {{ isValidating ? 'Validating Token' : isValid ? 'Token Valid' : 'Validation Failed' }}
+              {{ isValidating ? 'Memvalidasi Token' : tokenValid ? 'Token Valid' : 'Validasi Gagal' }}
             </h2>
           </div>
         </template>
 
-        <!-- Loading state -->
         <div
           v-if="isValidating"
           class="space-y-4"
         >
-          <div class="space-y-2">
-            <USkeleton class="h-4 w-full" />
-            <USkeleton class="h-4 w-3/4" />
-          </div>
-
-          <div class="flex items-center gap-2 text-sm text-muted">
-            <span>Verifying your access token...</span>
-          </div>
-
+          <USkeleton class="h-4 w-full" />
+          <USkeleton class="h-4 w-3/4" />
           <UProgress animation="carousel" />
         </div>
 
-        <!-- Success state -->
         <div
-          v-else-if="isValid"
+          v-else-if="tokenValid"
           class="space-y-4"
         >
           <UAlert
             color="success"
             variant="soft"
             icon="i-lucide-circle-check"
-            title="Access Granted"
-            description="Token validated successfully. Redirecting to dashboard..."
+            title="Akses Diberikan"
+            description="Token berhasil divalidasi. Mengalihkan ke dashboard..."
           />
-
-          <div class="flex items-center justify-center">
-            <UIcon
-              name="i-lucide-loader-circle"
-              class="size-5 animate-spin text-success"
-            />
-          </div>
         </div>
 
-        <!-- Error state -->
         <div
           v-else
           class="space-y-4"
@@ -125,21 +219,158 @@ watch(() => route.query.token, () => {
             color="error"
             variant="soft"
             icon="i-lucide-circle-x"
-            title="Access Denied"
-            :description="validationError || 'Unable to validate token'"
+            title="Akses Ditolak"
+            :description="tokenError || 'Token tidak valid'"
+          />
+          <UButton
+            to="/login"
+            variant="soft"
+            block
+            icon="i-lucide-arrow-left"
+          >
+            Login dengan OTP
+          </UButton>
+        </div>
+      </UCard>
+
+      <!-- OTP LOGIN MODE -->
+      <UCard
+        v-else
+        class="w-full max-w-md"
+      >
+        <template #header>
+          <div class="flex items-center gap-3">
+            <UIcon
+              name="i-lucide-smartphone"
+              class="size-6 text-primary"
+            />
+            <div>
+              <h2 class="text-xl font-semibold">
+                {{ otpStep === 'phone' ? 'Masuk ke Jolt' : 'Verifikasi OTP' }}
+              </h2>
+              <p class="text-sm text-muted">
+                {{ otpStep === 'phone' ? 'Masukkan nomor WhatsApp kamu' : 'Masukkan kode yang dikirim ke WhatsApp' }}
+              </p>
+            </div>
+          </div>
+        </template>
+
+        <!-- Step 1: Phone Number -->
+        <form
+          v-if="otpStep === 'phone'"
+          class="space-y-4"
+          @submit.prevent="sendOtp"
+        >
+          <UFormField label="Nomor WhatsApp">
+            <UInput
+              v-model="phoneNumber"
+              placeholder="08123456789"
+              icon="i-lucide-phone"
+              size="lg"
+              :disabled="isLoading"
+              autofocus
+              class="w-full"
+            />
+          </UFormField>
+
+          <UAlert
+            v-if="otpError"
+            color="error"
+            variant="soft"
+            icon="i-lucide-circle-x"
+            :description="otpError"
           />
 
-          <div class="space-y-3">
+          <UButton
+            type="submit"
+            block
+            size="lg"
+            :loading="isLoading"
+            icon="i-lucide-send"
+          >
+            Kirim Kode OTP
+          </UButton>
+        </form>
+
+        <!-- Step 2: OTP Code -->
+        <form
+          v-else
+          class="space-y-4"
+          @submit.prevent="verifyOtp"
+        >
+          <div class="text-center mb-4">
             <p class="text-sm text-muted">
-              The token in your URL is invalid or has expired. Please check your link or request a new one.
+              Kode dikirim ke
+              <span class="font-medium text-highlighted">{{ phoneNumber }}</span>
             </p>
           </div>
-        </div>
+
+          <UFormField label="Kode OTP">
+            <UInput
+              v-model="otpCode"
+              placeholder="123456"
+              icon="i-lucide-key-round"
+              size="lg"
+              maxlength="6"
+              :disabled="isLoading"
+              autofocus
+              class="text-center tracking-widest text-xl w-full"
+            />
+          </UFormField>
+
+          <UAlert
+            v-if="otpError"
+            color="error"
+            variant="soft"
+            icon="i-lucide-circle-x"
+            :description="otpError"
+          />
+
+          <UButton
+            type="submit"
+            block
+            size="lg"
+            :loading="isLoading"
+            icon="i-lucide-log-in"
+          >
+            Verifikasi & Masuk
+          </UButton>
+
+          <div class="flex items-center justify-between text-sm">
+            <UButton
+              variant="ghost"
+              size="sm"
+              icon="i-lucide-arrow-left"
+              @click="goBackToPhone"
+            >
+              Ganti Nomor
+            </UButton>
+
+            <UButton
+              v-if="resendTimer > 0"
+              variant="ghost"
+              size="sm"
+              disabled
+            >
+              Kirim ulang ({{ resendTimer }}s)
+            </UButton>
+            <UButton
+              v-else
+              variant="ghost"
+              size="sm"
+              icon="i-lucide-refresh-cw"
+              :loading="isLoading"
+              @click="sendOtp"
+            >
+              Kirim Ulang
+            </UButton>
+          </div>
+        </form>
 
         <template #footer>
-          <div class="text-xs text-muted">
-            <p>Token: <code class="text-highlighted">{{ token || 'Not provided' }}</code></p>
-          </div>
+          <p class="text-xs text-muted text-center">
+            Dengan masuk, kamu menyetujui ketentuan layanan Jolt AI.
+          </p>
         </template>
       </UCard>
     </template>

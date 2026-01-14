@@ -18,6 +18,14 @@ export const userRepository = {
     return user
   },
 
+  async create(phoneNumber: string) {
+    const [user] = await db
+      .insert(users)
+      .values({ phoneNumber })
+      .returning()
+    return user
+  },
+
   async upgradeToPro(userId: string, subscriptionEndsAt: Date) {
     await db
       .update(users)

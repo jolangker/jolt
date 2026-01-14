@@ -8,15 +8,22 @@
       <UCard class="w-full max-w-md mx-auto text-center">
         <div class="space-y-4">
           <UIcon
-            name="i-heroicons-lock-closed"
-            class="w-16 h-16 mx-auto text-gray-400"
+            name="i-lucide-lock"
+            class="w-16 h-16 mx-auto text-muted"
           />
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-            Unauthorized Access
+          <h1 class="text-2xl font-bold">
+            Akses Ditolak
           </h1>
-          <p class="text-gray-500 dark:text-gray-400">
-            You do not have permission to view this page.
+          <p class="text-muted">
+            Anda tidak memiliki izin untuk melihat halaman ini. Silakan login terlebih dahulu.
           </p>
+          <UButton
+            to="/login"
+            size="lg"
+            icon="i-lucide-log-in"
+          >
+            Masuk ke Akun
+          </UButton>
         </div>
       </UCard>
     </template>

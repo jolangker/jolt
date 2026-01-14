@@ -6,7 +6,7 @@ definePageMeta({
   layout: 'authenticated',
 })
 
-const { user, fetch } = useUserSession()
+const { user, clear } = useUserSession()
 const { tier, isPro } = useAuth()
 
 const memberSince = computed(() => {
@@ -305,6 +305,32 @@ const handleFileImport = async (event: Event) => {
               <UIcon
                 name="i-lucide:chevron-right"
                 class="w-5 h-5 text-error"
+              />
+            </div>
+          </UCard>
+          <UCard
+            variant="subtle"
+            class="cursor-pointer"
+            @click="async () => { await clear(); navigateTo('/login') }"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <UIcon
+                  name="i-lucide:log-out"
+                  class="w-5 h-5 text-primary"
+                />
+                <div>
+                  <div class="text-sm font-medium">
+                    Keluar
+                  </div>
+                  <div class="text-xs text-dimmed">
+                    Logout dari akun Anda
+                  </div>
+                </div>
+              </div>
+              <UIcon
+                name="i-lucide:chevron-right"
+                class="w-5 h-5 text-dimmed"
               />
             </div>
           </UCard>

@@ -155,6 +155,13 @@
       "when": 1768324595740,
       "tag": "0021_omniscient_scarlet_witch",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1768359298373,
+      "tag": "0022_lazy_squadron_supreme",
+      "breakpoints": true
     }
   ]
 }
