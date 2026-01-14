@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm'
 import { users } from '../db/schema'
+import { verifyHmacSignature } from '../utils/hmac'
 
 export default defineEventHandler(async (event) => {
   const url = getRequestURL(event)
@@ -13,8 +14,9 @@ export default defineEventHandler(async (event) => {
   if (url.pathname.startsWith('/api/webhooks')) return
 
   const session = await getUserSession(event)
-  const secret = getHeader(event, 'x-api-key')
   const phoneNumber = getHeader(event, 'x-phone-number')
+  const timestamp = getHeader(event, 'x-timestamp')
+  const signature = getHeader(event, 'x-signature')
 
   let currentUserId: string | null = null
   let currentUserTier: 'FREE' | 'PRO' | null = null
@@ -28,8 +30,18 @@ export default defineEventHandler(async (event) => {
     currentUserTier = session.user.tier
     subscriptionEndsAt = session.user.subscriptionEndsAt ? new Date(session.user.subscriptionEndsAt) : null
   }
-  else if (secret === process.env.APP_SECRET) {
-    if (!phoneNumber) throw createError({ statusCode: 400, statusMessage: 'Missing phone number' })
+  else if (signature && timestamp && phoneNumber) {
+    // Verify HMAC signature from n8n
+    const result = verifyHmacSignature(
+      phoneNumber,
+      timestamp,
+      signature,
+      process.env.APP_SECRET!,
+    )
+
+    if (!result.valid) {
+      throw createError({ statusCode: 401, statusMessage: result.error || 'Invalid signature' })
+    }
 
     let user = await db.query.users.findFirst({
       where: (user, { eq }) => eq(user.phoneNumber, phoneNumber),
