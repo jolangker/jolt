@@ -297,9 +297,17 @@ services:
 - **OTP Login** – Direct dashboard access via WhatsApp OTP (6-digit code, 5-min expiry)
 - **Token Login** – One-click login via bot-generated links
 
+### Rate Limiting (DDoS Protection)
+| Endpoint | Limit | Window |
+|----------|-------|--------|
+| All `/api/*` | 100 requests | 1 minute |
+| `/api/auth/send-otp` | 10 requests per IP | 10 minutes |
+| `/api/auth/send-otp` | 3 requests per phone | 10 minutes |
+
 ### Security Features
+- **HMAC-Signed n8n Requests** – Bot requests authenticated via HMAC-SHA256 signatures with 5-minute expiry
 - **Session Management** – Encrypted session tokens with nuxt-auth-utils
-- **OTP Rate Limiting** – Max 3 attempts per code, 60-second resend cooldown
+- **OTP Protection** – Max 3 attempts per code, phone-based + IP-based rate limiting
 - **Environment Variables** – Sensitive config never committed to source
 - **Protected Routes** – Server middleware validates authentication
 

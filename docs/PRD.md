@@ -398,7 +398,27 @@ Jolt AI supports two authentication methods, allowing users to access the dashbo
 | **Cross-Device Sync** | Same account, any device |
 | **Logout Option** | Clear session from profile page |
 
-### 6.3 Data Protection
+### 6.3 Rate Limiting & DDoS Protection
+
+| Protection Layer | Limit | Description |
+|-----------------|-------|-------------|
+| **Global API** | 100/min per IP | Prevents abuse across all endpoints |
+| **OTP Endpoint (IP)** | 10/10min per IP | Protects against DDoS with multiple phones |
+| **OTP Endpoint (Phone)** | 3/10min per phone | Prevents harassment of single user |
+| **OTP Verification** | 3 attempts per code | Prevents brute force attacks |
+
+### 6.4 n8n Integration Security
+
+The WhatsApp bot communicates with the web dashboard through n8n workflows. All requests from n8n are authenticated using HMAC signatures:
+
+| Feature | Description |
+|---------|-------------|
+| **HMAC-SHA256 Signature** | Each request signed with secret key |
+| **Timestamp Validation** | Requests expire after 5 minutes |
+| **Timing-Safe Comparison** | Prevents timing attacks |
+| **Replay Protection** | Old requests cannot be reused |
+
+### 6.5 Data Protection
 
 | Measure | Implementation |
 |---------|----------------|
