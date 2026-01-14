@@ -1,0 +1,9 @@
+services:
+  jolt:
+    image: jolleyx/jolt:dev
+    container_name: jolt-dev
+    ports:
+      - "3001:3000"
+    restart: unless-stopped
+    env_file:
+      - .env
