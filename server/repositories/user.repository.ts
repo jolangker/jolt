@@ -9,19 +9,19 @@ export const userRepository = {
     })
   },
 
-  async findByPhoneNumber(phoneNumber: string) {
+  async findByTelegramId(telegramId: string) {
     const [user] = await db
       .select()
       .from(users)
-      .where(eq(users.phoneNumber, phoneNumber))
+      .where(eq(users.telegramId, telegramId))
 
     return user
   },
 
-  async create(phoneNumber: string) {
+  async create(telegramId: string) {
     const [user] = await db
       .insert(users)
-      .values({ phoneNumber })
+      .values({ telegramId })
       .returning()
     return user
   },

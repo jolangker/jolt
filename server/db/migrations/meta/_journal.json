@@ -162,6 +162,20 @@
       "when": 1768359298373,
       "tag": "0022_lazy_squadron_supreme",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1769576799919,
+      "tag": "0023_futuristic_slyde",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1769577387050,
+      "tag": "0024_perpetual_blockbuster",
+      "breakpoints": true
     }
   ]
 }

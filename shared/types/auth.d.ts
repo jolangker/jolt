@@ -2,7 +2,7 @@
 declare module '#auth-utils' {
   interface User {
     id: string
-    phoneNumber: string
+    telegramId: string
     createdAt: Date
     tier: 'FREE' | 'PRO'
     subscriptionEndsAt: Date | null

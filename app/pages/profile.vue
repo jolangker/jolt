@@ -165,10 +165,10 @@ const handleFileImport = async (event: Event) => {
                 />
                 <div>
                   <div class="text-xs text-dimmed">
-                    Nomor Telepon
+                    Telegram ID
                   </div>
                   <div class="text-sm font-medium">
-                    {{ user?.phoneNumber }}
+                    {{ user?.telegramId }}
                   </div>
                 </div>
               </div>

@@ -5,11 +5,11 @@ import { users } from './users'
 export const paymentOrders = pgTable('payment_orders', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   userId: uuid('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  orderId: text('orderId').notNull().unique(), // Midtrans order ID
+  orderId: text('orderId').notNull().unique(),
   amount: integer('amount').notNull(),
-  status: text('status').notNull().default('pending'), // pending | settlement | capture | cancel | deny | expire | refund
-  paymentType: text('paymentType'), // credit_card, gopay, bank_transfer, etc.
-  transactionId: text('transactionId'), // Midtrans transaction ID
+  status: text('status').notNull().default('pending'),
+  paymentType: text('paymentType'),
+  transactionId: text('transactionId'),
   transactionTime: timestamp('transactionTime'),
   expiresAt: timestamp('expiresAt'),
   createdAt: timestamp('createdAt').defaultNow().notNull(),

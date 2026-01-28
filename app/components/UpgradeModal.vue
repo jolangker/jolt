@@ -219,7 +219,7 @@ async function handleUpgrade() {
           size="lg"
           block
           :loading="isLoading"
-          :disabled="!isSnapLoaded"
+          disabled
           @click="handleUpgrade"
         />
 

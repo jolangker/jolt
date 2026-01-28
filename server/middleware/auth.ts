@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   if (url.pathname.startsWith('/api/webhooks')) return
 
   const session = await getUserSession(event)
-  const phoneNumber = getHeader(event, 'x-phone-number')
+  const telegramId = getHeader(event, 'x-telegram-id')
   const timestamp = getHeader(event, 'x-timestamp')
   const signature = getHeader(event, 'x-signature')
 
@@ -30,10 +30,10 @@ export default defineEventHandler(async (event) => {
     currentUserTier = session.user.tier
     subscriptionEndsAt = session.user.subscriptionEndsAt ? new Date(session.user.subscriptionEndsAt) : null
   }
-  else if (signature && timestamp && phoneNumber) {
+  else if (signature && timestamp && telegramId) {
     // Verify HMAC signature from n8n
     const result = verifyHmacSignature(
-      phoneNumber,
+      telegramId,
       timestamp,
       signature,
       process.env.APP_SECRET!,
@@ -44,12 +44,12 @@ export default defineEventHandler(async (event) => {
     }
 
     let user = await db.query.users.findFirst({
-      where: (user, { eq }) => eq(user.phoneNumber, phoneNumber),
+      where: (user, { eq }) => eq(user.telegramId, telegramId),
     })
 
     if (!user) {
       [user] = await db.insert(users).values({
-        phoneNumber,
+        telegramId,
       }).returning()
       isNewUser = true
     }

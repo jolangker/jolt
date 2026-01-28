@@ -5,16 +5,16 @@ const TIMESTAMP_TOLERANCE_MS = 5 * 60 * 1000 // 5 minutes
 /**
  * Verify HMAC signature for n8n requests
  *
- * The signature is calculated as: HMAC-SHA256(timestamp:phoneNumber, secret)
+ * The signature is calculated as: HMAC-SHA256(timestamp:telegramId, secret)
  *
- * @param phoneNumber - The phone number from x-phone-number header
+ * @param telegramId - The telegramId from x-telegram-id header
  * @param timestamp - Unix timestamp in milliseconds from x-timestamp header
  * @param signature - HMAC signature from x-signature header
  * @param secret - The APP_SECRET used for signing
  * @returns Object with valid flag and optional error message
  */
 export function verifyHmacSignature(
-  phoneNumber: string,
+  telegramId: string,
   timestamp: string,
   signature: string,
   secret: string,
@@ -32,7 +32,7 @@ export function verifyHmacSignature(
   }
 
   // Calculate expected signature
-  const payload = `${timestamp}:${phoneNumber}`
+  const payload = `${timestamp}:${telegramId}`
   const expectedSignature = crypto
     .createHmac('sha256', secret)
     .update(payload)
