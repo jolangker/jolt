@@ -5,6 +5,12 @@ const isValidating = ref(false)
 const tokenValid = ref(false)
 const tokenError = ref<string | null>(null)
 
+const handleRedirect = () => {
+  setTimeout(() => {
+    location.href = '/'
+  }, 500)
+}
+
 async function validateToken() {
   const token = route.query.t as string
   if (!token || token.length < 8) {
@@ -22,9 +28,7 @@ async function validateToken() {
     })
 
     tokenValid.value = true
-    setTimeout(() => {
-      location.href = '/'
-    }, 1500)
+    handleRedirect()
   }
   catch (error: any) {
     tokenError.value = error.data?.message || 'Invalid or expired token'
@@ -42,7 +46,10 @@ onMounted(() => {
 <template>
   <UDashboardPanel :ui="{ body: 'flex items-center justify-center' }">
     <template #body>
-      <UCard class="w-full max-w-md">
+      <UCard
+        v-if="route.query.t"
+        class="w-full max-w-md"
+      >
         <template #header>
           <div class="flex items-center gap-3">
             <UIcon
@@ -95,6 +102,10 @@ onMounted(() => {
           />
         </div>
       </UCard>
+      <TelegramLoginWidget
+        v-else
+        @callback="handleRedirect"
+      />
     </template>
   </UDashboardPanel>
 </template>

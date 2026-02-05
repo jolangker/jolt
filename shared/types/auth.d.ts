@@ -17,4 +17,11 @@ export interface AuthContext {
   tier: 'FREE' | 'PRO'
 }
 
+export interface TelegramAuthData {
+  id: number
+  username: string
+  auth_date: number
+  hash: string
+}
+
 export { }
