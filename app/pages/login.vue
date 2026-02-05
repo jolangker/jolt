@@ -93,14 +93,6 @@ onMounted(() => {
             title="Akses Ditolak"
             :description="tokenError || 'Token tidak valid'"
           />
-          <UButton
-            to="/login"
-            variant="soft"
-            block
-            icon="i-lucide-arrow-left"
-          >
-            Login dengan OTP
-          </UButton>
         </div>
       </UCard>
     </template>

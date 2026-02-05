@@ -17,13 +17,6 @@
           <p class="text-muted">
             Anda tidak memiliki izin untuk melihat halaman ini. Silakan login terlebih dahulu.
           </p>
-          <UButton
-            to="/login"
-            size="lg"
-            icon="i-lucide-log-in"
-          >
-            Masuk ke Akun
-          </UButton>
         </div>
       </UCard>
     </template>
