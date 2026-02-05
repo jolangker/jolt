@@ -9,6 +9,13 @@
 - `npm run lint:fix` - Fix ESLint issues
 - `npm run typecheck` - Run TypeScript type checking
 
+## Testing
+
+**Note:** No test framework is currently set up. When adding tests:
+1. Choose a framework (Vitest recommended for Nuxt 4)
+2. Add test scripts to package.json
+3. Create `__tests__/` directories alongside source files
+
 ## Database Commands
 
 - `npm run db:generate` - Generate Drizzle migrations
@@ -17,38 +24,22 @@
 
 ## Project Structure
 
-This is a Nuxt 4 application with a clear separation of concerns:
+This is a Nuxt 4 application with clear separation of concerns:
 
 ```
 app/              # Frontend (Vue components, pages, composables)
-  components/     # Vue components
-  pages/          # Routes with page components
-  composables/    # Vue composables
-  layouts/        # Layout components
-  middleware/     # Nuxt middleware
-  utils/          # Frontend utilities
-
-server/           # Backend (Nitro)
-  api/           # API endpoints (REST conventions: [resource].[method].ts)
-  db/            # Database schemas and Drizzle setup
-  middleware/    # Server middleware (auth, rate-limiting)
-  repositories/  # Data access layer
-  services/      # Business logic layer
-  utils/         # Server utilities
-
-shared/           # Shared code between frontend and backend
-  types/         # TypeScript type definitions
-  utils/         # Shared utilities
+server/           # Backend (Nitro) - API endpoints, services, repositories, db
+shared/           # Shared types and utilities
 ```
 
 ## Code Style Guidelines
 
 ### Imports
 
-- Use `~~/` alias for project root (Nuxt auto-imports)
-- Group imports: third-party libraries, then internal imports
-- No explicit imports for Nuxt composables, auto-imported
+- Use `~~/` alias for project root
+- Group: third-party libraries, then internal imports
 - Import types with `type` keyword: `import type { Transaction } from '~~/shared/types'`
+- Nuxt composables are auto-imported
 
 ```ts
 import z from 'zod'
@@ -56,31 +47,33 @@ import { transactionService } from '~~/server/services'
 import type { TransactionPayload } from '~~/shared/types/transaction'
 ```
 
-### Component Structure (Vue)
+### Components (Vue)
 
-- Use `<script setup lang="ts">` for all components
-- Define props first, then emits, then reactive state
-- Use `computed` and `watch` as needed
-- Keep template logic minimal, delegate to computed properties
+- Use `<script setup lang="ts">`
+- Order: props → emits → reactive state → computed → functions
+- Use `useFetch` for data loading, `$fetch` for mutations
+- Call `refreshNuxtData()` after mutations to refresh cached data
 
 ```vue
 <script setup lang="ts">
 const props = defineProps<{ id: number }>()
 const emit = defineEmits<{ update: [value: string] }>()
-
 const state = reactive({ value: '' })
+
+const { data } = await useFetch('/api/categories')
+await $fetch('/api/transactions', { method: 'POST', body: payload })
+refreshNuxtData()
 </script>
 ```
 
 ### API Endpoints
 
-Follow REST conventions with file naming: `[resource].[method].ts`
+REST convention: `[resource].[method].ts`
 
-- Use `defineEventHandler` for all handlers
-- Extract userId from `event.context.auth.userId` (set by auth middleware)
-- Validate query/body with Zod using `getValidatedQuery` or `readValidatedBody`
-- Use service layer for business logic
-- Return consistent response: `{ success: true, data: ..., meta: ... }`
+- `defineEventHandler` for all handlers
+- Extract userId from `event.context.auth.userId`
+- Validate with Zod: `getValidatedQuery()` or `readValidatedBody()`
+- Return: `{ success: true, data: ..., meta: ... }`
 
 ```ts
 export default defineEventHandler(async (event) => {
@@ -88,95 +81,73 @@ export default defineEventHandler(async (event) => {
   const query = await getValidatedQuery(event, z.object({
     limit: z.string().optional(),
   }).parse)
-
-  return service.list(userId, query)
+  return transactionService.list(userId, query)
 })
 ```
 
-### Database Layer
+### Database Layer (Drizzle + PostgreSQL)
 
-- Use Drizzle ORM with PostgreSQL
-- Define schemas in `server/db/schemas/`
-- Use soft deletes: `deletedAt` timestamp (not null check in queries)
-- Repository functions: `findMany`, `findById`, `create`, `update`, `delete`, `count`
-- Build reusable filter functions with `and()`, `eq()`, `gte()`, etc.
+- Schemas in `server/db/schemas/`
+- Soft deletes: `deletedAt` timestamp (check with `isNull()`)
+- Repository methods: `findMany`, `findById`, `create`, `update`, `delete`, `count`
+- Build filters with `and()`, `eq()`, `gte()`, `ilike()`, `inArray()`
 
 ### Service Layer
 
-Business logic lives in services, not repositories:
-- Enforce tier restrictions (FREE users limited to 7 days of data)
-- Validate business rules
-- Throw `createError` with appropriate status codes (401, 402, 404)
+Business logic lives here, not repositories:
+- Enforce tier restrictions (FREE = 7 days max)
+- Throw `createError` with proper codes (401, 402, 404)
 - Return standardized success objects
 
 ```ts
 if (tier === 'FREE' && isOldData) {
-  throw createError({
-    statusCode: 402,
-    statusMessage: 'FREE users cannot access older data',
-  })
+  throw createError({ statusCode: 402, statusMessage: 'Upgrade required' })
 }
 ```
 
-### Type Definitions
+### Types
 
-- Use Drizzle's `$inferSelect` and `$inferInsert` for types
-- Export from `shared/types/` using type inference
-- Use Zod schemas for validation and generate types with `z.infer<>`
-
-```ts
-export type Transaction = typeof schema.transactions.$inferSelect & {
-  category: Category
-}
-```
-
-### Error Handling
-
-- Use `createError()` for API errors with proper status codes
-- 401: Unauthorized
-- 402: Payment Required (tier restrictions)
-- 404: Not found
-- Handle errors in components with try/catch, show toast notifications
+- Use Drizzle's `$inferSelect` and `$inferInsert`
+- Use Zod schemas with `z.infer<>` for types
+- Export from `shared/types/`
 
 ### Authentication
 
-- Web: Uses `useUserSession()` composable
-- Telegram/bot: HMAC signature verification in auth middleware
-- Auth context provides: `userId`, `tier`, `source`, `isNewUser`
-- Tier values: `'FREE' | 'PRO'`
-
-### Styling
-
-- Uses Nuxt UI components (`UButton`, `UCard`, `UDashboardPanel`, etc.)
-- Tailwind CSS for custom styling
-- Use semantic color tokens: `text-primary`, `bg-accented`, `text-dimmed`
-- Follow existing component patterns in Nuxt UI docs
+- Web: `useUserSession()` composable
+- Telegram/bot: HMAC signature verification in middleware
+- Context: `userId`, `tier` ('FREE' | 'PRO'), `source`, `isNewUser`
 
 ### Naming Conventions
 
 - Files: kebab-case (`transaction-form.vue`, `transaction.service.ts`)
-- Components: PascalCase (`TransactionForm.vue`, `LazyFilterDrawer`)
+- Components: PascalCase (`TransactionForm.vue`)
 - Functions: camelCase (`transactionService.create()`)
-- Constants: UPPER_SNAKE_CASE (`FREE`, `PRO`)
-- Database columns: camelCase (`userId`, `categoryId`, `deletedAt`)
+- Constants: UPPER_SNAKE_CASE
+- DB columns: camelCase
+
+### Styling (Nuxt UI + Tailwind)
+
+- Components: `UButton`, `UCard`, `UDrawer`, `UForm`, etc.
+- Color tokens: `text-primary`, `bg-accented`, `text-dimmed`
+- Icons: `i-solar:check-circle-outline`, `i-lucide:user`
+- Icon packages: `@iconify-json/solar`, `@iconify-json/lucide`
 
 ### Composables
 
-- Use `use` prefix for composables (`useAuth()`, `useToast()`)
-- Extract reusable logic into composables in `app/composables/`
-- Keep composables focused and composable
+- Use `use` prefix (`useAuth()`, `useToast()`)
+- Place in `app/composables/`
 
-### Tier Restrictions
+### Barrel Exports
 
-FREE users have these limitations:
-- Can only access transactions from last 7 days
-- Enforced in service layer before database queries
-- Show upgrade prompts in UI when restricted
-- PRO users have full access to all data
+- Services/repositories use `index.ts` for re-exports
+- Import from barrel: `import { transactionService } from '~~/server/services'`
 
 ### Date Handling
 
-- Use dayjs for all date operations
-- Format: `dayjs(date).format('YYYY-MM-DD')` for API
-- Locale set to Indonesian ('id')
-- Use shared `formatDate()` utility for display
+- Use dayjs (locale: 'id')
+- Format for API: `dayjs(date).format('YYYY-MM-DD')`
+
+### Error Handling
+
+- API: `createError()` with status codes (401, 402, 404)
+- Components: try/catch with toast notifications
