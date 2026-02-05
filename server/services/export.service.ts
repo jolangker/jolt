@@ -14,7 +14,7 @@ export const exportService = {
     const transactions = await transactionRepository.findMany(userId, filters)
 
     const workbook = new ExcelJS.Workbook()
-    workbook.creator = 'Jolt'
+    workbook.creator = 'Wuzz'
     workbook.created = new Date()
 
     // Sheet 1: Transactions

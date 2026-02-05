@@ -1,6 +1,6 @@
 {
-  "name": "jolt",
-  "description": "Jolt is a web application built with Nuxt 4, TypeScript, and Tailwind CSS.",
+  "name": "wuzz",
+  "description": "Wuzz is a web application built with Nuxt 4, TypeScript, and Tailwind CSS.",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,8 +14,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:script": "bun server/db/script.ts",
-    "docker:build": "docker build -t jolleyx/jolt:latest .",
-    "docker:push": "docker push jolleyx/jolt:latest"
+    "docker:build": "docker build -t jolleyx/wuzz:latest .",
+    "docker:push": "docker push jolleyx/wuzz:latest"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.2",

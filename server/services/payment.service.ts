@@ -35,7 +35,7 @@ export const paymentService = {
       orderId,
       amount,
       customerPhone: userPhone,
-      itemName: 'Jolt PRO Subscription (1 Month)',
+      itemName: 'Wuzz PRO Subscription (1 Month)',
     })
 
     return {

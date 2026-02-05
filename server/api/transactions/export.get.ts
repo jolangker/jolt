@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
   const buffer = await exportService.exportToExcel(userId, tier, query)
 
   const date = dayjs().format('YYYY-MM-DD')
-  const filename = `jolt-transactions-${date}.xlsx`
+  const filename = `wuzz-transactions-${date}.xlsx`
 
   setHeaders(event, {
     'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

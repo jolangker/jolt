@@ -15,7 +15,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Jolt',
+      title: 'Wuzz',
     },
   },
 

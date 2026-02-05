@@ -27,7 +27,7 @@ const { data: summary } = await useFetch('/api/analytics/summary', {
       >
         <template #left>
           <div class="font-bold text-2xl tracking-wider text-highlighted">
-            Jolt
+            Wuzz
           </div>
         </template>
       </UDashboardNavbar>

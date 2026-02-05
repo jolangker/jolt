@@ -76,7 +76,7 @@ const handleExport = async () => {
 
     // Create filename
     const date = dayjs().format('YYYY-MM-DD')
-    link.setAttribute('download', `jolt-transactions-${date}.xlsx`)
+    link.setAttribute('download', `wuzz-transactions-${date}.xlsx`)
 
     document.body.appendChild(link)
     link.click()

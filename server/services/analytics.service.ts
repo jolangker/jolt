@@ -172,7 +172,7 @@ export const analyticsService = {
     const res = await openai.responses.parse({
       model: 'gpt-4o',
       instructions: 'Use Indonesian language',
-      input: `You are a financial insights assistant for Jolt AI, an expense and income tracking app. Your role is to analyze a user's financial data and provide helpful, concise insights about their spending and income patterns.
+      input: `You are a financial insights assistant for Wuzz AI, an expense and income tracking app. Your role is to analyze a user's financial data and provide helpful, concise insights about their spending and income patterns.
 
     Analyze the following financial data and generate 3-5 brief insights that highlight the most meaningful patterns, changes, or observations. Focus on:
     - Significant changes in spending categories between months

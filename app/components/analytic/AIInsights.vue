@@ -30,7 +30,7 @@ const mockInsights = [
           <div>
             <div class="flex items-center gap-2">
               <div class="text-sm font-semibold">
-                Jolt AI Insights
+                Wuzz AI Insights
               </div>
               <UBadge
                 v-if="isFree"

@@ -91,7 +91,7 @@ export async function createSnapTransaction(params: {
     item_details: [
       {
         id: 'PRO_SUBSCRIPTION',
-        name: params.itemName || 'Jolt PRO Subscription (1 Month)',
+        name: params.itemName || 'Wuzz PRO Subscription (1 Month)',
         price: params.amount,
         quantity: 1,
       },

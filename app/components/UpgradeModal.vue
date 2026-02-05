@@ -37,7 +37,7 @@ const isLoading = ref(false)
 const features = [
   { icon: 'i-lucide:mic', label: 'Voice input tanpa batas' },
   { icon: 'i-lucide:camera', label: 'Scan struk belanja' },
-  { icon: 'i-lucide:sparkles', label: 'Jolt AI Insights' },
+  { icon: 'i-lucide:sparkles', label: 'Wuzz AI Insights' },
   { icon: 'i-lucide:bar-chart-3', label: 'Analitik lengkap' },
   { icon: 'i-lucide:tag', label: 'Kategori kustom' },
   { icon: 'i-lucide:download', label: 'Export data' },
@@ -175,7 +175,7 @@ async function handleUpgrade() {
             Upgrade ke PRO
           </h2>
           <p class="text-dimmed text-sm mt-1">
-            Nikmati semua fitur premium Jolt AI
+            Nikmati semua fitur premium Wuzz AI
           </p>
         </div>
 
