@@ -100,12 +100,50 @@ onMounted(() => {
             title="Akses Ditolak"
             :description="tokenError || 'Token tidak valid'"
           />
+          <UButton
+            label="Masuk dengan Telegram"
+            color="primary"
+            variant="solid"
+            block
+            @click="navigateTo('/login', { replace: true })"
+          />
         </div>
       </UCard>
-      <TelegramLoginWidget
+      <UCard
         v-else
-        @callback="handleRedirect"
-      />
+        class="w-full max-w-md"
+      >
+        <div class="space-y-6">
+          <div class="text-center space-y-2">
+            <div class="mx-auto w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
+              <UIcon
+                name="i-lucide-wallet"
+                class="size-8 text-primary"
+              />
+            </div>
+            <h1 class="text-2xl font-bold text-typography">
+              Wuzz AI
+            </h1>
+            <p class="text-sm text-dimmed">
+              Kelola keuangan Anda dengan mudah dan efisien
+            </p>
+          </div>
+
+          <div class="h-px bg-gray-200 dark:bg-gray-800" />
+
+          <div class="text-center space-y-3">
+            <p class="text-sm text-typography">
+              Masuk untuk melanjutkan
+            </p>
+            <div class="flex items-center justify-center">
+              <TelegramLoginWidget @callback="handleRedirect" />
+            </div>
+            <p class="text-xs text-dimmed">
+              Login aman dan terenkripsi dengan Telegram
+            </p>
+          </div>
+        </div>
+      </UCard>
     </template>
   </UDashboardPanel>
 </template>
