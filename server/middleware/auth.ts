@@ -50,6 +50,9 @@ export default defineEventHandler(async (event) => {
     if (!user) {
       [user] = await db.insert(users).values({
         telegramId,
+        tier: 'PRO',
+        subscriptionEndsAt: dayjs().add(7, 'day').toDate(),
+        isTrialUsed: true,
       }).returning()
       isNewUser = true
     }
