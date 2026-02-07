@@ -104,16 +104,18 @@ const sourceItems = [
           class="w-full"
           size="lg"
         />
-        <USelect
-          v-model="typeFilter"
-          :items="typeItems"
-          class="w-full"
-        />
-        <USelect
-          v-model="sourceFilter"
-          :items="sourceItems"
-          class="w-full"
-        />
+        <div class="flex gap-2">
+          <USelect
+            v-model="typeFilter"
+            :items="typeItems"
+            class="w-full"
+          />
+          <USelect
+            v-model="sourceFilter"
+            :items="sourceItems"
+            class="w-full"
+          />
+        </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
