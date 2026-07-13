@@ -291,14 +291,6 @@ bun run docker:push
 
 The Dockerfile uses `oven/bun` as both build and production runtime. The production image serves the Nuxt output via `bun .output/server/index.mjs` on port 3000.
 
-### CI/CD
-
-GitHub Actions workflow: `.github/workflows/deploy.yml`
-
-- **Trigger**: Push to `main` or `master` branch.
-- **Build**: Builds Docker image, pushes to Docker Hub as `jolleyx/jolt:latest` and `jolleyx/jolt:<commit-sha>`.
-- **Deploy**: SSH into VPS, runs `docker compose pull && docker compose up -d`.
-
 ### Docker Compose
 
 `compose.yaml` defines a single `jolt` service using the `jolleyx/jolt:latest` image, exposing port 3000, with `.env` file injection.
