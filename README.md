@@ -3,7 +3,7 @@
 [![Nuxt UI](https://img.shields.io/badge/Made%20with-Nuxt%20UI-00DC82?logo=nuxt&labelColor=020420)](https://ui.nuxt.com)
 [![Telegram Bot](https://img.shields.io/badge/Try%20it-Telegram%20Bot-26A5E4?logo=telegram&logoColor=white)](https://t.me/jollexpenser_bot)
 
-**Jolt** is an AI-powered personal finance tracking system that operates primarily through a **Telegram chat bot**. Users interact naturally by sending messages about their expenses and income to the bot, which processes the information using AI workflows and stores it in a database. This repository contains the **web dashboard** component for visualizing and monitoring your financial data.
+**Jolt** is an AI-powered personal finance tracking system that operates through a **Telegram chat bot** and a **web dashboard**. Users interact naturally by sending messages about their expenses and income to the bot, which processes the information using an in-process LLM agent and stores it in a PostgreSQL database. The web dashboard provides visualization, analytics, and transaction management.
 
 ## 📱 Preview
 
@@ -15,60 +15,64 @@
 
 ## 🤖 How Jolt Works
 
-Jolt is built on a three-part architecture:
+Jolt runs as a single Nuxt process handling both the Telegram bot and the web dashboard:
 
 ```
-┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐
-│  Telegram Bot   │ ───> │  n8n Workflow   │ ───> │  Web Dashboard  │
-│  (Primary UI)   │      │  (AI Processing)│      │  (This Repo)    │
-└─────────────────┘      └─────────────────┘      └─────────────────┘
-         │                        │                         │
-         └────────────────────────┴─────────────────────────┘
-                                  │
-                          ┌───────▼────────┐
-                          │  PostgreSQL    │
-                          │   Database     │
-                          └────────────────┘
+┌─────────────────┐      ┌─────────────────────────────────────┐      ┌─────────────────┐
+│  Telegram Bot   │ ───> │  Jolt Server (Nuxt + Nitro)         │ <─── │  Web Dashboard  │
+│  (Primary UI)   │      │  ┌───────────┐  ┌──────────────┐   │      │  (Charts/Stats) │
+└─────────────────┘      │  │  GrammY   │  │  LLM Agent   │   │      └─────────────────┘
+                         │  │  Adapter   │─>│  (8 tools)   │   │               │
+                         │  └───────────┘  └──────┬───────┘   │               │
+                         │                        │           │               │
+                         │              ┌─────────▼─────────┐ │               │
+                         │              │  Service Layer    │ │               │
+                         │              │  (shared logic)   │ │               │
+                         │              └─────────┬─────────┘ │               │
+                         └────────────────────────┼───────────┘               │
+                                                  │                           │
+                                          ┌───────▼────────┐                  │
+                                          │  PostgreSQL    │◄─────────────────┘
+                                          │   Database     │
+                                          └────────────────┘
 ```
 
 ### 1. **Telegram Bot** (Primary Interface)
-Users interact with Jolt by chatting with a Telegram bot. Simply send messages like:
-- "I spent $25 on lunch today"
-- "Received salary $3000"
-- "Coffee $5"
+Users interact with Jolt by chatting with a Telegram bot. Send messages like:
+- "lunch 25rb" — logs a Rp 25,000 expense under Food
+- "gajian 5jt" — logs a Rp 5,000,000 income under Salary
+- "how much did I spend on food this month?" — returns a summary
+- "show my last 5 transactions" — lists recent activity
+- "change that one to 30rb" — updates the most recently referenced transaction
+- "delete the bakso one" — removes a matching transaction
 
-The bot is the main entry point for all user interactions.
+### 2. **LLM Agent** (In-Process)
+When a message arrives:
+- The **Telegram Adapter** (GrammY) receives the webhook update
+- The **Agent** forwards the message to an LLM (via Vercel AI SDK) with 8 tools
+- The LLM decides which tools to invoke; each tool wraps an existing service method
+- The agent can chain multiple tool calls in one turn (e.g., create a category AND log a transaction)
+- Conversation memory is in-memory, windowed to the last 10 turns, dropped after 30 min inactivity
 
-### 2. **n8n Workflow** (AI Processing)
-When you send a message to the bot:
-- The message is forwarded to an n8n workflow
-- AI processes the natural language to extract:
-  - Amount
-  - Category (Food, Transport, Salary, etc.)
-  - Transaction type (expense or income)
-  - Date and notes
-- The structured data is then stored in the database
-
-### 3. **Web Dashboard** (This Repository)
+### 3. **Web Dashboard**
 The web dashboard provides:
 - **Visualization**: Charts and graphs of your spending patterns
 - **Analytics**: Insights into your financial habits
 - **Monitoring**: Overview of income, expenses, and balance
-- **Transaction History**: Review and manage past transactions
-
-> **Note**: The dashboard is read-focused. While you can manage transactions here, the primary way to add new entries is through the Telegram bot.
+- **Transaction Management**: Create, edit, delete, and export transactions
 
 ## ✨ Key Features
 
 ### For Users
 - 🗣️ **Natural Language Input**: Just chat normally with the Telegram bot
-- 🤖 **AI-Powered**: Automatic categorization and data extraction
+- 🤖 **AI-Powered**: Automatic categorization and data extraction via LLM agent
 - 📊 **Visual Analytics**: Beautiful charts showing spending trends and patterns
 - 📱 **Mobile-First**: Access your dashboard on any device
 - 🔒 **Secure**: Telegram authentication, no password needed
+- 🔄 **Multi-Action**: Chain multiple operations in a single message
 
 ### Dashboard Features
-- **Real-time Sync**: Data from Telegram appears instantly
+- **Real-time Sync**: Transactions from Telegram appear instantly in the dashboard
 - **Monthly Overview**: Current month's spending summary
 - **Quick Metrics**: Balance, total income, total expenses at a glance
 - **Transaction History**: Complete list with filtering and pagination
@@ -77,23 +81,18 @@ The web dashboard provides:
 
 ## 🛠️ Tech Stack
 
-### Web Dashboard (This Repository)
 - **Framework**: [Nuxt 4](https://nuxt.com) - Vue 3 full-stack framework
 - **Language**: TypeScript
-- **UI Library**: [Nuxt UI](https://ui.nuxt.com) v4.1.0
+- **UI Library**: [Nuxt UI](https://ui.nuxt.com) v4
 - **Styling**: Tailwind CSS
 - **Charts**: [Unovis](https://unovis.dev) - Data visualization library
 - **Icons**: Iconify (Lucide, Solar, Simple Icons)
-- **Database ORM**: Drizzle ORM with PostgreSQL
-- **Validation**: Zod & Valibot
+- **Database ORM**: Drizzle ORM with PostgreSQL (Neon serverless)
+- **Validation**: Zod + drizzle-zod
 - **Authentication**: nuxt-auth-utils (Telegram-based)
-- **Runtime**: Node.js with Bun package manager
-
-### External Components
-- **Chat Interface**: Telegram Bot API
-- **AI Processing**: n8n workflow automation
-- **Database**: Neon (Serverless PostgreSQL)
-- **Deployment**: Docker containerization
+- **Telegram Bot**: [grammY](https://grammy.dev) — webhook-based Telegram bot framework
+- **LLM Agent**: [Vercel AI SDK](https://ai-sdk.dev) (`ai`) + `@ai-sdk/openai-compatible`
+- **Runtime**: Bun
 
 ## 📊 Database Schema
 
@@ -140,13 +139,26 @@ jolt/
 │   ├── pages/               # Routes (Dashboard, Analytics, etc.)
 │   ├── components/          # Vue components
 │   └── layouts/             # Page layouts
-├── server/                  # Backend API
+├── server/                  # Backend (Nitro)
 │   ├── api/                # REST endpoints
-│   │   ├── transactions/   # Transaction CRUD
+│   │   ├── transactions/   # Transaction CRUD + export
 │   │   ├── analytics/      # Analytics data
-│   │   └── auth/           # Authentication
-│   └── db/                 # Database schemas
+│   │   ├── categories/     # Category CRUD
+│   │   ├── auth/           # Login token flow
+│   │   └── telegram/       # Telegram webhook
+│   ├── agent/              # LLM agent (Vercel AI SDK)
+│   │   ├── index.ts        # generateText loop + system prompt
+│   │   ├── memory.ts       # Conversation window (in-memory)
+│   │   └── tools/          # 8 tool definitions
+│   ├── telegram/           # GrammY adapter
+│   │   ├── adapter.ts      # Bot, webhook, message handler
+│   │   └── user.ts         # Telegram userId → internal userId
+│   ├── services/           # Business logic layer
+│   ├── repositories/       # Data access layer (Drizzle)
+│   ├── plugins/            # Nitro plugins (bot startup)
+│   └── db/                 # Database schemas & migrations
 ├── shared/                  # Shared types/utils
+├── tests/                   # Bun tests
 └── docs/                    # Documentation
 ```
 
@@ -172,8 +184,9 @@ The dashboard connects to these API endpoints:
 ## 🔐 Security
 
 - Telegram authentication (no passwords)
-- Secure session token management
-- Environment-based configuration
+- Session-based auth for the web dashboard (HTTP-only cookies)
+- The Telegram bot resolves users in-process — no external auth boundary
+- Environment-based configuration for all secrets
 - Data encryption in transit and at rest
 
 ## 📄 License
