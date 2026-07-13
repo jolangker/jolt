@@ -284,3 +284,17 @@ Configuration: `drizzle.config.ts` (dialect: `postgresql`, uses `DATABASE_URL`).
 - The `.npmrc` file sets `shamefully-hoist=true` for compatibility.
 - The `server/db/script.ts` file is used for one-off database operations (seeding, data migrations) — run with `bun run db:script`.
 - Unovis charts use CSS variables defined in `main.css` to integrate with the Nuxt UI theme.
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues on `jolangker/jolt`, accessed via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five-role vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context layout — root `CONTEXT.md` plus `docs/adr/`, created lazily by the domain-modeling skill. See `docs/agents/domain.md`.
