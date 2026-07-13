@@ -25,4 +25,7 @@ logs
 .env.*
 !.env.example
 
-.agent
+.agents
+.claude
+
+skills-lock.json
