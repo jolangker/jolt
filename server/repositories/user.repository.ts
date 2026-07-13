@@ -17,4 +17,9 @@ export const userRepository = {
 
     return user
   },
+
+  async create(data: { telegramUserId: string, telegramUsername: string }) {
+    const [user] = await db.insert(users).values(data).returning()
+    return user!
+  },
 }

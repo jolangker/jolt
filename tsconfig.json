@@ -1,5 +1,14 @@
 {
   // https://nuxt.com/docs/guide/concepts/typescript
+  "compilerOptions": {
+    "paths": {
+      "~~/*": ["./*"],
+      "@@/*": ["./*"],
+      "~/*": ["./app/*"],
+      "@/*": ["./app/*"],
+      "#imports": ["./.nuxt/types/nitro-imports"]
+    }
+  },
   "files": [],
   "references": [
     { "path": "./.nuxt/tsconfig.app.json" },
