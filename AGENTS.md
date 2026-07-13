@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**Jolt** is the web dashboard component of an AI-powered personal finance tracking system. Users log expenses/income by chatting with a Telegram bot; an n8n workflow uses AI to extract and categorize the data into PostgreSQL; this Nuxt 4 dashboard provides visualization, analytics, and transaction management.
+**Jolt** is the web dashboard and Telegram bot for an AI-powered personal finance tracking system. Users log expenses/income by chatting with a Telegram bot; an in-process LLM agent uses tool-calling to extract and categorize the data into PostgreSQL via the same service layer that serves the dashboard. The Nuxt 4 dashboard provides visualization, analytics, and transaction management.
 
 The dashboard is a **SPA** (`ssr: false`) with a Nuxt server backend providing REST API endpoints. The backend follows a strict **Service-Repository pattern**:
 
@@ -25,6 +25,8 @@ Database (PostgreSQL via Neon)
 - **ORM**: Drizzle ORM (PostgreSQL dialect, Neon serverless driver)
 - **Validation**: Zod + drizzle-zod (insert schemas auto-derived from table definitions)
 - **Auth**: nuxt-auth-utils (Telegram token-based login, session cookies)
+- **Telegram Bot**: grammY (webhook-based)
+- **LLM Agent**: Vercel AI SDK (`ai`) + `@ai-sdk/openai-compatible` (tool-calling agent)
 - **Export**: ExcelJS
 - **Package Manager**: Bun
 - **Linting**: ESLint with `@nuxt/eslint` (stylistic mode enabled)
@@ -53,10 +55,14 @@ bun run db:script
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `DATABASE_URL` | Yes | Neon PostgreSQL connection string |
-| `APP_SECRET` | Yes | Shared secret for n8n API authentication (`x-api-key` header) |
 | `APP_BASE_URL` | Yes | Base URL for generating login links (e.g. `http://localhost:3000`) |
-| `NUXT_SESSION_PASSWORD` | Yes | Session encryption key for n8n auth-utils |
+| `NUXT_SESSION_PASSWORD` | Yes | Session encryption key for nuxt-auth-utils |
 | `NUXT_PUBLIC_APP_URL` | Yes | Public app URL |
+| `TELEGRAM_BOT_TOKEN` | Yes | Telegram Bot API token (from BotFather) |
+| `TELEGRAM_WEBHOOK_URL` | No | Full webhook URL; if unset, bot won't register a webhook (dev mode) |
+| `LLM_BASE_URL` | Yes | OpenAI-compatible LLM endpoint (e.g. `https://api.openai.com/v1`) |
+| `LLM_API_KEY` | Yes | Bearer token for the LLM endpoint |
+| `LLM_MODEL` | Yes | Model name (e.g. `gpt-4o-mini`, `claude-3-5-sonnet`) |
 
 ## Development Workflow
 
@@ -122,11 +128,33 @@ server/
 │   ├── migrations/            # Generated SQL migration files
 │   └── script.ts              # Ad-hoc DB script runner
 ├── middleware/
-│   └── auth.ts                # Server auth middleware (web session OR n8n API key)
+│   └── auth.ts                # Server auth middleware (web session only)
 ├── repositories/              # Data access layer (Drizzle queries)
 │   └── index.ts               # Barrel export
 ├── services/                  # Business logic layer
 │   └── index.ts               # Barrel export
+├── telegram/                  # Telegram bot adapter
+│   ├── adapter.ts             # GrammY bot, webhook setup, message handler
+│   └── user.ts                # Telegram user → internal userId resolution
+├── agent/                     # LLM agent
+│   ├── index.ts               # generateText loop with system prompt + tools
+│   ├── memory.ts              # In-memory conversation window (Map<chatId, Turn[]>)
+│   └── tools/                 # 8 tool definitions wrapping services
+│       ├── index.ts           # Barrel export
+│       ├── add-transaction.ts
+│       ├── update-transaction.ts
+│       ├── delete-transaction.ts
+│       ├── list-transactions.ts
+│       ├── get-summary.ts
+│       ├── get-categories.ts
+│       ├── create-category.ts
+│       ├── get-user-info.ts
+│       └── resolve-date-reference.ts
+├── api/
+│   └── telegram/
+│       └── webhook.post.ts   # Telegram webhook route
+├── plugins/
+│   └── telegram.ts           # Bot startup on server boot
 └── utils/
     ├── db.ts                  # Drizzle instance (Neon serverless)
     └── token.ts               # generateShortToken (crypto-based)
@@ -142,7 +170,17 @@ shared/
 
 ## Testing Instructions
 
-There is currently **no test framework configured**. No test dependencies or test files exist in the project. If adding tests in the future, integrate with the existing Bun toolchain.
+Tests use **Bun's built-in test runner** (`bun:test`). Run with:
+
+```bash
+# Run all tests
+bun test
+
+# Run a single test file
+bun test tests/memory.test.ts
+```
+
+Test files live in `tests/`. The agent tools are tested by calling their exported `execute*` functions directly with mocked service/repository dependencies — no LLM or database required.
 
 ## Code Style
 
@@ -189,6 +227,19 @@ There is currently **no test framework configured**. No test dependencies or tes
 - Use `and()`, `eq()`, `gte()`, `lte()`, `ilike()`, `inArray()` for filter building.
 - Barrel-exported from `server/repositories/index.ts`.
 
+**Agent Tools** (`server/agent/tools/`):
+- Each tool is a `tool()` call from the Vercel AI SDK with a Zod `inputSchema`.
+- Tools wrap existing service methods — no direct repository/DB access from tools.
+- The `userId` is passed via closure from the agent, not read from `event.context.auth`.
+- Each tool file exports both a `create*Tool(userId)` factory (for the agent) and an `execute*()` function (for testing with mocked deps).
+- Barrel-exported from `server/agent/tools/index.ts`.
+
+**Telegram Adapter** (`server/telegram/`):
+- GrammY bot receives webhook updates at `/api/telegram/webhook`.
+- Resolves `telegramUserId` → internal `userId` via `server/telegram/user.ts` (auto-creates users on first contact).
+- Passes `chatId` and `userId` to the agent; sends the agent's reply back via `sendMessage`.
+- Conversation memory is in-memory, windowed to the last 10 turns, dropped after 30 min of inactivity.
+
 **Database Schema** (`server/db/schemas/`):
 - Drizzle `pgTable` definitions.
 - Insert schemas auto-derived with `createInsertSchema()` from `drizzle-zod`.
@@ -208,15 +259,15 @@ All amounts are in **Indonesian Rupiah (IDR)**. Use `formatCurrency()` from `app
 
 ## Authentication
 
-The app supports two authentication paths, handled by `server/middleware/auth.ts`:
+The app uses session-based authentication via `nuxt-auth-utils`, handled by `server/middleware/auth.ts`:
 
-1. **Web (session-based)**: Uses `nuxt-auth-utils`. Users get a login token via Telegram, visit `/login?t=<token>`, and the server creates an HTTP-only session cookie. Access via `getUserSession(event)`.
+1. **Web (session-based)**: Users get a login token via Telegram, visit `/login?t=<token>`, and the server creates an HTTP-only session cookie. Access via `getUserSession(event)`.
 
-2. **External API (n8n)**: Requests with `x-api-key: <APP_SECRET>`, `x-telegram-user-id`, and `x-telegram-username` headers. The middleware auto-creates users if they don't exist. Access via header inspection.
+The middleware sets `event.context.auth = { userId, source: 'web' }` for downstream handlers.
 
-Both paths set `event.context.auth = { userId, source }` for downstream handlers.
+**Public endpoints** (no auth required): `/api/auth/**`, `/api/master/**`, `/api/telegram/**`.
 
-**Public endpoints** (no auth required): `/api/auth/**`, `/api/master/**`.
+The Telegram bot does not go through the auth middleware — it resolves `telegramUserId` to `userId` internally via `server/telegram/user.ts` and calls services directly.
 
 Client-side route guard: `app/middleware/auth.ts` redirects unauthenticated users to `/unauthorized`.
 
@@ -284,6 +335,7 @@ Configuration: `drizzle.config.ts` (dialect: `postgresql`, uses `DATABASE_URL`).
 - The `.npmrc` file sets `shamefully-hoist=true` for compatibility.
 - The `server/db/script.ts` file is used for one-off database operations (seeding, data migrations) — run with `bun run db:script`.
 - Unovis charts use CSS variables defined in `main.css` to integrate with the Nuxt UI theme.
+- The agent's tool set is the v1 surface. New tools can be added by adding a file to `server/agent/tools/` and registering it with the agent in `server/agent/index.ts`.
 
 ## Agent skills
 
