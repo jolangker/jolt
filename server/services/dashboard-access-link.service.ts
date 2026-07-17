@@ -1,5 +1,6 @@
 import { dashboardAccessLinkRepository } from '~~/server/repositories'
 import { digestAccessCode, generateAccessCode } from '~~/server/utils/token'
+import { resolveAppBaseUrl } from '~~/server/utils/app-url'
 
 const EXPIRES_IN_MS = 5 * 60 * 1000
 const RATE_WINDOW_MS = 10 * 60 * 1000
@@ -16,7 +17,7 @@ export const dashboardAccessLinkService = {
     const expiresAt = new Date(now.getTime() + EXPIRES_IN_MS)
     await dashboardAccessLinkRepository.supersedeUnused(userId, now)
     await dashboardAccessLinkRepository.create(userId, digestAccessCode(code), expiresAt)
-    return { url: `${process.env.APP_BASE_URL}/login?t=${code}`, expiresAt }
+    return { url: `${resolveAppBaseUrl()}/login?t=${code}`, expiresAt }
   },
 
   async inspect(code: string) {

@@ -8,6 +8,7 @@ import { executeGetCategories } from '../server/agent/tools/get-categories'
 import { executeCreateCategory } from '../server/agent/tools/create-category'
 import { executeGetUserInfo } from '../server/agent/tools/get-user-info'
 import { executeRequestDashboardAccess } from '../server/agent/tools/request-dashboard-access'
+import { resolveAppBaseUrl } from '../server/utils/app-url'
 
 const userId = 'test-user-id'
 
@@ -292,5 +293,11 @@ describe('request_dashboard_access tool', () => {
     })
 
     expect(result).toEqual({ delivery: 'telegram_private_message', expiresAt: '2025-01-15T00:05:00.000Z' })
+  })
+})
+
+describe('dashboard access URL origin', () => {
+  it('uses the public application URL when the server-only URL is absent', () => {
+    expect(resolveAppBaseUrl({ NUXT_PUBLIC_APP_URL: 'https://jolt.example/' })).toBe('https://jolt.example')
   })
 })
