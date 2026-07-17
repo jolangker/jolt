@@ -29,5 +29,13 @@ A label that classifies a Transaction. Has a `type` (`expense` | `income`), a `n
 _Avoid_: tag, label, bucket
 
 **User**:
-A person who uses Jolt. Identified internally by `users.id` (uuid) and externally by `telegramUserId`. A Telegram user becomes a Jolt User the first time they send any message; no explicit signup step.
+A person who uses Jolt. Identified internally by `users.id` (uuid); each Telegram user ID identifies exactly one User. A Telegram user becomes a Jolt User the first time they send any message; no explicit signup step.
 _Avoid_: account, member, customer
+
+**Dashboard Access Link**:
+A short-lived, single-use URL that a User receives through the Telegram Adapter to establish access to the web dashboard. Possession of the link is the authentication proof.
+_Avoid_: magic link, login token, dashboard URL
+
+**Dashboard Request**:
+An explicit request from a User to access the web dashboard, made either in natural language to the Agent or with the `/dashboard` Telegram command.
+_Avoid_: login request, token request
