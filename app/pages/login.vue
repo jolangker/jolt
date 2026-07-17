@@ -6,6 +6,7 @@ const confirming = ref(false)
 const error = ref('')
 const user = ref('')
 const linkUnavailableMessage = 'This dashboard link is no longer available. Please request a new one from Telegram.'
+const { fetch: fetchUserSession } = useUserSession()
 
 async function inspect() {
   if (!token.value) {
@@ -25,6 +26,7 @@ async function confirm() {
   confirming.value = true
   try {
     await $fetch('/api/auth/dashboard-link', { method: 'POST', body: { token: token.value } })
+    await fetchUserSession()
     await navigateTo('/')
   }
   catch { error.value = linkUnavailableMessage }
