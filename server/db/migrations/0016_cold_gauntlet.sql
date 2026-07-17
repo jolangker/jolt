@@ -1,0 +1,1 @@
+DROP INDEX "dashboard_access_links_digest_idx";

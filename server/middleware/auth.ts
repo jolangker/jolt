@@ -1,6 +1,11 @@
 export default defineEventHandler(async (event) => {
   const url = getRequestURL(event)
 
+  if (url.pathname === '/login') {
+    setHeader(event, 'Referrer-Policy', 'no-referrer')
+    setHeader(event, 'X-Frame-Options', 'DENY')
+  }
+
   if (!url.pathname.startsWith('/api')) return
 
   setHeader(event, 'Content-Type', 'application/json')

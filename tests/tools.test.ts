@@ -7,6 +7,7 @@ import { executeGetSummary } from '../server/agent/tools/get-summary'
 import { executeGetCategories } from '../server/agent/tools/get-categories'
 import { executeCreateCategory } from '../server/agent/tools/create-category'
 import { executeGetUserInfo } from '../server/agent/tools/get-user-info'
+import { executeRequestDashboardAccess } from '../server/agent/tools/request-dashboard-access'
 
 const userId = 'test-user-id'
 
@@ -280,5 +281,16 @@ describe('get_user_info tool', () => {
     expect(result.userId).toBe(userId)
     expect(result.defaultCategories).toHaveLength(1)
     expect(result.defaultCategories[0].name).toBe('Food')
+  })
+})
+
+describe('request_dashboard_access tool', () => {
+  it('returns delivery instructions without exposing the access URL', async () => {
+    const result = await executeRequestDashboardAccess(userId, async (id) => {
+      expect(id).toBe(userId)
+      return { url: 'https://jolt.test/login?t=secret', expiresAt: new Date('2025-01-15T00:05:00Z') }
+    })
+
+    expect(result).toEqual({ delivery: 'telegram_private_message', expiresAt: '2025-01-15T00:05:00.000Z' })
   })
 })

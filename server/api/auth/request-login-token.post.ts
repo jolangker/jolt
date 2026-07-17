@@ -1,10 +1,3 @@
-import z from 'zod'
-import { authService } from '~~/server/services'
-
-export default defineEventHandler(async (event) => {
-  const body = await readValidatedBody(event, z.object({
-    telegramUserId: z.string(),
-  }).parse)
-
-  return authService.requestLoginToken(body.telegramUserId)
+export default defineEventHandler(() => {
+  throw createError({ statusCode: 410, statusMessage: 'Dashboard links must be requested from Telegram.' })
 })

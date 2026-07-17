@@ -1,6 +1,7 @@
 import { Bot, webhookCallback } from 'grammy'
 import { resolveTelegramUser } from './user'
 import { runAgent } from '~~/server/agent'
+import { dashboardAccessLinkService } from '~~/server/services'
 
 let bot: Bot | null = null
 let webhookRegistered = false
@@ -22,8 +23,17 @@ export async function initializeBot(): Promise<void> {
   }
 
   bot = new Bot(token)
+  await bot.api.setMyCommands([{ command: 'dashboard', description: 'Open your Jolt dashboard' }])
+
+  bot.command('dashboard', async (ctx) => {
+    if (ctx.chat.type !== 'private' || !ctx.from) return
+    const userId = await resolveTelegramUser(ctx.from.id.toString(), ctx.from.username || ctx.from.first_name || 'unknown')
+    const link = await dashboardAccessLinkService.issue(userId)
+    await ctx.reply(`Open your dashboard: ${link.url}\n\nThis link expires in 5 minutes.`, { link_preview_options: { is_disabled: true } })
+  })
 
   bot.on('message:text', async (ctx) => {
+    if (ctx.chat.type !== 'private') return
     if (processedUpdates.has(ctx.update.update_id)) return
     processedUpdates.add(ctx.update.update_id)
     if (processedUpdates.size > MAX_PROCESSED) {
@@ -45,11 +55,14 @@ export async function initializeBot(): Promise<void> {
       }, 4000)
 
       try {
-        const reply = await runAgent(chatId.toString(), userId, text)
+        const result = await runAgent(chatId.toString(), userId, text)
         await new Promise(resolve => setTimeout(resolve, 500))
-        await ctx.reply(reply, {
+        await ctx.reply(result.reply, {
           reply_parameters: { message_id: ctx.message.message_id },
         })
+        if (result.dashboardLink) {
+          await ctx.reply(`Open your dashboard: ${result.dashboardLink.url}\n\nThis link expires in 5 minutes.`, { link_preview_options: { is_disabled: true } })
+        }
       }
       finally {
         clearInterval(typingInterval)

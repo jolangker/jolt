@@ -9,6 +9,7 @@ import {
   createGetCategoriesTool,
   createCreateCategoryTool,
   createGetUserInfoTool,
+  createRequestDashboardAccessTool,
 } from './tools'
 import { getTurns, addTurn } from './memory'
 
@@ -20,6 +21,7 @@ const SYSTEM_PROMPT = `You are Jolt, a personal finance assistant bot. You help 
 - List and search transactions
 - Generate spending summaries
 - Manage categories
+- Request dashboard access when the User clearly asks to open their dashboard
 
 ## Rules
 1. Always respond in the user's language. If they write in Indonesian (Bahasa Indonesia), respond in Indonesian. If in English, respond in English.
@@ -43,7 +45,8 @@ const SYSTEM_PROMPT = `You are Jolt, a personal finance assistant bot. You help 
 - Use get_categories to see available categories before recording transactions.
 - Use get_user_info to check user context if needed.
 - When updating/deleting by description, if multiple matches are found, list them and ask which one.
-- For spending questions, use get_summary with appropriate date filters.`
+- For spending questions, use get_summary with appropriate date filters.
+- For a clear request to open the dashboard, use request_dashboard_access. Confirm the request without including a URL; it will be sent separately.`
 
 const provider = createOpenAICompatible({
   name: 'jolt-llm',
@@ -51,9 +54,10 @@ const provider = createOpenAICompatible({
   apiKey: process.env.LLM_API_KEY!,
 })
 
-export async function runAgent(chatId: string, userId: string, message: string): Promise<string> {
+export async function runAgent(chatId: string, userId: string, message: string): Promise<{ reply: string, dashboardLink?: { url: string, expiresAt: Date } }> {
   const model = provider.chatModel(process.env.LLM_MODEL!)
 
+  let dashboardLink: { url: string, expiresAt: Date } | undefined
   const tools = {
     add_transaction: createAddTransactionTool(userId),
     update_transaction: createUpdateTransactionTool(userId),
@@ -63,6 +67,7 @@ export async function runAgent(chatId: string, userId: string, message: string):
     get_categories: createGetCategoriesTool(userId),
     create_category: createCreateCategoryTool(userId),
     get_user_info: createGetUserInfoTool(userId),
+    request_dashboard_access: createRequestDashboardAccessTool(userId, (link) => { dashboardLink = link }),
   }
 
   const history = getTurns(chatId)
@@ -86,10 +91,10 @@ export async function runAgent(chatId: string, userId: string, message: string):
     addTurn(chatId, { role: 'user', content: message })
     addTurn(chatId, { role: 'assistant', content: reply })
 
-    return reply
+    return { reply, dashboardLink }
   }
   catch (error) {
     console.error('[agent] Error:', error)
-    return 'Sorry, I couldn\'t process that. Please try again.'
+    return { reply: 'Sorry, I couldn\'t process that. Please try again.' }
   }
 }

@@ -10,7 +10,12 @@ export async function resolveTelegramUser(telegramUserId: string, telegramUserna
   const created = await userRepository.create({
     telegramUserId,
     telegramUsername,
+  }).catch(async (error: { code?: string }) => {
+    if (error.code === '23505') return userRepository.findByTelegramId(telegramUserId)
+    throw error
   })
+
+  if (!created) throw createError({ statusCode: 500, statusMessage: 'Unable to resolve Telegram user' })
 
   return created.id
 }
