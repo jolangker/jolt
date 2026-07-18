@@ -1,52 +1,108 @@
-/* eslint-disable @stylistic/arrow-parens */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import { rand, randBetweenDate, randNumber } from '@ngneat/falso'
+import { and, eq, or } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/neon-http'
 import { neon } from '@neondatabase/serverless'
 import * as schema from './schema'
-import { rand, randNumber, randBetweenDate, randCatchPhrase } from '@ngneat/falso'
-import { eq } from 'drizzle-orm'
 
-const sql = neon(process.env.DATABASE_URL!)
-const db = drizzle(sql, { schema })
+const USER_ID = '4c1e0f90-e4f6-4300-b4ce-bfa314885006'
+const TRANSACTION_COUNT = 100
 
-const generateTrx = (): typeof schema.transactions.$inferInsert => {
-  const type = rand([
+type Category = Pick<typeof schema.categories.$inferSelect, 'id' | 'name' | 'type'>
+type TransactionType = Category['type']
+
+const notesByType = {
+  expense: [
+    'Belanja kebutuhan harian',
+    'Makan dan minum',
+    'Pembayaran tagihan',
+    'Transportasi',
+    'Keperluan pribadi',
+  ],
+  income: [
+    'Pendapatan bulanan',
+    'Pendapatan tambahan',
+    'Pembayaran proyek',
+    'Bonus',
+    'Pemasukan lainnya',
+  ],
+} as const
+
+export function generateTransaction(
+  categories: Category[],
+  requestedType: TransactionType = rand([
+    'expense' as const,
+    'expense' as const,
     'expense' as const,
     'expense' as const,
     'income' as const,
-    'income' as const,
-    'income' as const,
-  ])
-  const categoryId = type === 'expense' ? randNumber({ min: 1, max: 13 }) : randNumber({ min: 14, max: 18 })
+  ]),
+): typeof schema.transactions.$inferInsert {
+  if (categories.length === 0) {
+    throw new Error(`No categories are available for user ${USER_ID}`)
+  }
+
+  const type = categories.some(category => category.type === requestedType)
+    ? requestedType
+    : rand(categories).type
+  const matchingCategories = categories.filter(category => category.type === type)
+
+  const category = rand(matchingCategories)
+  const amount = type === 'expense'
+    ? randNumber({ min: 10_000, max: 750_000 })
+    : randNumber({ min: 1_000_000, max: 15_000_000 })
+  const from = new Date()
+  from.setMonth(from.getMonth() - 6)
 
   return {
+    userId: USER_ID,
+    categoryId: category.id,
     type,
-    categoryId,
-    note: `${randCatchPhrase()}`,
-    amount: randNumber({ min: 20000, max: 300000 }).toString(),
-    date: randBetweenDate({ from: new Date('2025-11-01'), to: new Date('2025-11-25') }),
-    userId: '11e778d5-7d39-4a6d-a92f-25330b14cdf1',
+    note: `${rand(notesByType[type])} - ${category.name}`,
+    amount: amount.toString(),
+    date: randBetweenDate({ from, to: new Date() }),
   }
 }
 
-const generateTrxs = (count: number) => {
-  return Array.from({ length: count }, () => generateTrx())
-}
-
 async function main() {
-  db.select().from(schema.categories)
-    .where(eq(schema.categories.isDefault, false))
-    .then(async (res) => {
-      res.forEach(async (cat) => {
-        if (cat.icon) {
-          await db.update(schema.categories)
-            .set({ icon: `${cat.icon}-outline`, isDefault: true })
-            .where(eq(schema.categories.id, cat.id))
-        }
-      })
+  const sql = neon(process.env.DATABASE_URL!)
+  const db = drizzle(sql, { schema })
+
+  const user = await db.query.users.findFirst({
+    where: eq(schema.users.id, USER_ID),
+    columns: { id: true },
+  })
+
+  if (!user) {
+    throw new Error(`User ${USER_ID} does not exist`)
+  }
+
+  const categories = await db
+    .select({
+      id: schema.categories.id,
+      name: schema.categories.name,
+      type: schema.categories.type,
     })
+    .from(schema.categories)
+    .where(and(
+      or(
+        eq(schema.categories.isDefault, true),
+        eq(schema.categories.userId, USER_ID),
+      ),
+    ))
+
+  const transactions = Array.from(
+    { length: TRANSACTION_COUNT },
+    () => generateTransaction(categories),
+  )
+
+  await db.insert(schema.transactions).values(transactions)
+
+  console.log(`Seeded ${TRANSACTION_COUNT} transactions for user ${USER_ID}`)
 }
 
-main()
-  .then(() => console.log('done'))
-  .catch((e) => console.error(e))
+if (import.meta.main) {
+  main().catch((error) => {
+    console.error('Failed to seed transactions:', error)
+    process.exitCode = 1
+  })
+}
