@@ -7,8 +7,8 @@ export function createGetSummaryTool(userId: string): Tool {
     description: 'Get a spending/income summary report. Use this when the user asks "how much did I spend", "what did I spend on food", or wants a financial overview for a period.',
     inputSchema: z.object({
       type: z.enum(['expense', 'income']).optional().describe('Filter by transaction type'),
-      startDate: z.string().optional().describe('Start date in YYYY-MM-DD format'),
-      endDate: z.string().optional().describe('End date in YYYY-MM-DD format'),
+      startDate: z.iso.date().optional().describe('Concrete start date in YYYY-MM-DD format'),
+      endDate: z.iso.date().optional().describe('Concrete end date in YYYY-MM-DD format'),
     }),
     execute: async (args) => {
       return executeGetSummary(userId, args, transactionService.getSummaryReport)

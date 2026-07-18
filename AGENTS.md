@@ -56,6 +56,7 @@ bun run db:script
 |----------|----------|-------------|
 | `DATABASE_URL` | Yes | Neon PostgreSQL connection string |
 | `APP_BASE_URL` | Yes | Base URL for generating login links (e.g. `http://localhost:3000`) |
+| `APP_TIMEZONE` | No | IANA timezone used by the Agent for relative dates (defaults to `Asia/Jakarta`) |
 | `NUXT_SESSION_PASSWORD` | Yes | Session encryption key for nuxt-auth-utils |
 | `NUXT_PUBLIC_APP_URL` | Yes | Public app URL |
 | `TELEGRAM_BOT_TOKEN` | Yes | Telegram Bot API token (from BotFather) |

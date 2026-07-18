@@ -4,7 +4,6 @@ import { transactionService } from '~~/server/services'
 import { transactionRepository } from '~~/server/repositories'
 import type { TransactionPayload } from '~~/shared/types/transaction'
 import dayjs from 'dayjs'
-import { resolveDateReference } from './resolve-date-reference'
 
 export function createUpdateTransactionTool(userId: string): Tool {
   return tool({
@@ -12,12 +11,12 @@ export function createUpdateTransactionTool(userId: string): Tool {
     inputSchema: z.object({
       id: z.number().int().positive().optional().describe('The transaction ID if known'),
       search: z.string().optional().describe('A description keyword to find the transaction, e.g. "bakso", "lunch"'),
-      dateReference: z.string().optional().describe('A relative date reference like "yesterday", "last Friday", "the one from 2 days ago"'),
+      matchDate: z.iso.date().optional().describe('A concrete YYYY-MM-DD date used to find the transaction. Resolve relative date words using the current date context before calling this tool.'),
       type: z.enum(['expense', 'income']).optional().describe('Updated type if changing'),
       amount: z.number().positive().optional().describe('Updated amount in IDR'),
       categoryId: z.number().int().positive().optional().describe('Updated category ID'),
       note: z.string().min(1).optional().describe('Updated description'),
-      date: z.string().optional().describe('Updated date in YYYY-MM-DD format'),
+      date: z.iso.date().optional().describe('Updated date in YYYY-MM-DD format'),
     }),
     execute: async (args) => {
       return executeUpdateTransaction(userId, args, {
@@ -34,7 +33,7 @@ export async function executeUpdateTransaction(
   args: {
     id?: number
     search?: string
-    dateReference?: string
+    matchDate?: string
     type?: 'expense' | 'income'
     amount?: number
     categoryId?: number
@@ -52,8 +51,9 @@ export async function executeUpdateTransaction(
   if (!transactionId) {
     const filters: { search?: string, startDate?: string, endDate?: string } = {}
     if (args.search) filters.search = args.search
-    if (args.dateReference) {
-      Object.assign(filters, resolveDateReference(args.dateReference))
+    if (args.matchDate) {
+      filters.startDate = args.matchDate
+      filters.endDate = args.matchDate
     }
 
     const matches = await deps.findMany(userId, filters)

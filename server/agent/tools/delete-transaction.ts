@@ -3,7 +3,6 @@ import { z } from 'zod'
 import { transactionService } from '~~/server/services'
 import { transactionRepository } from '~~/server/repositories'
 import dayjs from 'dayjs'
-import { resolveDateReference } from './resolve-date-reference'
 
 export function createDeleteTransactionTool(userId: string): Tool {
   return tool({
@@ -11,7 +10,7 @@ export function createDeleteTransactionTool(userId: string): Tool {
     inputSchema: z.object({
       id: z.number().int().positive().optional().describe('The transaction ID if known'),
       search: z.string().optional().describe('A description keyword to find the transaction, e.g. "bakso", "lunch"'),
-      dateReference: z.string().optional().describe('A relative date reference like "yesterday", "today"'),
+      matchDate: z.iso.date().optional().describe('A concrete YYYY-MM-DD date used to find the transaction. Resolve relative date words using the current date context before calling this tool.'),
     }),
     execute: async (args) => {
       return executeDeleteTransaction(userId, args, {
@@ -25,7 +24,7 @@ export function createDeleteTransactionTool(userId: string): Tool {
 
 export async function executeDeleteTransaction(
   userId: string,
-  args: { id?: number, search?: string, dateReference?: string },
+  args: { id?: number, search?: string, matchDate?: string },
   deps: {
     deleteTransaction: typeof transactionService.delete
     findMany: typeof transactionRepository.findMany
@@ -37,8 +36,9 @@ export async function executeDeleteTransaction(
   if (!transactionId) {
     const filters: { search?: string, startDate?: string, endDate?: string } = {}
     if (args.search) filters.search = args.search
-    if (args.dateReference) {
-      Object.assign(filters, resolveDateReference(args.dateReference))
+    if (args.matchDate) {
+      filters.startDate = args.matchDate
+      filters.endDate = args.matchDate
     }
 
     const matches = await deps.findMany(userId, filters)

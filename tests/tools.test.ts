@@ -102,6 +102,27 @@ describe('update_transaction tool', () => {
     expect(result).toEqual({ error: 'No matching transaction found' })
   })
 
+  it('uses a concrete match date as an exact repository filter', async () => {
+    const result = await executeUpdateTransaction(
+      userId,
+      { search: 'coffee', matchDate: '2026-07-17' },
+      {
+        update: async () => ({ success: true, data: mockTransaction() }),
+        findMany: async (_uid, filters) => {
+          expect(filters).toMatchObject({
+            search: 'coffee',
+            startDate: '2026-07-17',
+            endDate: '2026-07-17',
+          })
+          return []
+        },
+        findById: async () => undefined as unknown as ReturnType<typeof mockTransaction>,
+      },
+    )
+
+    expect(result).toEqual({ error: 'No matching transaction found' })
+  })
+
   it('returns ambiguity error when multiple matches found', async () => {
     const result = await executeUpdateTransaction(
       userId,
@@ -165,6 +186,27 @@ describe('delete_transaction tool', () => {
       {
         deleteTransaction: async () => ({ success: true }),
         findMany: async () => [],
+        findById: async () => undefined as unknown as ReturnType<typeof mockTransaction>,
+      },
+    )
+
+    expect(result).toEqual({ error: 'No matching transaction found' })
+  })
+
+  it('uses a concrete match date as an exact repository filter', async () => {
+    const result = await executeDeleteTransaction(
+      userId,
+      { search: 'coffee', matchDate: '2026-07-17' },
+      {
+        deleteTransaction: async () => ({ success: true }),
+        findMany: async (_uid, filters) => {
+          expect(filters).toMatchObject({
+            search: 'coffee',
+            startDate: '2026-07-17',
+            endDate: '2026-07-17',
+          })
+          return []
+        },
         findById: async () => undefined as unknown as ReturnType<typeof mockTransaction>,
       },
     )

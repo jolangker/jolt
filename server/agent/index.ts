@@ -12,8 +12,9 @@ import {
   createRequestDashboardAccessTool,
 } from './tools'
 import { getTurns, addTurn } from './memory'
+import { formatAgentDateContext, resolveAppTimeZone } from './date-context'
 
-const SYSTEM_PROMPT = `You are Jolt, a personal finance assistant bot. You help users track their expenses and income via Telegram.
+const BASE_SYSTEM_PROMPT = `You are Jolt, a personal finance assistant bot. You help users track their expenses and income via Telegram.
 
 ## Capabilities
 - Record expenses and income transactions
@@ -26,7 +27,7 @@ const SYSTEM_PROMPT = `You are Jolt, a personal finance assistant bot. You help 
 ## Rules
 1. Always respond in the user's language. If they write in Indonesian (Bahasa Indonesia), respond in Indonesian. If in English, respond in English.
 2. When the user says "25rb" or "25k", interpret as 25000 IDR. "1jt" or "1jt" = 1000000 IDR.
-3. When the user says "yesterday", "last Friday", "2 days ago", etc., convert to an actual YYYY-MM-DD date.
+3. Resolve relative dates in the user's language, including phrases like "kemarin", "Jumat lalu", "2 hari lalu", "yesterday", "last Friday", and "2 days ago", to an actual YYYY-MM-DD date before calling a tool.
 4. Always use get_categories first before adding a transaction to find the correct categoryId.
 5. For ambiguous requests (e.g., "the bakso one" when there are multiple matches), ask for clarification before taking destructive actions.
 6. After a successful action, confirm what you did in natural language.
@@ -44,9 +45,20 @@ const SYSTEM_PROMPT = `You are Jolt, a personal finance assistant bot. You help 
 ## Tool Usage
 - Use get_categories to see available categories before recording transactions.
 - Use get_user_info to check user context if needed.
-- When updating/deleting by description, if multiple matches are found, list them and ask which one.
+- When updating/deleting by description or date, pass a concrete YYYY-MM-DD matchDate. Never pass relative date words to tools. If multiple matches are found, list them and ask which one.
 - For spending questions, use get_summary with appropriate date filters.
 - For a clear request to open the dashboard, use request_dashboard_access. Confirm the request without including a URL; it will be sent separately.`
+
+export function buildSystemPrompt(referenceTime: Date, timeZone = resolveAppTimeZone()): string {
+  const { date, weekday } = formatAgentDateContext(referenceTime, timeZone)
+
+  return `${BASE_SYSTEM_PROMPT}
+
+## Current Date Context
+Current local date: ${date} (${weekday})
+Timezone: ${timeZone}
+Use this local date as the anchor for every relative date expression. If the user does not specify a transaction date, use ${date}. All dates passed to tools must use YYYY-MM-DD.`
+}
 
 const provider = createOpenAICompatible({
   name: 'jolt-llm',
@@ -54,7 +66,7 @@ const provider = createOpenAICompatible({
   apiKey: process.env.LLM_API_KEY!,
 })
 
-export async function runAgent(chatId: string, userId: string, message: string): Promise<{ reply: string, dashboardLink?: { url: string, expiresAt: Date } }> {
+export async function runAgent(chatId: string, userId: string, message: string, referenceTime: Date): Promise<{ reply: string, dashboardLink?: { url: string, expiresAt: Date } }> {
   const model = provider.chatModel(process.env.LLM_MODEL!)
 
   let dashboardLink: { url: string, expiresAt: Date } | undefined
@@ -80,7 +92,7 @@ export async function runAgent(chatId: string, userId: string, message: string):
   try {
     const result = await generateText({
       model,
-      system: SYSTEM_PROMPT,
+      system: buildSystemPrompt(referenceTime),
       messages,
       tools,
       stopWhen: isStepCount(10),

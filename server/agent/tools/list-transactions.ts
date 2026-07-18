@@ -9,8 +9,8 @@ export function createListTransactionsTool(userId: string): Tool {
     inputSchema: z.object({
       limit: z.number().int().positive().max(20).default(5).describe('Number of transactions to return (max 20)'),
       type: z.enum(['expense', 'income']).optional().describe('Filter by transaction type'),
-      startDate: z.string().optional().describe('Start date filter in YYYY-MM-DD format'),
-      endDate: z.string().optional().describe('End date filter in YYYY-MM-DD format'),
+      startDate: z.iso.date().optional().describe('Concrete start date filter in YYYY-MM-DD format'),
+      endDate: z.iso.date().optional().describe('Concrete end date filter in YYYY-MM-DD format'),
       search: z.string().optional().describe('Search by description keyword'),
     }),
     execute: async (args) => {

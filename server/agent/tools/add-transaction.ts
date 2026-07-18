@@ -12,7 +12,7 @@ export function createAddTransactionTool(userId: string): Tool {
       amount: z.number().positive().describe('The amount in Indonesian Rupiah (IDR). Convert shorthand like "25rb" to 25000, "1jt" to 1000000.'),
       categoryId: z.number().int().positive().describe('The category ID for this transaction. Use get_categories to see available categories.'),
       note: z.string().min(1).describe('A short description of the transaction, e.g. "lunch with friends", "monthly salary"'),
-      date: z.string().describe('The date of the transaction in YYYY-MM-DD format. Infer from context like "yesterday", "last Friday", or default to today.'),
+      date: z.iso.date().describe('The concrete date of the transaction in YYYY-MM-DD format, resolved from the current date context. Use today when the user does not specify a date.'),
     }),
     execute: async (args) => {
       return executeAddTransaction(userId, args, transactionService.create)

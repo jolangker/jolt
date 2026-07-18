@@ -1,6 +1,7 @@
 import { Bot, webhookCallback } from 'grammy'
 import { resolveTelegramUser } from './user'
 import { runAgent } from '~~/server/agent'
+import { resolveAppTimeZone } from '~~/server/agent/date-context'
 import { dashboardAccessLinkService } from '~~/server/services'
 
 let bot: Bot | null = null
@@ -21,6 +22,8 @@ export async function initializeBot(): Promise<void> {
     console.warn('[telegram] TELEGRAM_BOT_TOKEN not set, bot will not start')
     return
   }
+
+  resolveAppTimeZone()
 
   bot = new Bot(token)
   await bot.api.setMyCommands([{ command: 'dashboard', description: 'Open your Jolt dashboard' }])
@@ -55,7 +58,7 @@ export async function initializeBot(): Promise<void> {
       }, 4000)
 
       try {
-        const result = await runAgent(chatId.toString(), userId, text)
+        const result = await runAgent(chatId.toString(), userId, text, new Date(ctx.message.date * 1000))
         await new Promise(resolve => setTimeout(resolve, 500))
         await ctx.reply(result.reply, {
           reply_parameters: { message_id: ctx.message.message_id },
