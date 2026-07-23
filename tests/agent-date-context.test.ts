@@ -84,4 +84,18 @@ describe('Agent date context', () => {
       'Agent reference time must be a valid Date',
     )
   })
+
+  it('instructs Transaction Proposal flow for Receipt Extraction facts', async () => {
+    await runAgent(
+      'date-context-test',
+      'test-user',
+      'Money Evidence facts\nDate: 2026-07-20\n1. Nasi goreng — 25000',
+      new Date('2026-07-24T00:00:00.000Z'),
+    )
+
+    expect(observedSystem).toContain('Transaction Proposal')
+    expect(observedSystem).toContain('Receipt Extraction')
+    expect(observedSystem).toContain('Do NOT call add_transaction')
+    expect(observedSystem).toContain('confirm')
+  })
 })
