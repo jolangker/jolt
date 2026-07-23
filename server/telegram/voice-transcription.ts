@@ -57,15 +57,28 @@ function extensionForMime(mimeType: string): string {
   }
 }
 
+export type SttConfig = {
+  baseURL: string
+  apiKey: string
+  model: string
+}
+
+/** Prefer STT_* env; fall back to LLM_* so a single OpenAI-compatible stack still works. */
+export function resolveSttConfig(env: NodeJS.ProcessEnv = process.env): SttConfig | null {
+  const baseURL = env.STT_BASE_URL || env.LLM_BASE_URL
+  const apiKey = env.STT_API_KEY || env.LLM_API_KEY
+  const model = env.STT_MODEL || env.LLM_STT_MODEL || 'whisper-1'
+
+  if (!baseURL || !apiKey) return null
+  return { baseURL, apiKey, model }
+}
+
 export async function openAiCompatibleTranscribe(
   input: TranscribeVoiceInput,
   env: NodeJS.ProcessEnv = process.env,
 ): Promise<AudioFetchResult> {
-  const baseURL = env.LLM_BASE_URL
-  const apiKey = env.LLM_API_KEY
-  const model = env.STT_MODEL || env.LLM_STT_MODEL || 'whisper-1'
-
-  if (!baseURL || !apiKey) {
+  const config = resolveSttConfig(env)
+  if (!config) {
     return { ok: false, reason: 'stt-not-configured' }
   }
 
@@ -74,12 +87,12 @@ export async function openAiCompatibleTranscribe(
     const bytes = new Uint8Array(input.audio)
     const blob = new Blob([bytes.buffer], { type: input.mimeType || 'audio/ogg' })
     form.append('file', blob, `voice.${extensionForMime(input.mimeType)}`)
-    form.append('model', model)
+    form.append('model', config.model)
 
-    const response = await fetch(`${baseURL.replace(/\/$/, '')}/audio/transcriptions`, {
+    const response = await fetch(`${config.baseURL.replace(/\/$/, '')}/audio/transcriptions`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${config.apiKey}`,
       },
       body: form,
     })

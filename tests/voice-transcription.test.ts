@@ -1,5 +1,5 @@
 import { describe, expect, it, mock } from 'bun:test'
-import { executeTranscribeVoice } from '../server/telegram/voice-transcription'
+import { executeTranscribeVoice, resolveSttConfig } from '../server/telegram/voice-transcription'
 
 describe('Voice Transcription port', () => {
   it('returns transcribed text on success', async () => {
@@ -35,5 +35,36 @@ describe('Voice Transcription port', () => {
       { fetchAudio: async () => ({ ok: true, text: '  \n' }) },
     )
     expect(result).toEqual({ ok: false, reason: 'empty-transcript' })
+  })
+})
+
+describe('resolveSttConfig', () => {
+  it('prefers dedicated STT env over LLM env', () => {
+    expect(resolveSttConfig({
+      LLM_BASE_URL: 'https://chat.example/v1',
+      LLM_API_KEY: 'chat-key',
+      STT_BASE_URL: 'https://stt.example/v1',
+      STT_API_KEY: 'stt-key',
+      STT_MODEL: 'whisper-1',
+    })).toEqual({
+      baseURL: 'https://stt.example/v1',
+      apiKey: 'stt-key',
+      model: 'whisper-1',
+    })
+  })
+
+  it('falls back to LLM env when STT env is unset', () => {
+    expect(resolveSttConfig({
+      LLM_BASE_URL: 'https://api.openai.com/v1',
+      LLM_API_KEY: 'llm-key',
+    })).toEqual({
+      baseURL: 'https://api.openai.com/v1',
+      apiKey: 'llm-key',
+      model: 'whisper-1',
+    })
+  })
+
+  it('returns null when no base URL or key is available', () => {
+    expect(resolveSttConfig({})).toBeNull()
   })
 })
