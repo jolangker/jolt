@@ -14,8 +14,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:script": "bun server/db/script.ts",
-    "docker:build": "docker build -t jolleyx/jolt:latest .",
-    "docker:push": "docker push jolleyx/jolt:latest"
+    "docker:build": "docker build -t ghcr.io/jolangker/jolt:latest .",
+    "docker:push": "docker push ghcr.io/jolangker/jolt:latest"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.7",

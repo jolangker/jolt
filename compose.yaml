@@ -1,9 +1,13 @@
 services:
   jolt:
-    image: jolleyx/jolt:latest
+    # GHCR (CI): ghcr.io/jolangker/jolt:latest
+    # legacy docker hub alias still retagged by deploy for local convenience
+    image: ghcr.io/jolangker/jolt:latest
     container_name: jolt
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3010:3000"
     restart: unless-stopped
     env_file:
       - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

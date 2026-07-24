@@ -280,21 +280,38 @@ Client-side route guard: `app/middleware/auth.ts` redirects unauthenticated user
 bun run build        # Output: .output/
 ```
 
-### Docker
+### CI (preferred — VPS is too small to build)
+
+Push to `main` runs `.github/workflows/build-deploy.yml`:
+
+1. GitHub Actions builds `linux/amd64` image
+2. Pushes `ghcr.io/jolangker/jolt:latest` + `ghcr.io/jolangker/jolt:sha-<short>`
+3. SSHs to VPS, `docker pull`, retag, `docker compose up -d --force-recreate`
+4. Health-checks `http://127.0.0.1:3010/`
+
+Required repo secrets: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`.
+
+Manual re-run: Actions → build-deploy → Run workflow.
+
+### Docker (local machine with enough RAM only)
 
 ```bash
-# Build Docker image
-bun run docker:build    # Builds: jolleyx/jolt:latest
-
-# Push to Docker Hub
-bun run docker:push
+bun run docker:build    # Builds: ghcr.io/jolangker/jolt:latest
+bun run docker:push     # needs docker login ghcr.io
 ```
 
 The Dockerfile uses `oven/bun` as both build and production runtime. The production image serves the Nuxt output via `bun .output/server/index.mjs` on port 3000.
 
-### Docker Compose
+### Docker Compose (prod VPS)
 
-`compose.yaml` defines a single `jolt` service using the `jolleyx/jolt:latest` image, exposing port 3000, with `.env` file injection.
+Prod dir: `/opt/jolt` (`compose.yaml` + `.env`). Image: `ghcr.io/jolangker/jolt:latest`, bind `127.0.0.1:3010:3000`, `extra_hosts: host.docker.internal:host-gateway`.
+
+Manual pull/recreate:
+
+```bash
+./scripts/deploy-vps.sh              # latest
+./scripts/deploy-vps.sh sha-00e47fd  # pinned
+```
 
 ## Database Migrations
 
