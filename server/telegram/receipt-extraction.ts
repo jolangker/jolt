@@ -1,6 +1,6 @@
 import { generateText } from 'ai'
-import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import type { ReceiptExtractionResult } from './normalize-message'
+import { createJoltLlmProvider } from '~~/server/utils/llm-provider'
 
 export type ExtractReceiptInput = {
   image: Uint8Array
@@ -90,11 +90,7 @@ export async function openAiCompatibleVision(input: VisionCallInput): Promise<Vi
   }
 
   try {
-    const provider = createOpenAICompatible({
-      name: 'jolt-vision',
-      baseURL,
-      apiKey,
-    })
+    const provider = createJoltLlmProvider('jolt-vision')
 
     const result = await generateText({
       model: provider.chatModel(modelId),

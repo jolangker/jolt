@@ -1,5 +1,4 @@
 import { generateText, isStepCount } from 'ai'
-import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import {
   createAddTransactionTool,
   createUpdateTransactionTool,
@@ -13,6 +12,7 @@ import {
 } from './tools'
 import { getTurns, addTurn } from './memory'
 import { formatAgentDateContext, resolveAppTimeZone } from './date-context'
+import { createJoltLlmProvider } from '~~/server/utils/llm-provider'
 
 const BASE_SYSTEM_PROMPT = `You are Jolt, a personal finance assistant bot. You help users track their expenses and income via Telegram.
 
@@ -73,13 +73,8 @@ Timezone: ${timeZone}
 Use this local date as the anchor for every relative date expression. If the user does not specify a transaction date, use ${date}. All dates passed to tools must use YYYY-MM-DD.`
 }
 
-const provider = createOpenAICompatible({
-  name: 'jolt-llm',
-  baseURL: process.env.LLM_BASE_URL!,
-  apiKey: process.env.LLM_API_KEY!,
-})
-
 export async function runAgent(chatId: string, userId: string, message: string, referenceTime: Date): Promise<{ reply: string, dashboardLink?: { url: string, expiresAt: Date } }> {
+  const provider = createJoltLlmProvider()
   const model = provider.chatModel(process.env.LLM_MODEL!)
 
   let dashboardLink: { url: string, expiresAt: Date } | undefined

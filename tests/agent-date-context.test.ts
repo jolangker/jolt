@@ -11,6 +11,15 @@ mock.module('ai', () => ({
   tool: <T>(definition: T) => definition,
 }))
 
+mock.module('../server/utils/llm-provider', () => ({
+  createJoltLlmProvider: () => ({ chatModel: () => ({}) }),
+}))
+
+mock.module('~~/server/utils/llm-provider', () => ({
+  createJoltLlmProvider: () => ({ chatModel: () => ({}) }),
+}))
+
+// keep legacy mock so any residual imports don't explode
 mock.module('@ai-sdk/openai-compatible', () => ({
   createOpenAICompatible: () => ({ chatModel: () => ({}) }),
 }))
