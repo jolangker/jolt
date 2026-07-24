@@ -155,5 +155,10 @@ export async function initializeBot(): Promise<void> {
 
 export function getWebhookHandler() {
   if (!bot) return null
-  return webhookCallback(bot, 'std/http')
+  // Telegram allows ~60s; image vision + tools often exceed grammY's 10s default
+  // and surface as webhook 500 / hard-fail replies.
+  return webhookCallback(bot, 'std/http', {
+    timeoutMilliseconds: 55_000,
+    onTimeout: 'return',
+  })
 }

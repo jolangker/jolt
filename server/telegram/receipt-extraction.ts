@@ -111,7 +111,11 @@ export async function openAiCompatibleVision(input: VisionCallInput): Promise<Vi
 
     return { ok: true, text: result.text ?? '' }
   }
-  catch {
+  catch (error) {
+    console.error('[vision] provider error', {
+      modelId,
+      message: error instanceof Error ? error.message : String(error),
+    })
     return { ok: false, reason: 'provider-error' }
   }
 }
