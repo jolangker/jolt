@@ -15,7 +15,7 @@ export async function resolveTelegramUser(telegramUserId: string, telegramUserna
     throw error
   })
 
-  if (!created) throw createError({ statusCode: 500, statusMessage: 'Unable to resolve Telegram user' })
+  if (!created) throw createError({ statusCode: 500, statusMessage: 'Gagal memetakan pengguna Telegram' })
 
   return created.id
 }

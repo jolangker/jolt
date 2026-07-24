@@ -106,7 +106,7 @@ export async function runAgent(chatId: string, userId: string, message: string, 
       stopWhen: isStepCount(10),
     })
 
-    const reply = result.text || 'Done!'
+    const reply = result.text || 'Selesai!'
 
     addTurn(chatId, { role: 'user', content: message })
     addTurn(chatId, { role: 'assistant', content: reply })
@@ -115,6 +115,6 @@ export async function runAgent(chatId: string, userId: string, message: string, 
   }
   catch (error) {
     console.error('[agent] Error:', error)
-    return { reply: 'Sorry, I couldn\'t process that. Please try again.' }
+    return { reply: 'Maaf, belum bisa diproses. Coba lagi ya.' }
   }
 }

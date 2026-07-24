@@ -34,7 +34,7 @@ describe('Message Normalization', () => {
     )
     expect(result.ok).toBe(false)
     if (!result.ok) {
-      expect(result.reply).toContain('transcribe')
+      expect(result.reply).toContain('ditranskrip')
     }
   })
 
@@ -47,7 +47,7 @@ describe('Message Normalization', () => {
     )
     expect(result.ok).toBe(false)
     if (!result.ok) {
-      expect(result.reply).toContain('hear')
+      expect(result.reply).toContain('kata')
     }
   })
 
@@ -82,13 +82,13 @@ describe('Message Normalization', () => {
       ports({
         extractReceipt: async () => ({
           ok: true,
-          text: 'This image does not look like Money Evidence (receipt or transfer screenshot). Please send a clearer photo or type the transaction.',
+          text: 'Gambar ini sepertinya bukan bukti uang (struk atau screenshot transfer). Kirim foto yang lebih jelas atau ketik transaksi-nya.',
         }),
       }),
     )
     expect(result.ok).toBe(true)
     if (result.ok) {
-      expect(result.text).toContain('Money Evidence')
+      expect(result.text).toContain('bukti uang')
     }
   })
 
@@ -106,7 +106,7 @@ describe('Message Normalization', () => {
     )
     expect(result.ok).toBe(false)
     if (!result.ok) {
-      expect(result.reply).toContain('image')
+      expect(result.reply).toContain('Gambar')
     }
   })
 

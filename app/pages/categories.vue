@@ -45,18 +45,18 @@ interface ApiError {
 }
 
 const deleteCategory = async (id: number) => {
-  if (!confirm('Are you sure you want to delete this category?')) return
+  if (!confirm('Yakin mau hapus kategori ini?')) return
 
   try {
     await $fetch(`/api/categories/${id}`, { method: 'DELETE' })
-    toast.add({ title: 'Category deleted', color: 'success', icon: 'i-solar:check-circle-outline' })
+    toast.add({ title: 'Kategori dihapus', color: 'success', icon: 'i-solar:check-circle-outline' })
     refresh()
   }
   catch (err: unknown) {
     const error = err as ApiError
     toast.add({
-      title: 'Error',
-      description: error.data?.statusMessage || 'Could not delete category',
+      title: 'Gagal',
+      description: error.data?.statusMessage || 'Gagal menghapus kategori',
       color: 'error',
       icon: 'i-solar:close-circle-outline',
     })
@@ -64,15 +64,15 @@ const deleteCategory = async (id: number) => {
 }
 
 const typeItems = [
-  { label: 'All Types', value: 'all' },
-  { label: 'Income', value: 'income' },
-  { label: 'Expense', value: 'expense' },
+  { label: 'Semua Jenis', value: 'all' },
+  { label: 'Pemasukan', value: 'income' },
+  { label: 'Pengeluaran', value: 'expense' },
 ]
 
 const sourceItems = [
-  { label: 'All Sources', value: 'all' },
+  { label: 'Semua Sumber', value: 'all' },
   { label: 'Default', value: 'default' },
-  { label: 'Custom', value: 'custom' },
+  { label: 'Kustom', value: 'custom' },
 ]
 </script>
 
@@ -80,7 +80,7 @@ const sourceItems = [
   <UDashboardPanel>
     <template #header>
       <UDashboardNavbar
-        title="Manage Categories"
+        title="Kelola Kategori"
         :toggle="false"
       >
         <template #leading>
@@ -93,7 +93,7 @@ const sourceItems = [
         </template>
         <template #right>
           <UButton
-            label="Add Category"
+            label="Tambah Kategori"
             icon="i-lucide:plus"
             @click="openModal()"
           />
@@ -106,7 +106,7 @@ const sourceItems = [
         <UInput
           v-model="search"
           icon="i-lucide:search"
-          placeholder="Search categories..."
+          placeholder="Cari kategori..."
           class="w-full"
           size="lg"
         />
@@ -181,7 +181,7 @@ const sourceItems = [
         v-if="filteredCategories.length === 0"
         class="text-center py-12 text-dimmed"
       >
-        No categories found.
+        Kategori tidak ditemukan.
       </div>
     </template>
   </UDashboardPanel>

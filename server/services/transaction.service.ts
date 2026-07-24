@@ -35,7 +35,7 @@ export const transactionService = {
     if (!transaction) {
       throw createError({
         statusCode: 404,
-        statusMessage: 'Transaction not found',
+        statusMessage: 'Transaksi tidak ditemukan',
       })
     }
 

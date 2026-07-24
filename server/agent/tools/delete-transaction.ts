@@ -43,11 +43,11 @@ export async function executeDeleteTransaction(
 
     const matches = await deps.findMany(userId, filters)
     if (matches.length === 0) {
-      return { error: 'No matching transaction found' }
+      return { error: 'Tidak ada transaksi yang cocok' }
     }
     if (matches.length > 1) {
       return {
-        error: 'Multiple transactions match. Please specify which one to delete.',
+        error: 'Ada beberapa transaksi yang cocok. Sebutkan yang mana yang mau dihapus.',
         matches: matches.slice(0, 5).map(t => ({
           id: t.id,
           note: t.note,
@@ -62,7 +62,7 @@ export async function executeDeleteTransaction(
 
   const existing = await deps.findById(userId, transactionId)
   if (!existing) {
-    return { error: 'Transaction not found' }
+    return { error: 'Transaksi tidak ditemukan' }
   }
 
   await deps.deleteTransaction(userId, transactionId)

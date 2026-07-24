@@ -31,7 +31,7 @@ const openExportModal = () => {
       >
         <template #left>
           <div class="font-bold text-xl">
-            Profile
+            Profil
           </div>
         </template>
         <template #right>
@@ -53,7 +53,7 @@ const openExportModal = () => {
           @{{ user?.telegramUsername || 'username' }}
         </div>
         <UButton
-          label="Export Data"
+          label="Ekspor Data"
           icon="i-solar:export-outline"
           color="neutral"
           variant="outline"
@@ -64,7 +64,7 @@ const openExportModal = () => {
 
       <div class="space-y-4 mb-6">
         <div class="text-sm font-semibold mb-3">
-          Account Information
+          Informasi Akun
         </div>
 
         <UCard variant="subtle">
@@ -114,7 +114,7 @@ const openExportModal = () => {
               />
               <div>
                 <div class="text-xs text-dimmed">
-                  Member Since
+                  Bergabung Sejak
                 </div>
                 <div class="text-sm font-medium">
                   {{ memberSince }}
@@ -127,7 +127,7 @@ const openExportModal = () => {
 
       <div class="space-y-4 mb-6">
         <div class="text-sm font-semibold mb-3">
-          Settings
+          Pengaturan
         </div>
 
         <UCard
@@ -143,10 +143,10 @@ const openExportModal = () => {
               />
               <div>
                 <div class="text-sm font-medium">
-                  Manage Categories
+                  Kelola Kategori
                 </div>
                 <div class="text-xs text-dimmed">
-                  Customize your income and expense categories
+                  Atur kategori pemasukan dan pengeluaran
                 </div>
               </div>
             </div>
@@ -161,7 +161,7 @@ const openExportModal = () => {
       <!-- Statistics -->
       <div class="space-y-4">
         <div class="text-sm font-semibold mb-3">
-          Your Statistics
+          Statistik Kamu
         </div>
 
         <UCard variant="subtle">
@@ -173,7 +173,7 @@ const openExportModal = () => {
               />
               <div>
                 <div class="text-xs text-dimmed">
-                  Total Transactions
+                  Total Transaksi
                 </div>
                 <div class="text-2xl font-bold text-highlighted">
                   {{ summary?.data.count }}
@@ -192,7 +192,7 @@ const openExportModal = () => {
               />
               <div>
                 <div class="text-xs text-dimmed">
-                  Total Spent (All Time)
+                  Total Pengeluaran (Semua Waktu)
                 </div>
                 <div class="text-2xl font-bold text-error">
                   {{ formatCurrency(summary?.data.expense) }}
@@ -210,7 +210,7 @@ const openExportModal = () => {
               />
               <div>
                 <div class="text-xs text-dimmed">
-                  Total Income (All Time)
+                  Total Pemasukan (Semua Waktu)
                 </div>
                 <div class="text-2xl font-bold text-success">
                   {{ formatCurrency(summary?.data.income) }}

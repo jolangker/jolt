@@ -46,7 +46,7 @@ watch(search, () => {
     <UInput
       v-model="search"
       icon="i-lucide:search"
-      placeholder="Search icons..."
+      placeholder="Cari ikon..."
       class="w-full"
       size="xl"
     />
@@ -79,7 +79,7 @@ watch(search, () => {
           name="i-lucide:frown"
           class="w-8 h-8 mb-2"
         />
-        <span class="text-sm">No icons found</span>
+        <span class="text-sm">Ikon tidak ditemukan</span>
       </div>
 
       <div
@@ -90,7 +90,7 @@ watch(search, () => {
           variant="ghost"
           color="neutral"
           size="xs"
-          label="Load more"
+          label="Muat lagi"
           @click="loadMore"
         />
       </div>

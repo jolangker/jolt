@@ -69,10 +69,10 @@ const colors = (d: undefined, i: number) => ['var(--ui-success)', 'var(--ui-erro
       <div class="flex justify-between items-start">
         <div>
           <div class="text-sm font-semibold">
-            Daily Income & Expense
+            Pemasukan & Pengeluaran Harian
           </div>
           <div class="text-xs text-dimmed">
-            Track your income and expense over time
+            Pantau pemasukan dan pengeluaran dari waktu ke waktu
           </div>
         </div>
         <USelectMenu
@@ -81,15 +81,15 @@ const colors = (d: undefined, i: number) => ['var(--ui-success)', 'var(--ui-erro
           :items="categoriesData"
           multiple
           value-key="value"
-          :search-input="{ placeholder: 'Search category' }"
+          :search-input="{ placeholder: 'Cari kategori' }"
         />
       </div>
     </template>
     <UEmpty
       v-if="!daily.length"
       icon="i-lucide-chart-line"
-      title="No data available"
-      description="There's no income or expense data for the selected period. Try adjusting the date range or categories."
+      title="Data tidak tersedia"
+      description="Belum ada data pemasukan/pengeluaran untuk periode ini. Coba ubah rentang tanggal atau kategori."
       variant="naked"
       class="h-[300px]"
     />

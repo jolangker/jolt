@@ -43,8 +43,8 @@ const triggers = {
 }
 
 const items = [
-  { label: 'Income', value: 'income' as const },
-  { label: 'Expense', value: 'expense' as const },
+  { label: 'Pemasukan', value: 'income' as const },
+  { label: 'Pengeluaran', value: 'expense' as const },
 ]
 </script>
 
@@ -53,11 +53,11 @@ const items = [
     <template #header>
       <div class="flex justify-between items-start">
         <div>
-          <div class="text-sm font-semibold capitalize">
-            {{ type }} Breakdown
+          <div class="text-sm font-semibold">
+            Rincian {{ type === 'income' ? 'Pemasukan' : 'Pengeluaran' }}
           </div>
           <div class="text-xs text-dimmed">
-            See the breakdown of your {{ type }}
+            Lihat rincian {{ type === 'income' ? 'pemasukan' : 'pengeluaran' }} kamu
           </div>
         </div>
         <USelect
@@ -70,8 +70,8 @@ const items = [
     <UEmpty
       v-if="!categories.length"
       icon="i-lucide-pie-chart"
-      title="No data available"
-      :description="`There's no ${type} data for the selected period. Try adjusting the date range.`"
+      title="Data tidak tersedia"
+      :description="`Belum ada data ${type === 'income' ? 'pemasukan' : 'pengeluaran'} untuk periode ini. Coba ubah rentang tanggal.`"
       variant="naked"
       class="h-[300px]"
     />

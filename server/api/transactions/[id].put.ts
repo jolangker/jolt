@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   if (!transactionId) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Transaction not found',
+      statusMessage: 'Transaksi tidak ditemukan',
     })
   }
 

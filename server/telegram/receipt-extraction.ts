@@ -25,7 +25,7 @@ export type ExtractReceiptDeps = {
 }
 
 const SOFT_REFUSAL
-  = 'This image does not look like Money Evidence (receipt or transfer screenshot). Please send a clearer photo or type the transaction.'
+  = 'Gambar ini sepertinya bukan bukti uang (struk atau screenshot transfer). Kirim foto yang lebih jelas atau ketik transaksi-nya.'
 
 const EXTRACTION_PROMPT = `You extract Money Evidence facts from a single image for a personal finance bot.
 

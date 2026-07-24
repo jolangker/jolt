@@ -99,7 +99,7 @@ describe('update_transaction tool', () => {
       },
     )
 
-    expect(result).toEqual({ error: 'No matching transaction found' })
+    expect(result).toEqual({ error: 'Tidak ada transaksi yang cocok' })
   })
 
   it('uses a concrete match date as an exact repository filter', async () => {
@@ -120,7 +120,7 @@ describe('update_transaction tool', () => {
       },
     )
 
-    expect(result).toEqual({ error: 'No matching transaction found' })
+    expect(result).toEqual({ error: 'Tidak ada transaksi yang cocok' })
   })
 
   it('returns ambiguity error when multiple matches found', async () => {
@@ -137,7 +137,7 @@ describe('update_transaction tool', () => {
       },
     )
 
-    expect((result as { error: string }).error).toBe('Multiple transactions match. Please specify which one.')
+    expect((result as { error: string }).error).toBe('Ada beberapa transaksi yang cocok. Sebutkan yang mana.')
     expect((result as { matches: unknown[] }).matches).toHaveLength(2)
   })
 
@@ -152,7 +152,7 @@ describe('update_transaction tool', () => {
       },
     )
 
-    expect(result).toEqual({ error: 'Transaction not found' })
+    expect(result).toEqual({ error: 'Transaksi tidak ditemukan' })
   })
 })
 
@@ -190,7 +190,7 @@ describe('delete_transaction tool', () => {
       },
     )
 
-    expect(result).toEqual({ error: 'No matching transaction found' })
+    expect(result).toEqual({ error: 'Tidak ada transaksi yang cocok' })
   })
 
   it('uses a concrete match date as an exact repository filter', async () => {
@@ -211,7 +211,7 @@ describe('delete_transaction tool', () => {
       },
     )
 
-    expect(result).toEqual({ error: 'No matching transaction found' })
+    expect(result).toEqual({ error: 'Tidak ada transaksi yang cocok' })
   })
 
   it('returns ambiguity error when multiple matches found', async () => {
@@ -228,7 +228,7 @@ describe('delete_transaction tool', () => {
       },
     )
 
-    expect((result as { error: string }).error).toBe('Multiple transactions match. Please specify which one to delete.')
+    expect((result as { error: string }).error).toBe('Ada beberapa transaksi yang cocok. Sebutkan yang mana yang mau dihapus.')
   })
 })
 

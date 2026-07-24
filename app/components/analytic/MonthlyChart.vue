@@ -27,17 +27,17 @@ const yFormat = (d: number) => formatCurrency(d, true)
   >
     <div class="mb-4">
       <div class="text-sm font-semibold">
-        Monthly Comparison
+        Perbandingan Bulanan
       </div>
       <div class="text-xs text-dimmed">
-        Last 6 months spending
+        Pengeluaran 6 bulan terakhir
       </div>
     </div>
     <UEmpty
       v-if="!data?.length"
       icon="i-lucide-bar-chart-3"
-      title="No data available"
-      description="There's no spending data for the last 6 months. Start tracking your expenses to see the comparison."
+      title="Data tidak tersedia"
+      description="Belum ada data pengeluaran 6 bulan terakhir. Mulai catat pengeluaran untuk melihat perbandingan."
       variant="naked"
       class="h-[300px]"
     />

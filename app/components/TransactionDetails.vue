@@ -22,16 +22,16 @@ const onEdit = () => {
 
 const handleOnDelete = () => {
   confirmationModal.open({
-    title: 'Delete Transaction',
-    description: 'Are you sure you want to delete this transaction?',
+    title: 'Hapus Transaksi',
+    description: 'Yakin mau hapus transaksi ini?',
     onConfirm: async () => {
       await useFetch(`/api/transactions/${props.transaction.id}`, {
         method: 'DELETE',
       })
       refreshNuxtData()
       toast.add({
-        title: 'Transaction deleted',
-        description: 'The transaction has been deleted successfully',
+        title: 'Transaksi dihapus',
+        description: 'Transaksi berhasil dihapus',
         color: 'success',
         icon: 'i-solar:check-circle-outline',
       })
@@ -49,7 +49,7 @@ const handleOnDelete = () => {
       <div class="flex flex-col gap-6">
         <div class="flex flex-col items-center justify-center py-8 gap-2">
           <div class="text-sm text-muted uppercase tracking-wider font-medium">
-            Amount
+            Jumlah
           </div>
           <div
             class="text-4xl font-bold"
@@ -68,7 +68,7 @@ const handleOnDelete = () => {
             />
             <div>
               <div class="text-xs text-muted mb-0.5">
-                Category
+                Kategori
               </div>
               <div class="font-medium">
                 {{ transaction.category.name }}
@@ -84,7 +84,7 @@ const handleOnDelete = () => {
             />
             <div>
               <div class="text-xs text-muted mb-0.5">
-                Date
+                Tanggal
               </div>
               <div class="font-medium">
                 {{ formatDate(transaction.date) }}
@@ -103,7 +103,7 @@ const handleOnDelete = () => {
             />
             <div>
               <div class="text-xs text-muted mb-0.5">
-                Note
+                Catatan
               </div>
               <div class="font-medium break-all">
                 {{ transaction.note }}
@@ -121,7 +121,7 @@ const handleOnDelete = () => {
             icon="i-solar:trash-bin-2-outline"
             @click="handleOnDelete"
           >
-            Delete
+            Hapus
           </UButton>
           <UButton
             size="xl"
@@ -131,7 +131,7 @@ const handleOnDelete = () => {
             icon="i-solar:pen-new-square-outline"
             @click="onEdit"
           >
-            Edit
+            Ubah
           </UButton>
         </div>
       </div>

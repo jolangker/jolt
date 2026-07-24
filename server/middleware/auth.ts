@@ -23,6 +23,6 @@ export default defineEventHandler(async (event) => {
     }
   }
   else {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+    throw createError({ statusCode: 401, statusMessage: 'Tidak diizinkan' })
   }
 })

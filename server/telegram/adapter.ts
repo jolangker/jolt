@@ -65,7 +65,7 @@ async function handlePrivateMessage(ctx: Context, ports: NormalizePorts = defaul
 
       if (classified.kind === 'voice' || classified.kind === 'image') {
         if (!token) {
-          await ctx.reply('Sorry, something went wrong. Please try again.', {
+          await ctx.reply('Maaf, terjadi kesalahan. Coba lagi ya.', {
             reply_parameters: { message_id: ctx.message!.message_id },
           })
           return
@@ -98,7 +98,7 @@ async function handlePrivateMessage(ctx: Context, ports: NormalizePorts = defaul
       })
       if (result.dashboardLink) {
         await ctx.reply(
-          `Open your dashboard: ${result.dashboardLink.url}\n\nThis link expires in 5 minutes.`,
+          `Buka dashboard kamu: ${result.dashboardLink.url}\n\nLink ini kadaluarsa dalam 5 menit.`,
           { link_preview_options: { is_disabled: true } },
         )
       }
@@ -106,7 +106,7 @@ async function handlePrivateMessage(ctx: Context, ports: NormalizePorts = defaul
   }
   catch (error) {
     console.error('[telegram] Error handling message:', error)
-    await ctx.reply('Sorry, something went wrong. Please try again.', {
+    await ctx.reply('Maaf, terjadi kesalahan. Coba lagi ya.', {
       reply_parameters: { message_id: ctx.message.message_id },
     })
   }
@@ -125,13 +125,13 @@ export async function initializeBot(): Promise<void> {
   resolveAppTimeZone()
 
   bot = new Bot(token)
-  await bot.api.setMyCommands([{ command: 'dashboard', description: 'Open your Jolt dashboard' }])
+  await bot.api.setMyCommands([{ command: 'dashboard', description: 'Buka dashboard Jolt' }])
 
   bot.command('dashboard', async (ctx) => {
     if (ctx.chat.type !== 'private' || !ctx.from) return
     const userId = await resolveTelegramUser(ctx.from.id.toString(), ctx.from.username || ctx.from.first_name || 'unknown')
     const link = await dashboardAccessLinkService.issue(userId)
-    await ctx.reply(`Open your dashboard: ${link.url}\n\nThis link expires in 5 minutes.`, { link_preview_options: { is_disabled: true } })
+    await ctx.reply(`Buka dashboard kamu: ${link.url}\n\nLink ini kadaluarsa dalam 5 menit.`, { link_preview_options: { is_disabled: true } })
   })
 
   bot.on('message:text', ctx => handlePrivateMessage(ctx))

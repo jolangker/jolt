@@ -10,7 +10,7 @@ export const dashboardAccessLinkService = {
   async issue(userId: string) {
     const now = new Date()
     if (await dashboardAccessLinkRepository.countRecent(userId, new Date(now.getTime() - RATE_WINDOW_MS)) >= MAX_ISSUANCES) {
-      throw createError({ statusCode: 429, statusMessage: 'Too many dashboard access requests. Please try again later.' })
+      throw createError({ statusCode: 429, statusMessage: 'Terlalu banyak permintaan akses dashboard. Coba lagi nanti.' })
     }
 
     const code = generateAccessCode()

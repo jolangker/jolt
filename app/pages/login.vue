@@ -5,7 +5,7 @@ const loading = ref(true)
 const confirming = ref(false)
 const error = ref('')
 const user = ref('')
-const linkUnavailableMessage = 'This dashboard link is no longer available. Please request a new one from Telegram.'
+const linkUnavailableMessage = 'Link dashboard ini sudah tidak tersedia. Minta link baru lewat Telegram.'
 const { fetch: fetchUserSession } = useUserSession()
 
 async function inspect() {
@@ -42,7 +42,7 @@ onMounted(inspect)
       <UCard class="w-full max-w-md">
         <template #header>
           <h1 class="text-xl font-semibold">
-            Confirm dashboard sign-in
+            Konfirmasi masuk dashboard
           </h1>
         </template>
         <div
@@ -55,20 +55,20 @@ onMounted(inspect)
           v-else-if="error"
           color="error"
           variant="soft"
-          title="Unable to sign in"
+          title="Gagal masuk"
           :description="error"
         />
         <div
           v-else
           class="space-y-5"
         >
-          <p>You are about to sign in to Jolt as <strong>{{ user }}</strong>.</p>
+          <p>Kamu akan masuk ke Jolt sebagai <strong>{{ user }}</strong>.</p>
           <UButton
             block
             :loading="confirming"
             @click="confirm"
           >
-            Confirm sign-in
+            Konfirmasi masuk
           </UButton>
         </div>
       </UCard>

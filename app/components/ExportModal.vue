@@ -45,9 +45,9 @@ const categories = computed(() => {
 })
 
 const typeItems = [
-  { label: 'All', value: 'all' },
-  { label: 'Income', value: 'income' },
-  { label: 'Expense', value: 'expense' },
+  { label: 'Semua', value: 'all' },
+  { label: 'Pemasukan', value: 'income' },
+  { label: 'Pengeluaran', value: 'expense' },
 ]
 
 const handleExport = async () => {
@@ -80,8 +80,8 @@ const handleExport = async () => {
     window.URL.revokeObjectURL(url)
 
     toast.add({
-      title: 'Export successful',
-      description: 'Your transactions have been exported successfully',
+      title: 'Ekspor berhasil',
+      description: 'Transaksi berhasil diekspor',
       color: 'success',
       icon: 'i-solar:check-circle-outline',
     })
@@ -90,8 +90,8 @@ const handleExport = async () => {
   }
   catch {
     toast.add({
-      title: 'Export failed',
-      description: 'An error occurred while exporting transactions',
+      title: 'Ekspor gagal',
+      description: 'Terjadi kesalahan saat mengekspor transaksi',
       color: 'error',
       icon: 'i-solar:close-circle-outline',
     })
@@ -103,7 +103,7 @@ const handleExport = async () => {
 </script>
 
 <template>
-  <UModal title="Export Transactions">
+  <UModal title="Ekspor Transaksi">
     <template #body>
       <UForm
         :state="state"
@@ -113,7 +113,7 @@ const handleExport = async () => {
       >
         <UFormField
           name="type"
-          label="Type"
+          label="Jenis"
         >
           <URadioGroup
             v-model="state.type"
@@ -126,7 +126,7 @@ const handleExport = async () => {
 
         <UFormField
           name="categories"
-          label="Categories"
+          label="Kategori"
         >
           <USelectMenu
             v-model="state.categories"
@@ -137,14 +137,14 @@ const handleExport = async () => {
             max-height="200"
             size="xl"
             multiple
-            placeholder="Select categories (optional)"
+            placeholder="Pilih kategori (opsional)"
           />
         </UFormField>
 
         <div class="flex gap-4">
           <UFormField
             name="startDate"
-            label="Start Date"
+            label="Tanggal Mulai"
             class="flex-1"
           >
             <UInput
@@ -156,7 +156,7 @@ const handleExport = async () => {
           </UFormField>
           <UFormField
             name="endDate"
-            label="End Date"
+            label="Tanggal Selesai"
             class="flex-1"
           >
             <UInput
@@ -171,21 +171,21 @@ const handleExport = async () => {
         <UFormField name="includeSummary">
           <UCheckbox
             v-model="state.includeSummary"
-            label="Include summary sheet"
+            label="Sertakan lembar ringkasan"
             size="xl"
           />
         </UFormField>
 
         <div class="flex justify-end gap-3 mt-4">
           <UButton
-            label="Cancel"
+            label="Batal"
             color="neutral"
             variant="ghost"
             @click="emit('close', false)"
           />
           <UButton
             type="submit"
-            label="Export"
+            label="Ekspor"
             icon="i-solar:export-outline"
             :loading="loading"
           />

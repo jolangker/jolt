@@ -12,10 +12,10 @@
             class="w-16 h-16 mx-auto text-gray-400"
           />
           <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-            Unauthorized Access
+            Akses Tidak Diizinkan
           </h1>
           <p class="text-gray-500 dark:text-gray-400">
-            You do not have permission to view this page.
+            Kamu tidak punya izin untuk melihat halaman ini.
           </p>
         </div>
       </UCard>

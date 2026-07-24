@@ -30,7 +30,7 @@ const { data: summary } = await useFetch('/api/analytics/summary')
     <template #body>
       <div class="mb-6 mx-auto w-full max-w-2xl flex flex-col items-center gap-1">
         <div class="text-dimmed">
-          Nett Balance
+          Saldo Bersih
         </div>
         <div class="text-4xl font-bold text-primary">
           {{ formatCurrency(summary?.data?.nett) }}
@@ -40,7 +40,7 @@ const { data: summary } = await useFetch('/api/analytics/summary')
         <UCard variant="subtle">
           <div class="flex flex-col gap-1">
             <div class="text-xs text-dimmed">
-              Total Income
+              Total Pemasukan
             </div>
             <div class="text-xl font-semibold text-success">
               {{ formatCurrency(summary?.data.income) }}
@@ -50,7 +50,7 @@ const { data: summary } = await useFetch('/api/analytics/summary')
         <UCard variant="subtle">
           <div class="flex flex-col gap-1">
             <div class="text-xs text-dimmed">
-              Total Expense
+              Total Pengeluaran
             </div>
             <div class="text-xl font-semibold text-error">
               {{ formatCurrency(summary?.data.expense) }}
@@ -62,13 +62,13 @@ const { data: summary } = await useFetch('/api/analytics/summary')
       <div>
         <div class="flex justify-between items-center mb-2">
           <div class="text-lg font-semibold">
-            Recent Transactions
+            Transaksi Terbaru
           </div>
           <NuxtLink
             to="/transactions"
             class="text-sm text-primary hover:underline"
           >
-            View All
+            Lihat Semua
           </NuxtLink>
         </div>
 
@@ -85,8 +85,8 @@ const { data: summary } = await useFetch('/api/analytics/summary')
         <UEmpty
           v-else
           icon="i-solar:wallet-2-outline"
-          title="No transactions found"
-          description="You have no transactions yet"
+          title="Belum ada transaksi"
+          description="Kamu belum punya transaksi"
           variant="naked"
         />
       </div>
